@@ -11,7 +11,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 ]
 
 
-cFunction::usage="f";
+cFunction::usage="cFunction[expr,id] works like Function[expr], but only considers Slots/SlotSequences subscripted with id. Can also be entered using a subscripted & (this can be entered using \[AliasDelimiter]cf\[AliasDelimiter])";
 tee::usage="tee[expr] prints expr and returns in afterwards";
 
 
