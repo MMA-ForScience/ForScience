@@ -1,5 +1,11 @@
 (* ::Package:: *)
 
+BeginPackage["ForScience`"]
+
+
+EndPackage[]
+
+
 Block[{Notation`AutoLoadNotationPalette=False},
   BeginPackage["ForScience`Util`",{"Notation`"}]
 ]
