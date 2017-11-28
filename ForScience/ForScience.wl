@@ -13,6 +13,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 
 cFunction::usage="cFunction[expr,id] works like Function[expr], but only considers Slots/SlotSequences subscripted with id. Can also be entered using a subscripted & (this can be entered using \[AliasDelimiter]cf\[AliasDelimiter])";
 tee::usage="tee[expr] prints expr and returns in afterwards";
+TableToTexForm::usage="TableToTexForm[data] returns the LaTeX representation of a list or a dataset";
 
 
 Begin["Private`"]
@@ -53,6 +54,34 @@ Attributes[cFunction]={HoldAll};
 
 tee[expr_]:=(Print@expr;expr)
 SyntaxInformation[tee]={"ArgumentsPattern"->{_}};
+
+
+TableToTexForm[data_]:=Module[
+{out,normData},
+out="";
+normData=Normal@data;
+out=out<>"\\begin{tabular}{|";
+Do[out=out<>"c|",Length@normData[[1]]];
+out=out<>"} \\hline
+";
+If[ToString[normData[[0]]]=="Association",
+	PrependTo[normData,Keys@normData]
+];
+If[ToString[normData[[1,0]]]=="Association",
+	PrependTo[normData,Keys@normData[[1]]]
+];
+For[i=1,i<=Length@normData,i++,
+	For[j=1,j<=Length@normData[[1]],j++,
+		If[j==1,
+			out=out<>ToString[normData[[i,j]]],
+			out=out<>" & "<>ToString[normData[[i,j]]]
+		];
+	];
+	out=out<>" \\\\ \\hline
+";
+];
+out=out<>"\\end{tabular}"
+]
 
 
 End[]
