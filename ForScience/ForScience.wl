@@ -13,7 +13,6 @@ Block[{Notation`AutoLoadNotationPalette=False},
 
 cFunction::usage="cFunction[expr,id] works like Function[expr], but only considers Slots/SlotSequences subscripted with id. Can also be entered using a subscripted & (this can be entered using \[AliasDelimiter]cf\[AliasDelimiter])";
 tee::usage="tee[expr] prints expr and returns in afterwards";
-jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152"
 TableToTexForm::usage="TableToTexForm[data] returns the LaTeX representation of a list or a dataset";
 
 
@@ -85,7 +84,22 @@ out=out<>"\\end{tabular}"
 ]
 
 
+End[]
+
+
+EndPackage[]
+
+
 (* --- Styling Part --- *)
+
+
+BeginPackage["ForScience`PlotUtils`"]
+
+
+jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152"
+
+
+Begin["Private`"]
 
 
 jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
@@ -161,10 +175,10 @@ End[]
 EndPackage[]
 
 
-BeginPackage["ForScience`PlotUtils`"]
-
-
 foo2::usage="a";
 
 
 EndPackage[]
+
+
+
