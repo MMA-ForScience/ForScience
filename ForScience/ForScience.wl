@@ -173,12 +173,3 @@ End[]
 
 
 EndPackage[]
-
-
-foo2::usage="a";
-
-
-EndPackage[]
-
-
-
