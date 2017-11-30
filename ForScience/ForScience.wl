@@ -103,7 +103,6 @@ Begin["Private`"]
 
 
 jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
-EndPackage[]
 
 
 niceRadialTicks/:Switch[niceRadialTicks,a___]:=Switch[Automatic,a]/.l:{__Text}:>Most@l
@@ -113,7 +112,7 @@ niceRadialTicks/:MemberQ[a___,niceRadialTicks]:=MemberQ[a,Automatic]
 basicPlots={ListContourPlot};
 polarPlots={ListPolarPlot};
 polarPlotsNoJoin={PolarPlot};
-themedPlots={LogLogPlot,ListLogLogPlot,ListLogPlot,ListLinePlot,ListPlot,Plot,ParametricPlot,SmoothHistogram}~Join~polarPlots;
+themedPlots={LogLogPlot,ListLogLogPlot,ListLogPlot,ListLinePlot,ListPlot,Plot,ParametricPlot,SmoothHistogram};
 plots3D={ListPlot3D,ListPointPlot3D,ParametricPlot3D};
 histogramType={Histogram,BarChart,PieChart};
 
