@@ -75,6 +75,9 @@ Private`processingAutoSlot=False;
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 fancyTrace::usage=formatUsage@"fancyTrace[expr] produces an interactive version of the Trace output";
+windowedMap::usage=formatUsage@"windowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list
+windowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```,```\[Ellipsis]``` wide windows of arbitrary dimension
+windowedMap[func,wspec] is the operator form";
 
 
 Begin["Private`"]
@@ -277,6 +280,30 @@ DynamicModule[
 ]
 iFancyTrace[i_,o:OptionsPattern[fancyTrace]]:=fancyTracePanel[fancyTraceStyle[fancyTraceShort[i,2,o],o],o]
 iFancyTrace[{},o:OptionsPattern[fancyTrace]]:=Panel[Background->OptionValue["PanelBackground"]]
+
+
+windowedMap[f_,d_,w_Integer,o:OptionsPattern[]]:=windowedMap[f,d,{w},o]
+windowedMap[f_,w_Integer,o:OptionsPattern[]][d_]:=windowedMap[f,d,w,o]
+windowedMap[f_,d_,w:{__Integer}|_Integer,OptionsPattern[]]:=
+With[
+  {ws=If[Head@w===List,w,{w}]},
+    Map[
+      f,
+      Partition[
+      If[
+        OptionValue@Padding===None,
+        d,
+        ArrayPad[d,Transpose@Floor@{ws/2,(ws-1)/2},Nest[List,OptionValue@Padding,Length@ws]]
+      ],
+      ws,
+      Table[1,Length@ws]
+    ],
+    {Length@ws}
+  ]
+]
+windowedMap[f_,w:{__Integer}|_Integer,o:OptionsPattern[]][d_]:=windowedMap[f,d,w,o]
+Options[windowedMap]={Padding->0};
+SyntaxInformation[windowedMap]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
 
 
 End[]
