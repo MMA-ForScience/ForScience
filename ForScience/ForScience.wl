@@ -31,9 +31,9 @@ stringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
 formatUsageCase[str_String]:=StringReplace[
   str,
   RegularExpression@
-  "(?:^|\r\n)(\\w*)(?P<P>\\[(?:[\\w\[Ellipsis],]|(?P>P))*\\])"
-  :>"'''$1"
-    <>StringReplace["$2",RegularExpression@"\\w+"->"```$0```"]
+  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],]|(?P>P))*\\])"
+  :>"$1'''$2"
+    <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
 ]
 
