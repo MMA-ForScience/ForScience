@@ -74,6 +74,7 @@ autoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
 Private`processingAutoSlot=False;
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
+fancyTrace::usage=formatUsage@"fancyTrace[expr] produces an interactive version of the Trace output";
 
 
 Begin["Private`"]
@@ -232,6 +233,50 @@ For[i=1,i<=Length@normData,i++,
 ];
 out=out<>"\\end{tabular}"
 ]
+
+
+fancyTraceStyle[i_,o:OptionsPattern[fancyTrace]]:=Style[i,o,FontFamily->"Consolas",Bold]
+fancyTraceShort[i_,fac_,o:OptionsPattern[fancyTrace]]:=Tooltip[Short[i,fac OptionValue["ShortWidth"]],Panel@fancyTraceStyle[i,o],TooltipStyle->{CellFrame->None,Background->White}]
+fancyTraceArrowStyle[a_,o:OptionsPattern[fancyTrace]]:=Style[a,OptionValue["ArrowColor"],FontSize->OptionValue["ArrowScale"]OptionValue[FontSize]]
+fancyTracePanel[i_,o:OptionsPattern[fancyTrace]]:=Panel[i,Background->OptionValue["PanelBackground"],ContentPadding->False]
+fancyTraceColumn[l_,o:OptionsPattern[fancyTrace]]:=Column[
+ Riffle[
+  iFancyTrace[#,"PanelBackground"->Darker[OptionValue["PanelBackground"],OptionValue["DarkeningFactor"]],o]&/@l,
+  If[OptionValue["DownArrows"],fancyTraceArrowStyle["\[DoubleDownArrow]",o],Nothing]
+ ],
+ Alignment->OptionValue["ColumnAlignment"]
+]
+Options[fancyTrace]=Options[Style]~Join~{"ArrowColor"->Darker@Red,"ArrowScale"->1.5,"ShortWidth"->0.15,"TraceFilter"->Sequence[],"TraceOptions"->{},"DarkeningFactor"->0.1,"PanelBackground"->White,"DownArrows"->False,"ColumnAlignment"->Left};
+fancyTrace[expr_,o:OptionsPattern[]]:=Framed@iFancyTrace[Trace[expr,Evaluate@OptionValue["TraceFilter"],Evaluate[Sequence@@OptionValue["TraceOptions"]]]/.s:(Slot|SlotSequence):>Defer[s],o]
+SetAttributes[fancyTrace,HoldFirst]
+iFancyTrace[l_List,o:OptionsPattern[fancyTrace]]:=
+DynamicModule[
+ {expanded=False},
+  EventHandler[
+   fancyTracePanel[
+    Dynamic@If[
+     expanded,
+     fancyTraceColumn[l,o],
+     fancyTraceStyle[Row@{
+      fancyTraceShort[First@l,1,o],
+      If[
+        Length@l<3,
+        fancyTraceArrowStyle[" \[DoubleRightArrow] ",o],
+        Tooltip[fancyTraceArrowStyle[" \[DoubleRightArrow] \[CenterEllipsis] \[DoubleRightArrow] ",o],fancyTraceColumn[l[[2;;-2]],o],TooltipStyle->{CellFrame->None,Background->OptionValue["PanelBackground"]}]
+       ],
+      fancyTraceShort[Last@l,1,o]
+     },
+     o
+    ]
+   ],
+   o
+  ],
+  {"MouseClicked":>(expanded=!expanded)},
+  PassEventsUp->False
+ ]
+]
+iFancyTrace[i_,o:OptionsPattern[fancyTrace]]:=fancyTracePanel[fancyTraceStyle[fancyTraceShort[i,2,o],o],o]
+iFancyTrace[{},o:OptionsPattern[fancyTrace]]:=Panel[Background->OptionValue["PanelBackground"]]
 
 
 End[]
