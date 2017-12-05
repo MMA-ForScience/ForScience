@@ -11,9 +11,60 @@ Block[{Notation`AutoLoadNotationPalette=False},
 ]
 
 
-cFunction::usage="cFunction[expr,id] works like Function[expr], but only considers Slots/SlotSequences subscripted with id. Can also be entered using a subscripted & (this can be entered using \[AliasDelimiter]cf\[AliasDelimiter])";
-tee::usage="tee[expr] prints expr and returns in afterwards";
-TableToTexForm::usage="TableToTexForm[data] returns the LaTeX representation of a list or a dataset";
+(*usage formatting utilities, need to make public before defining, as they're already used in the usage definition*)
+fixUsage;
+stringEscape;
+formatUsageCase;
+formatUsage;
+formatCode;
+
+
+Begin["Private`"]
+
+
+fixUsage[usage_]:=If[StringMatchQ[usage,"\!\("~~__],"","\!\(\)"]<>StringReplace[usage,{p:("\!\(\*"~~__?(StringFreeQ["\*"])~~"\)"):>StringReplace[p,"\n"->""],"\n"->"\n\!\(\)"}]
+
+
+stringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
+
+
+formatUsageCase[str_String]:=StringReplace[
+  str,
+  RegularExpression@
+  "(?:^|\r\n)(\\w*)(?P<P>\\[(?:[\\w\[Ellipsis],]|(?P>P))*\\])"
+  :>"'''$1"
+    <>StringReplace["$2",RegularExpression@"\\w+"->"```$0```"]
+    <>"'''"
+]
+
+
+formatDelims="'''"|"```";
+formatCode[str_String]:=fixUsage@FixedPoint[
+  StringReplace[
+    {
+      pre:((___~~Except[WordCharacter])|"")~~b:(WordCharacter)..~~"_"~~s:(WordCharacter)..:>pre<>"\!\(\*SubscriptBox[\""<>stringEscape@b<>"\",\""<>stringEscape@s<>"\"]\)",
+      pre___~~"{"~~b__~~"}_{"~~s__~~"}"/;(And@@(StringFreeQ["{"|"}"|"'''"|"```"|"_"]/@{b,s})):>pre<>"\!\(\*SubscriptBox[\""<>stringEscape@b<>"\",\""<>stringEscape@s<>"\"]\)",
+      pre___~~"```"~~c__~~"```"/;StringFreeQ[c,formatDelims]:>pre<>"\!\(\*StyleBox[\""<>stringEscape@c<>"\",\"TI\"]\)",
+      pre___~~"'''"~~c__~~"'''"/;StringFreeQ[c,formatDelims]:>pre<>"\!\(\*StyleBox[\""<>stringEscape@c<>"\",\"MR\"]\)"
+    }
+  ],
+  str
+]
+formatUsage=formatCode@*formatUsageCase;
+
+
+End[]
+
+
+fixUsage::usage=formatUsage@"fixUsuage[str] fixes usage messages with custom formatting so that they are properly displayed in the front end";
+stringEscape::usage=formatUsage@"stringEscape[str] escapes literal '''\\''' and '''\"''' in ```str```";
+formatUsageCase::usage=formatUsage@"formatUsageCase[str] prepares all function calls all the beginning of a line in ```str``` to be formatted nicely by '''formatCode'''. See also '''formatUsage'''.";
+formatCode::usage=formatUsage@"formatCome[str] formats anything wrapped in \!\(\*StyleBox[\"```\",\"MR\"]\) as 'Times Italic' and anything wrapped in \!\(\*StyleBox[\"'''\",\"MR\"]\) as 'Mono Regular'. Also formats subscripts to a_b (written as "<>"\!\(\*StyleBox[\"a_b\",\"MR\"]\) or \!\(\*StyleBox[\"{a}_{b}\",\"MR\"]\).)";
+formatUsage::usage=formatUsage@"formatUsage[str] combines the functionalities of '''formatUsageCase''' and '''formatCode'''.";
+
+cFunction::usage=formatUsage@"cFunction[expr,id] works like '''Function[```expr```]''', but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''{#}_{1}''' or '''{##3}_{f}'''. Can also be entered using a subscripted '''&''' (e.g. '''{&}_{1}''', this can be entered using \[AliasIndicator]cf\[AliasIndicator])";
+tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
+TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 
 
 Begin["Private`"]
