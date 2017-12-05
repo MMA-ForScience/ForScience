@@ -64,7 +64,14 @@ formatUsage::usage=formatUsage@"formatUsage[str] combines the functionalities of
 
 assignmentWrapper::usage=formatUsage@"'''{//}_{=}''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar{//}_{=}FullForm''' is equivalent to '''FullForm[foo=bar]'''";
 mergeRules::usage=formatUsage@"mergeRules[rule_1,\[Ellipsis]] combines all rules into a single rule, that matches anything any of the rules match and returns the corresponding replacement. Useful e.g. for '''Cases'''";
+funcErr;(*make error symbols public*)
 cFunction::usage=formatUsage@"cFunction[expr,id] works like '''Function[```expr```]''', but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''{#}_{1}''' or '''{##3}_{f}'''. Can also be entered using a subscripted '''&''' (e.g. '''{&}_{1}''', this can be entered using \[AliasIndicator]cf\[AliasIndicator])";
+Private`processingAutoSlot=True;(*disable autoslot related parsing while setting usage messages. Needed when loading this multiple times*)
+\[Bullet]::usage=formatUsage@"\[Bullet] works analogously to '''#''', but doesn't require an eclosing '''&'''. Slots are only filled on the topmost level. E.g. '''f[\[Bullet], g[\[Bullet]]][3]'''\[RightArrow]'''f[3,g[\[Bullet]]]'''. Can also use '''\[Bullet]'''```n``` and '''\[Bullet]'''```name```, analogous to '''#'''. See also '''\[Bullet]\[Bullet]''' Enter \[Bullet] s '''\\[Bullet]''' or '''ALT+7'''.";
+\[Bullet]\[Bullet]::usage=formatUsage@"\[Bullet]\[Bullet] works the same as \[Bullet], but is analogue to ##. Can also use '''\[Bullet]'''```n```, analogous to ```##```. Enter \[Bullet] as '''\\[Bullet]''' or '''ALT+7'''.";
+autoSlot::usage=\[Bullet]::usage;
+autoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
+Private`processingAutoSlot=False;
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 
@@ -93,37 +100,106 @@ Notation[ParsedBoxWrapper[RowBox[{"expr_", SubscriptBox["//", "="], "wrap_"}]] \
 assignmentWrapper/:h_[lhs_,assignmentWrapper[rhs_,wrap_]]:=If[h===Set||h===SetDelayed,wrap[h[lhs,rhs]],h[lhs,wrap[rhs]]]
 Attributes[assignmentWrapper]={HoldAllComplete};
 
-Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"expr_", "&"}], "id_"]] \[DoubleLongLeftRightArrow] ParsedBoxWrapper[RowBox[{"cFunction", "[", RowBox[{"expr_", ",", "id_"}], "]"}]]]
-AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
-cFunction::missingArg="Cannot fill `` in ``\!\(\*SubscriptBox[\(&\), \(``\)]\) from (`2`\!\(\*SubscriptBox[\(&\), \(`3`\)]\))[`4`].";
-cFunction::noAssoc="`` is expected to have an Association as the first argument.";
-cFunction::missingKey="Named slot `` in ``\!\(\*SubscriptBox[\(&\), \(``\)]\) cannot be filled from (`2`\!\(\*SubscriptBox[\(&\), \(`3`\)]\))[`4`]";
-cFunction[expr_,id_][args___]:=With[
-  {argList={args},hExpr=Hold@expr},
-  With[
-    {
-      firstAssoc=MemberQ[hExpr,Subscript[Slot[_String],id],Infinity],
-      minArgs=Max[Cases[hExpr,Subscript[(Slot|SlotSequence)[n_],id]:>n,Infinity]/._String->1]
-    },
-    If[Length@{args}<minArgs,
-      With[
-        {errSlot=Last@First@MaximalBy[First]@Select[GreaterThan[Length@argList]@*First]@Cases[hExpr,s:Subscript[(Slot|SlotSequence)[n_],id]:>{n,s},Infinity]},
-        Message[cFunction::missingArg,errSlot,HoldForm@expr,id,StringTake[ToString@args,{2,-2}]]
-      ]
-    ];
-    If[firstAssoc&&!AssociationQ@First@argList,
-      Message[cFunction::noAssoc,HoldForm@expr]
-      ];
-    ReleaseHold[
-      hExpr
-        /.Subscript[Slot[i_/;i<=Length@argList],id]:>With[{arg=argList[[i]]},arg/;True]
-        /.Subscript[SlotSequence[i_/;i<=Length@argList],id]:>With[{arg=cfArgSeq@@argList[[i;;]]},arg/;True]
-        //.h_[pre___,cfArgSeq[seq__],post___]:>h[pre,seq,post]
-        /.s:Subscript[Slot[n_String],id]:>With[{arg=Lookup[First@argList,n,Message[cFunction::missingKey,s,HoldForm@expr,id,First@argList];s]},arg/;firstAssoc]
+
+funcErr::missingArg="`` in `` cannot be filled from ``.";
+funcErr::noAssoc="`` is expected to have an Association as the first argument.";
+funcErr::missingKey="Named slot `` in `` cannot be filled from ``.";
+funcErr::invalidSlot="`` (in ``) should contain a non-negative integer or string.";
+funcErr::invalidSlotSeq="`` (in ``) should contain a positive integer.";
+funcErr::slotArgCount="`` called with `` arguments; 0 or 1 expected.";
+procFunction[func_,args:{argSeq___},{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  levelspec_:\[Infinity],{head_,sltHead_,sltSeqHead_}]:=With[
+  {
+    hExpr=Hold@func,
+    funcForm=HoldForm@head@func
+  },
+  ReleaseHold[
+    Replace[
+      Replace[
+        hExpr,
+        {
+          s:sltPat:>With[
+            {arg=Which[
+              Length@{sltIdx}>1,
+              Message[funcErr::slotArgCount,sltHead,Length@{sltIdx}];s,
+              StringQ@sltIdx,
+              If[
+                AssociationQ@First@args,              
+                Lookup[First@args,sltIdx,Message[funcErr::missingKey,sltIdx,HoldForm@head@func,First@args];s],
+                Message[funcErr::noAssoc,funcForm];s
+              ],
+              !IntegerQ@sltIdx||sltIdx<0,
+              Message[funcErr::invalidSlot,s,funcForm];s,
+              sltIdx==0,
+              head@func,
+              sltIdx<=Length@args,
+              args[[sltIdx]],
+              True,
+              Message[funcErr::missingArg,s,funcForm,
+                HoldForm[head[func]@argSeq]];s
+            ]},
+            arg/;True
+          ],
+          s:sltSeqPat:>With[
+            {arg=Which[
+              Length@{sltSeqIdx}>1,            
+              Message[funcErr::slotArgCount,sltSeqHead,Length@{sltSeqIdx}];s,
+              !IntegerQ@sltSeqIdx||sltSeqIdx<=0,
+              Message[funcErr::invalidSlotSeq,s,funcForm];s,
+              sltIdx<=Length@args+1,
+              pfArgSeq@@args[[sltIdx;;]],
+              True,
+              Message[funcErr::missingArg,s,funcForm,HoldForm[head[func]@argSeq]];s
+            ]},
+            arg/;True
+          ]
+        },
+        levelspec
+      ]//.
+        h_[pre___,pfArgSeq[seq___],post___]:>h[pre,seq,post],
+      Hold[]->Hold@Sequence[],
+      {0}
     ]
   ]
 ];
-Attributes[cFunction]={HoldAll};
+Attributes[procFunction]={HoldFirst};
+
+
+processingAutoSlot=True;
+slotMatcher=StringMatchQ["\[Bullet]"~~___];
+(
+  #/:expr:_[___,#[___],___]/;!processingAutoSlot:=Block[
+    {processingAutoSlot=True},
+    Replace[autoFunction[expr],{autoSlot[i___]:>iAutoSlot[i],autoSlotSequence[i___]:>iAutoSlotSequence[i]},{2}]
+  ];
+)&/@{autoSlot,autoSlotSequence};
+MakeBoxes[(iAutoSlot|autoSlot)[i_String|i:_Integer?NonNegative:1],fmt_]/;!processingAutoSlot:=With[{sym=Symbol["\[Bullet]"<>ToString@i]},MakeBoxes[sym,fmt]]
+MakeBoxes[(iAutoSlotSequence|autoSlotSequence)[i:_Integer?Positive:1],fmt_]/;!processingAutoSlot:=With[{sym=Symbol["\[Bullet]\[Bullet]"<>ToString@i]},MakeBoxes[sym,fmt]]
+MakeBoxes[iAutoSlot[i___],fmt_]/;!processingAutoSlot:=MakeBoxes[autoSlot[i],fmt]
+MakeBoxes[iAutoSlotSequence[i___],fmt_]/;!processingAutoSlot:=MakeBoxes[autoSlotSequence[i],fmt]
+MakeBoxes[autoFunction[func_],fmt_]:=MakeBoxes[func,fmt]
+MakeExpression[RowBox[{"?", t_String?slotMatcher}], fmt_?(!processingAutoSlot&)(*make check here instead of ordinary condition as that one causes an error*)]:= 
+  MakeExpression[RowBox[{"?", If[StringMatchQ[t,"\[Bullet]\[Bullet]"~~___],"autoSlotSequence","autoSlot"]}], fmt]
+MakeExpression[arg_RowBox?(MemberQ[#,_String?slotMatcher,Infinity]&),fmt_?(!processingAutoSlot&)(*make check here instead of ordinary condition as that one causes an error*)]:=Block[
+  {processingAutoSlot=True},
+  MakeExpression[
+    arg/.a_String:>First[
+      StringCases[a,t:("\[Bullet]\[Bullet]"|"\[Bullet]")~~i___:>ToBoxes@If[t=="\[Bullet]",autoSlot,autoSlotSequence]@If[StringMatchQ[i,__?DigitQ],ToExpression@i,i/.""->1]],
+      a
+    ],
+    fmt
+  ]
+]
+processingAutoSlot=False;
+Attributes[autoFunction]={HoldFirst};
+autoFunction[func_][args___]:=procFunction[func,{args},{iAutoSlot[i__:1]:>i,iAutoSlotSequence[i__:1]:>i},{2},{autoFunction,autoSlot,autoSlotSequence}]
+SyntaxInformation[autoSlot]={"ArgumentsPattern"->{_.}};
+SyntaxInformation[autoSlotSequence]={"ArgumentsPattern"->{_.}};
+
+
+Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"func_", "&"}], "id_"]] \[DoubleLongLeftRightArrow]ParsedBoxWrapper[RowBox[{"cFunction", "[", RowBox[{"func_", ",", "id_"}], "]"}]]]
+AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
+cFunction[func_,id_][args___]:=procFunction[func,{args},{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{cFunction,Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}]
+Attributes[cFunction]={HoldFirst};
 
 
 tee[expr_]:=(Print@expr;expr)
