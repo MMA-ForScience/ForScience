@@ -62,6 +62,7 @@ formatUsageCase::usage=formatUsage@"formatUsageCase[str] prepares all function c
 formatCode::usage=formatUsage@"formatCome[str] formats anything wrapped in \!\(\*StyleBox[\"```\",\"MR\"]\) as 'Times Italic' and anything wrapped in \!\(\*StyleBox[\"'''\",\"MR\"]\) as 'Mono Regular'. Also formats subscripts to a_b (written as "<>"\!\(\*StyleBox[\"a_b\",\"MR\"]\) or \!\(\*StyleBox[\"{a}_{b}\",\"MR\"]\).)";
 formatUsage::usage=formatUsage@"formatUsage[str] combines the functionalities of '''formatUsageCase''' and '''formatCode'''.";
 
+assignmentWrapper::usage=formatUsage@"'''{//}_{=}''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar{//}_{=}FullForm''' is equivalent to '''FullForm[foo=bar]'''";
 cFunction::usage=formatUsage@"cFunction[expr,id] works like '''Function[```expr```]''', but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''{#}_{1}''' or '''{##3}_{f}'''. Can also be entered using a subscripted '''&''' (e.g. '''{&}_{1}''', this can be entered using \[AliasIndicator]cf\[AliasIndicator])";
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
@@ -69,6 +70,10 @@ TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX repres
 
 Begin["Private`"]
 
+
+Notation[ParsedBoxWrapper[RowBox[{"expr_", SubscriptBox["//", "="], "wrap_"}]] \[DoubleLongRightArrow] ParsedBoxWrapper[RowBox[{"assignmentWrapper", "[", RowBox[{"expr_", ",", "wrap_"}], "]"}]]]
+assignmentWrapper/:h_[lhs_,assignmentWrapper[rhs_,wrap_]]:=If[h===Set||h===SetDelayed,wrap[h[lhs,rhs]],h[lhs,wrap[rhs]]]
+Attributes[assignmentWrapper]={HoldAllComplete};
 
 Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"expr_", "&"}], "id_"]] \[DoubleLongLeftRightArrow] ParsedBoxWrapper[RowBox[{"cFunction", "[", RowBox[{"expr_", ",", "id_"}], "]"}]]]
 AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
