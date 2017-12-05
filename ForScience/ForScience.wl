@@ -63,12 +63,30 @@ formatCode::usage=formatUsage@"formatCome[str] formats anything wrapped in \!\(\
 formatUsage::usage=formatUsage@"formatUsage[str] combines the functionalities of '''formatUsageCase''' and '''formatCode'''.";
 
 assignmentWrapper::usage=formatUsage@"'''{//}_{=}''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar{//}_{=}FullForm''' is equivalent to '''FullForm[foo=bar]'''";
+mergeRules::usage=formatUsage@"mergeRules[rule_1,\[Ellipsis]] combines all rules into a single rule, that matches anything any of the rules match and returns the corresponding replacement. Useful e.g. for '''Cases'''";
 cFunction::usage=formatUsage@"cFunction[expr,id] works like '''Function[```expr```]''', but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''{#}_{1}''' or '''{##3}_{f}'''. Can also be entered using a subscripted '''&''' (e.g. '''{&}_{1}''', this can be entered using \[AliasIndicator]cf\[AliasIndicator])";
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 
 
 Begin["Private`"]
+
+
+mergeRules[rules:(Rule|RuleDelayed)[_,_]..]:=With[
+  {ruleList={rules}},
+  With[
+    {ruleNames=Unique["rule"]&/@ruleList},
+    With[
+      {
+        wRules=List/@ruleNames,
+        patterns=ruleList[[All,1]],
+        replacements=ruleList[[All,2]]
+      },
+      Alternatives@@MapThread[Pattern,{ruleNames,patterns}]:>
+        replacements[[First@FirstPosition[wRules,{__}]]]
+    ]
+  ]
+]
 
 
 Notation[ParsedBoxWrapper[RowBox[{"expr_", SubscriptBox["//", "="], "wrap_"}]] \[DoubleLongRightArrow] ParsedBoxWrapper[RowBox[{"assignmentWrapper", "[", RowBox[{"expr_", ",", "wrap_"}], "]"}]]]
