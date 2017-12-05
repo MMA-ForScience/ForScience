@@ -64,10 +64,10 @@ out=out<>"\\begin{tabular}{|";
 Do[out=out<>"c|",Length@normData[[1]]];
 out=out<>"} \\hline
 ";
-If[ToString[normData[[0]]]=="Association",
+If[AssociationQ@normData[[0]],
 	PrependTo[normData,Keys@normData]
 ];
-If[ToString[normData[[1,0]]]=="Association",
+If[AssociationQ@normData[[1,0]],
 	PrependTo[normData,Keys@normData[[1]]]
 ];
 For[i=1,i<=Length@normData,i++,
