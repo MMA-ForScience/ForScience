@@ -73,6 +73,7 @@ Private`processingAutoSlot=True;(*disable autoslot related parsing while setting
 autoSlot::usage=\[Bullet]::usage;
 autoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
 Private`processingAutoSlot=False;
+toFunction::usage=formatUsage@"toFunction[expr] attempts to convert any function constructs inside '''expr''' to pure Functions. Can't convert functions containing SlotSequence. For functions using only indexed Slots, the returned pure function is fully equivalent. If named slots are used, the handling of missing keys/associations is altered.";
 tee::usage=formatUsage@"tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=formatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 fancyTrace::usage=formatUsage@"fancyTrace[expr] produces an interactive version of the Trace output";
@@ -225,6 +226,38 @@ AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
 funcData[cFunction,id_]:={{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}};
 func:cFunction[_,_][___]:=procFunction[func]
 Attributes[cFunction]={HoldFirst};
+
+
+toFunction::slotSeq="Cannot convert function ``, as it contains a SlotSequence (``).";
+toFunction[expr_]:=
+expr//.func:fType_[funcExpr_,fData___]:>
+  Let[
+    {
+      hFunc=Hold@funcExpr,
+      res=FirstCase[funcData[fType,fData],{{sltPat_:>sltIdx_,sltSeqPat_:>_},  levelspec_:\[Infinity],_}:>With[
+        {
+          newFunc=If[
+            FreeQ[hFunc,sltSeqPat,levelspec],
+            Let[
+              {
+                maxSlt=Max[Max@Cases[hFunc,sltPat:>If[IntegerQ@sltIdx,sltIdx,1],levelspec],0],
+                vars=Table[Unique@"fArg",maxSlt],
+                pFunc=hFunc/.sltPat:>With[{slot=If[IntegerQ@sltIdx,vars[[sltIdx]],vars[[1]][sltIdx]]},slot/;True]
+              },
+              Function@@Prepend[pFunc,vars]
+            ],
+            Message[Unevaluated@toFunction::slotSeq,HoldForm@func,FirstCase[hFunc,sltSeqPat,"##",levelspec]];$Failed
+          ]
+        },
+        newFunc/;True
+      ],
+      $Failed,
+      {0}
+    ]
+  },
+  res/;res=!=$Failed
+]
+Attributes[toFunction]={HoldFirst};
 
 
 tee[expr_]:=(Print@expr;expr)
