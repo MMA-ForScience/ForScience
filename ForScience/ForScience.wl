@@ -111,10 +111,14 @@ funcErr::missingKey="Named slot `` in `` cannot be filled from ``.";
 funcErr::invalidSlot="`` (in ``) should contain a non-negative integer or string.";
 funcErr::invalidSlotSeq="`` (in ``) should contain a positive integer.";
 funcErr::slotArgCount="`` called with `` arguments; 0 or 1 expected.";
-procFunction[func_,args:{argSeq___},{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  levelspec_:\[Infinity],{head_,sltHead_,sltSeqHead_}]:=With[
+
+funcData[__]=None;
+
+procFunction[(func:fType_[funcExpr_,fData___])[args___]]:=procFunction[funcExpr,{args},func,Sequence@@funcData[fType,fData]]
+procFunction[funcExpr_,args:{argSeq___},func_,{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  levelspec_:\[Infinity],{sltHead_,sltSeqHead_}]:=With[
   {
-    hExpr=Hold@func,
-    funcForm=HoldForm@head@func
+    hExpr=Hold@funcExpr,
+    funcForm=HoldForm@func
   },
   ReleaseHold[
     Replace[
@@ -128,18 +132,18 @@ procFunction[func_,args:{argSeq___},{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  
               StringQ@sltIdx,
               If[
                 AssociationQ@First@args,              
-                Lookup[First@args,sltIdx,Message[funcErr::missingKey,sltIdx,HoldForm@head@func,First@args];s],
+                Lookup[First@args,sltIdx,Message[funcErr::missingKey,sltIdx,func,First@args];s],
                 Message[funcErr::noAssoc,funcForm];s
               ],
               !IntegerQ@sltIdx||sltIdx<0,
               Message[funcErr::invalidSlot,s,funcForm];s,
               sltIdx==0,
-              head@func,
+              func,
               sltIdx<=Length@args,
               args[[sltIdx]],
               True,
               Message[funcErr::missingArg,s,funcForm,
-                HoldForm[head[func]@argSeq]];s
+                HoldForm[func@argSeq]];s
             ]},
             arg/;True
           ],
@@ -152,7 +156,7 @@ procFunction[func_,args:{argSeq___},{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  
               sltIdx<=Length@args+1,
               pfArgSeq@@args[[sltIdx;;]],
               True,
-              Message[funcErr::missingArg,s,funcForm,HoldForm[head[func]@argSeq]];s
+              Message[funcErr::missingArg,s,funcForm,HoldForm[func@argSeq]];s
             ]},
             arg/;True
           ]
@@ -195,14 +199,16 @@ MakeExpression[arg_RowBox?(MemberQ[#,_String?slotMatcher,Infinity]&),fmt_?(!proc
 ]
 processingAutoSlot=False;
 Attributes[autoFunction]={HoldFirst};
-autoFunction[func_][args___]:=procFunction[func,{args},{iAutoSlot[i__:1]:>i,iAutoSlotSequence[i__:1]:>i},{2},{autoFunction,autoSlot,autoSlotSequence}]
+funcData[autoFunction]={{iAutoSlot[i__:1]:>i,iAutoSlotSequence[i__:1]:>i},{2},{autoSlot,autoSlotSequence}};
+func:autoFunction[_][___]:=procFunction[func]
 SyntaxInformation[autoSlot]={"ArgumentsPattern"->{_.}};
 SyntaxInformation[autoSlotSequence]={"ArgumentsPattern"->{_.}};
 
 
 Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"func_", "&"}], "id_"]] \[DoubleLongLeftRightArrow]ParsedBoxWrapper[RowBox[{"cFunction", "[", RowBox[{"func_", ",", "id_"}], "]"}]]]
 AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
-cFunction[func_,id_][args___]:=procFunction[func,{args},{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{cFunction,Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}]
+funcData[cFunction,id_]:={{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}};
+func:cFunction[_,_][___]:=procFunction[func]
 Attributes[cFunction]={HoldFirst};
 
 
