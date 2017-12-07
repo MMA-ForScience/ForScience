@@ -31,7 +31,7 @@ stringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
 formatUsageCase[str_String]:=StringReplace[
   str,
   RegularExpression@
-  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],]|(?P>P))*\\])"
+  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=]|(?P>P))*\\])"
   :>"$1'''$2"
     <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
@@ -64,6 +64,7 @@ formatUsage::usage=formatUsage@"formatUsage[str] combines the functionalities of
 
 assignmentWrapper::usage=formatUsage@"'''{//}_{=}''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar{//}_{=}FullForm''' is equivalent to '''FullForm[foo=bar]'''";
 mergeRules::usage=formatUsage@"mergeRules[rule_1,\[Ellipsis]] combines all rules into a single rule, that matches anything any of the rules match and returns the corresponding replacement. Useful e.g. for '''Cases'''";
+Let::usage=formatUsage@"Let[{var_1=expr_1,\[Ellipsis]},expr] works exactly like '''With''', but allows variable definitions to refer to previous ones.";
 funcErr;(*make error symbols public*)
 cFunction::usage=formatUsage@"cFunction[expr,id] works like '''Function[```expr```]''', but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''{#}_{1}''' or '''{##3}_{f}'''. Can also be entered using a subscripted '''&''' (e.g. '''{&}_{1}''', this can be entered using \[AliasIndicator]cf\[AliasIndicator])";
 Private`processingAutoSlot=True;(*disable autoslot related parsing while setting usage messages. Needed when loading this multiple times*)
@@ -98,6 +99,20 @@ mergeRules[rules:(Rule|RuleDelayed)[_,_]..]:=With[
     ]
   ]
 ]
+
+
+(*From https://mathematica.stackexchange.com/a/10451/36508*)
+SetAttributes[Let,HoldAll];
+SyntaxInformation[Let]={"ArgumentsPattern"->{_,_}(*,"LocalVariables"\[Rule]{"Solve",{1}}*)};
+Let/:(assign:SetDelayed|RuleDelayed)[lhs_,rhs:HoldPattern[Let[{__},_]]]:=Block[
+  {With},
+  Attributes[With]={HoldAll};
+  assign[lhs,Evaluate[rhs]]
+];
+Let[{},expr_]:=expr;
+Let[{head_},expr_]:=With[{head},expr];
+Let[{head_,tail__},expr_]:=Block[{With},Attributes[With]={HoldAll};
+With[{head},Evaluate[Let[{tail},expr]]]];
 
 
 Notation[ParsedBoxWrapper[RowBox[{"expr_", SubscriptBox["//", "="], "wrap_"}]] \[DoubleLongRightArrow] ParsedBoxWrapper[RowBox[{"assignmentWrapper", "[", RowBox[{"expr_", ",", "wrap_"}], "]"}]]]
