@@ -413,6 +413,12 @@ Begin["Private`"]
 jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
 
 
+fontStyle=Directive[Black,FontSize->20,FontFamily->"Times"];
+
+
+smallFontStyle=Directive[Black,FontSize->18,FontFamily->"Times"];
+
+
 niceRadialTicks/:Switch[niceRadialTicks,a___]:=Switch[Automatic,a]/.l:{__Text}:>Most@l
 niceRadialTicks/:MemberQ[a___,niceRadialTicks]:=MemberQ[a,Automatic]
 
@@ -425,18 +431,24 @@ plots3D={ListPlot3D,ListPointPlot3D,ParametricPlot3D};
 histogramType={Histogram,BarChart,PieChart};
 
 
-Themes`AddThemeRules["...you Monster",plots3D,
+Themes`AddThemeRules["ForScience",plots3D,
 	  LabelStyle->fontStyle,PlotRangePadding->0
 ]
 
 
-Themes`AddThemeRules["...you Monster",themedPlots,
+Themes`AddThemeRules["ForScience",themedPlots,
 	  LabelStyle->fontStyle,PlotRangePadding->0,
 	  PlotTheme->"VibrantColors"
+	  LabelStyle->fontStyle,
+	  FrameStyle->fontStyle,
+	  FrameTicksStyle->smallFontStyle,
+	  Frame->True,
+	  PlotRangePadding->0,
+	  Axes->False
 ]
 
 
-Themes`AddThemeRules["...you Monster",basicPlots,
+Themes`AddThemeRules["ForScience",basicPlots,
 	  LabelStyle->fontStyle,PlotRangePadding->0,
 	  PlotTheme->"VibrantColors",
 	  LabelStyle->fontStyle,
@@ -448,7 +460,7 @@ Themes`AddThemeRules["...you Monster",basicPlots,
 ]
 
 
-Themes`AddThemeRules["...you Monster",polarPlots,
+Themes`AddThemeRules["ForScience",polarPlots,
 	  Joined->True,
 	  Mesh->All,
 	  PolarGridLines->Automatic,
@@ -460,7 +472,7 @@ Themes`AddThemeRules["...you Monster",polarPlots,
 ]
 
 
-Themes`AddThemeRules["...you Monster",polarPlotsNoJoin,
+Themes`AddThemeRules["ForScience",polarPlotsNoJoin,
 	  Mesh->All,
 	  PolarGridLines->Automatic,
 	  PolarTicks->{"Degrees",niceRadialTicks},
@@ -471,7 +483,7 @@ Themes`AddThemeRules["...you Monster",polarPlotsNoJoin,
 ]
 
 
-Themes`AddThemeRules["...you Monster",histogramType,
+Themes`AddThemeRules["ForScience",histogramType,
 	  ChartStyle -> {Pink} (* Placeholder *)
 ]
 
