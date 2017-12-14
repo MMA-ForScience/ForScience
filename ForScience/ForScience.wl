@@ -80,6 +80,8 @@ FancyTrace::usage=FormatUsage@"FancyTrace[expr] produces an interactive version 
 WindowedMap::usage=FormatUsage@"WindowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list
 WindowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```,```\[Ellipsis]``` wide windows of arbitrary dimension
 WindowedMap[func,wspec] is the operator form";
+KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but operates on keys
+KeyGroupBy[f] is the operator form";
 
 
 Begin["Private`"]
@@ -390,6 +392,11 @@ With[
 WindowedMap[f_,w:{__Integer}|_Integer,o:OptionsPattern[]][d_]:=WindowedMap[f,d,w,o]
 Options[WindowedMap]={Padding->0};
 SyntaxInformation[WindowedMap]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
+
+
+KeyGroupBy[f_][expr_]:=Association/@GroupBy[Normal@expr,f@*Keys]
+KeyGroupBy[expr_,f_]:=KeyGroupBy[f][expr]
+SyntaxInformation[KeyGroupBy]={"ArgumentsPattern"->{_,_.}};
 
 
 End[]
