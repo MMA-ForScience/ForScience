@@ -82,6 +82,7 @@ WindowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```
 WindowedMap[func,wspec] is the operator form";
 KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but operates on keys
 KeyGroupBy[f] is the operator form";
+AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like '''FoldList''', but preserves the association keys";
 
 
 Begin["Private`"]
@@ -397,6 +398,10 @@ SyntaxInformation[WindowedMap]={"ArgumentsPattern"->{_,_,_.,OptionsPattern[]}};
 KeyGroupBy[f_][expr_]:=Association/@GroupBy[Normal@expr,f@*Keys]
 KeyGroupBy[expr_,f_]:=KeyGroupBy[f][expr]
 SyntaxInformation[KeyGroupBy]={"ArgumentsPattern"->{_,_.}};
+
+
+AssociationFoldList[f_,list_]:=AssociationThread[Keys@list,FoldList[f,Values@list]]
+SyntaxInformation[AssociationFoldList]={"ArgumentsPattern"->{_,_}};
 
 
 End[]
