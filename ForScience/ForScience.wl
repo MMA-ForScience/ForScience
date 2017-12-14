@@ -83,6 +83,7 @@ WindowedMap[func,wspec] is the operator form";
 KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but operates on keys
 KeyGroupBy[f] is the operator form";
 AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like '''FoldList''', but preserves the association keys";
+SPrintF::usage=FormatUsage@"SPrintF[spec,arg_1,\[Ellipsis]] is equivalent to '''ToString@StringForm[```spec```,```arg_1```,\[Ellipsis]]'''";
 
 
 Begin["Private`"]
@@ -402,6 +403,9 @@ SyntaxInformation[KeyGroupBy]={"ArgumentsPattern"->{_,_.}};
 
 AssociationFoldList[f_,list_]:=AssociationThread[Keys@list,FoldList[f,Values@list]]
 SyntaxInformation[AssociationFoldList]={"ArgumentsPattern"->{_,_}};
+
+
+SPrintF[spec__]:=ToString@StringForm@spec
 
 
 End[]
