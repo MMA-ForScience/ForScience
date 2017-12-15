@@ -95,12 +95,12 @@ MergeRules[rules:(Rule|RuleDelayed)[_,_]..]:=With[
     {ruleNames=Unique["rule"]&/@ruleList},
     With[
       {
-        wRules=List/@ruleNames,
+        wRules=Hold@@(List/@ruleNames),
         patterns=ruleList[[All,1]],
-        replacements=ruleList[[All,2]]
+        replacements=Extract[ruleList,{All,2},Hold]
       },
       Alternatives@@MapThread[Pattern,{ruleNames,patterns}]:>
-        replacements[[First@FirstPosition[wRules,{__}]]]
+        replacements[[1,First@FirstPosition[wRules,{__}]]]
     ]
   ]
 ]
