@@ -25,4 +25,4 @@ A list of the most noteworthy functions:
   (correct if it apears on top of the list)
 
 ## Prerequisites
-none, exept a working Mathematica version, newer than 10.0.0 (@mathe, correct?)
+None, exept a working Mathematica version, newer than 11.1.0
