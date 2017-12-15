@@ -84,6 +84,8 @@ KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but 
 KeyGroupBy[f] is the operator form";
 AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like '''FoldList''', but preserves the association keys";
 SPrintF::usage=FormatUsage@"SPrintF[spec,arg_1,\[Ellipsis]] is equivalent to '''ToString@StringForm[```spec```,```arg_1```,\[Ellipsis]]'''";
+PrettyUnit::usage=FormatUsage@"PrettyUnit[qty,{unit_1,unit_2,\[Ellipsis]}] tries to convert ```qty``` to that unit that produces the \"nicest\" result";
+PrettyTime::usage=FormatUsage@"PrettyTime[time] is a special for of '''PrettyUnit''' for the most common time units";
 
 
 Begin["Private`"]
@@ -406,6 +408,15 @@ SyntaxInformation[AssociationFoldList]={"ArgumentsPattern"->{_,_}};
 
 
 SPrintF[spec__]:=ToString@StringForm@spec
+
+
+PrettyUnit[qty_,units_List]:=SelectFirst[#,QuantityMagnitude@#>1&,Last@#]&@Sort[UnitConvert[qty,#]&/@units]
+SyntaxInformation[PrettyUnit]={"ArgumentsPattern"->{_,_}};
+
+
+$PrettyTimeUnits={"ms","s","min","h"};
+PrettyTime[time_]:=PrettyUnit[time,$PrettyTimeUnits]
+SyntaxInformation[PrettyTime]={"ArgumentsPattern"->{_}};
 
 
 End[]
