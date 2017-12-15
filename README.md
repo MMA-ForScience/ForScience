@@ -12,6 +12,12 @@ A list of the most noteworthy functions:
 - TableToTex function
 
 ## Installation
+### Latest release
+- Download the latest .paclet file from [releases](https://github.com/lukas-lang/ForScience/releases)
+- Execute `PacletInstall["path/to/paclet/ForScience-#.#.#.paclet"]` (with the appropriate path and version number)
+- Package can now be loaded with ``<<"ForScience`"``
+
+### Latest version
 - Download the zip (and uncompress it) of this repo or clone it to your computer
 - open build.nb with Mathematica
 - evaluate the notbook
