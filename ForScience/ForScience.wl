@@ -86,6 +86,13 @@ AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like 
 SPrintF::usage=FormatUsage@"SPrintF[spec,arg_1,\[Ellipsis]] is equivalent to '''ToString@StringForm[```spec```,```arg_1```,\[Ellipsis]]'''";
 PrettyUnit::usage=FormatUsage@"PrettyUnit[qty,{unit_1,unit_2,\[Ellipsis]}] tries to convert ```qty``` to that unit that produces the \"nicest\" result";
 PrettyTime::usage=FormatUsage@"PrettyTime[time] is a special for of '''PrettyUnit''' for the most common time units";
+ProgressReport::usage=FormatUsage@"ProgressReport[expr,len] displays a progress report while ```expr``` is being evaluated, where ```len``` is the number of steps. To indicate that a step is finished, call '''Step'''. If '''SetCurrent''' is used, the currently processed item is also displayed
+ProgressReport[expr] automatically injects '''Step''' and '''SetCurrent''' for certain types of ```expr```. Currently supported types of expressions can be found in '''ProgressReportTransform'''";
+ProgressReportTransform::usage=FormatUsage@"'''ProgressReportTransform''' handles automatic transformations in '''ProgressReport[```expr```]'''. New transformations can be added as down-values";
+Step::usage=FormatUsage@"'''Step''' is used inside '''ProgressReport''' to indicate a step has been finished. '''Step''' passes through any argument passed to it. A typical use would be e.g. '''Step@*proc''' where '''proc''' is the function doing the actual work";
+SetCurrent::usage=FormatUsage@"SetCurrent[curVal] sets the currently processed item (displayed by '''ProgressReport''') to the specified value";
+SetCurrentBy::usage=FormatUsage@"SetCurrentBy[curFunc] sets the currently processed item (displayed by '''ProgressReport''') by applying ```curFunc``` to its argument (the argument is also returned). A typical use would be e.g. '''Step@*proc@*SetCurrentrent[```curFunc```]''';
+SetCurrentBy[] defaults ```curFunc``` to the identity function";
 
 
 Begin["Private`"]
@@ -417,6 +424,103 @@ SyntaxInformation[PrettyUnit]={"ArgumentsPattern"->{_,_}};
 $PrettyTimeUnits={"ms","s","min","h"};
 PrettyTime[time_]:=PrettyUnit[time,$PrettyTimeUnits]
 SyntaxInformation[PrettyTime]={"ArgumentsPattern"->{_}};
+
+
+ProgressReport[expr_,len_]:=Module[
+  {
+    i,
+    start,
+    pExpr,
+    cur,
+    durations={},
+    totals={}
+  },
+  pExpr=HoldComplete[expr]/.
+  {
+    SetCurrent:>ISetCurrent[cur],
+    SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
+    Step->IStep[i]
+  };
+  i=0;
+  cur=None;
+  Return@Monitor[
+    start=CurrentDate[];
+    ReleaseHold@pExpr,
+    Refresh[
+      With[
+        {
+          dur=UnitConvert[CurrentDate[]-start]
+        },
+        If[i!=0,
+          AppendTo[durations,dur];
+          AppendTo[totals,len*dur/i];
+        ];
+        Panel@Row@{
+          Grid[
+            {
+              If[cur=!=None,{"Current item:",cur},Unevaluated@Sequence[]],
+              {"Progess:",StringForm["``/``",i,len]},
+              {"Time elapsed:",If[i==0,"NA",PrettyTime@dur]},
+              {"Time per Step:",If[i==0,"NA",PrettyTime[dur/i]]},
+              {"Est. time remaining:",If[i==0,"NA",PrettyTime[(len-i)*dur/i]]},
+              {"Est. total time:",If[i==0,"NA",PrettyTime[len*dur/i]]}
+            },
+            Alignment->{{Left,Right}},
+            ItemSize->{{10,10},{2,2,2,2,2}}
+          ],
+          Spacer@10,
+          ListLinePlot[
+            {{Range@Length@durations,durations}\[Transpose],{Range@Length@totals,totals}\[Transpose]},
+            FrameTicks->None,
+            Axes->None,
+            PlotRangePadding->0,
+            ImageSize->300,
+            PlotStyle->{White,{White,Dashed}},
+            PlotRange->{{1,len},All},
+            GridLines->Automatic,
+            GridLinesStyle->Directive[White,Opacity@0.75],
+            Method -> {"GridLinesInFront" -> True},
+            Background->GrayLevel@0.9,
+            Filling->{1->{Bottom,Directive[Darker@Green,Opacity@1]},2->Top,2->{Bottom,{Directive[Darker@Green,Opacity@0.4],Directive[Darker@Green,Opacity@0.65]}}}
+          ]
+        }
+      ],
+      TrackedSymbols:>{i,cur}
+    ]
+  ]
+]
+
+Attributes[ProgressReportTransform]={HoldFirst};
+ProgressReportTransform[Map[func_,list_]]:=ProgressReport[Map[Step@*func@*SetCurrentBy[],list],Length@list]
+ProgressReportTransform[Table[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..]]:=Let[
+  {
+    pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
+    symbols=List@@(First/@pSpec)
+  },
+  ProgressReport[
+    Table@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
+    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{Optional@_Symbol,s__}:>Length@Range@s})
+  ]
+]
+ProgressReportTransform[expr_]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
+
+ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for currently supported types.";
+ProgressReport[expr_]:=ProgressReportTransform@expr
+
+SetAttributes[ProgressReport,HoldFirst]
+SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.}};
+
+IStep[i_][expr_]:=(++i;expr)
+SetAttributes[IStep,HoldFirst]
+SyntaxInformation[Step]={"ArgumentsPattern"->{_}};
+
+ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
+SetAttributes[ISetCurrent,HoldFirst]
+SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
+
+ISetCurrentBy[cur_Symbol,curFunc_][expr_]:=(cur=curFunc@expr;expr)
+SetAttributes[ISetCurrentBy,HoldFirst]
+SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 
 
 End[]
