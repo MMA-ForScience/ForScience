@@ -144,7 +144,7 @@ FunctionError::slotArgCount="`` called with `` arguments; 0 or 1 expected.";
 funcData[__]=None;
 
 ProcFunction[(func:fType_[funcExpr_,fData___])[args___]]:=ProcFunction[funcExpr,{args},func,Sequence@@funcData[fType,fData]]
-ProcFunction[funcExpr_,args:{argSeq___},func_,{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},  levelspec_:\[Infinity],{sltHead_,sltSeqHead_}]:=With[
+ProcFunction[funcExpr_,args:{argSeq___},func_,{sltPat_:>sltIdx_,sltSeqPat_:>sltSeqIdx_},levelspec_:All,{sltHead_,sltSeqHead_}]:=With[
   {
     hExpr=Hold@funcExpr,
     funcForm=HoldForm@func
@@ -190,11 +190,11 @@ ProcFunction[funcExpr_,args:{argSeq___},func_,{sltPat_:>sltIdx_,sltSeqPat_:>sltS
             arg/;True
           ]
         },
-        levelspec
+        levelspec,
+        Heads->True
       ]//.
         h_[pre___,pfArgSeq[seq___],post___]:>h[pre,seq,post],
-      Hold[]->Hold@Sequence[],
-      {0}
+      Hold[]->Hold@Sequence[]
     ]
   ]
 ];
@@ -206,14 +206,14 @@ slotMatcher=StringMatchQ["\[Bullet]"~~___];
 (
   #/:expr:_[___,#[___],___]/;!ProcessingAutoSlot:=Block[
     {ProcessingAutoSlot=True},
-    Replace[auToFunction[expr],{AutoSlot[i___]:>IAutoSlot[i],AutoSlotSequence[i___]:>IAutoSlotSequence[i]},{2}]
+    Replace[AutoFunction[expr],{AutoSlot[i___]:>IAutoSlot[i],AutoSlotSequence[i___]:>IAutoSlotSequence[i]},{2}]
   ];
 )&/@{AutoSlot,AutoSlotSequence};
 MakeBoxes[(IAutoSlot|AutoSlot)[i_String|i:_Integer?NonNegative:1],fmt_]/;!ProcessingAutoSlot:=With[{sym=Symbol["\[Bullet]"<>ToString@i]},MakeBoxes[sym,fmt]]
 MakeBoxes[(IAutoSlotSequence|AutoSlotSequence)[i:_Integer?Positive:1],fmt_]/;!ProcessingAutoSlot:=With[{sym=Symbol["\[Bullet]\[Bullet]"<>ToString@i]},MakeBoxes[sym,fmt]]
 MakeBoxes[IAutoSlot[i___],fmt_]/;!ProcessingAutoSlot:=MakeBoxes[AutoSlot[i],fmt]
 MakeBoxes[IAutoSlotSequence[i___],fmt_]/;!ProcessingAutoSlot:=MakeBoxes[AutoSlotSequence[i],fmt]
-MakeBoxes[auToFunction[func_],fmt_]:=MakeBoxes[func,fmt]
+MakeBoxes[AutoFunction[func_],fmt_]:=MakeBoxes[func,fmt]
 MakeExpression[RowBox[{"?", t_String?slotMatcher}], fmt_?(!ProcessingAutoSlot&)(*make check here instead of ordinary condition as that one causes an error*)]:= 
   MakeExpression[RowBox[{"?", If[StringMatchQ[t,"\[Bullet]\[Bullet]"~~___],"AutoSlotSequence","AutoSlot"]}], fmt]
 MakeExpression[arg_RowBox?(MemberQ[#,_String?slotMatcher,Infinity]&),fmt_?(!ProcessingAutoSlot&)(*make check here instead of ordinary condition as that one causes an error*)]:=Block[
@@ -227,9 +227,9 @@ MakeExpression[arg_RowBox?(MemberQ[#,_String?slotMatcher,Infinity]&),fmt_?(!Proc
   ]
 ]
 ProcessingAutoSlot=False;
-Attributes[auToFunction]={HoldFirst};
-funcData[auToFunction]={{IAutoSlot[i__:1]:>i,IAutoSlotSequence[i__:1]:>i},{2},{AutoSlot,AutoSlotSequence}};
-func:auToFunction[_][___]:=ProcFunction[func]
+Attributes[AutoFunction]={HoldFirst};
+funcData[AutoFunction]={{IAutoSlot[i__:1]:>i,IAutoSlotSequence[i__:1]:>i},{2},{AutoSlot,AutoSlotSequence}};
+func:AutoFunction[_][___]:=ProcFunction[func]
 SyntaxInformation[AutoSlot]={"ArgumentsPattern"->{_.}};
 SyntaxInformation[AutoSlotSequence]={"ArgumentsPattern"->{_.}};
 
