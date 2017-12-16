@@ -74,7 +74,6 @@ AutoSlot::usage=\[Bullet]::usage;
 AutoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
 Private`ProcessingAutoSlot=False;
 ToFunction::usage=FormatUsage@"ToFunction[expr] attempts to convert any function constructs inside '''expr''' to pure Functions. Can't convert functions containing SlotSequence. For functions using only indexed Slots, the returned pure function is fully equivalent. If named slots are used, the handling of missing keys/associations is altered.";
-Tee::usage=FormatUsage@"Tee[expr] prints expr and returns in afterwards ";
 TableToTexForm::usage=FormatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
 FancyTrace::usage=FormatUsage@"FancyTrace[expr] produces an interactive version of the Trace output";
 WindowedMap::usage=FormatUsage@"WindowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list
@@ -271,10 +270,6 @@ expr//.func:fType_[funcExpr_,fData___]:>
   res/;res=!=$Failed
 ]
 Attributes[ToFunction]={HoldFirst};
-
-
-Tee[expr_]:=(Print@expr;expr)
-SyntaxInformation[Tee]={"ArgumentsPattern"->{_}};
 
 
 TableToTexFormCore[TableToTexForm,data_,OptionsPattern[{"position"->"c","hline"->"auto","vline"->"auto"}]]:=Module[
