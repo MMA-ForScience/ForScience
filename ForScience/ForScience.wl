@@ -553,8 +553,7 @@ ImportDataset[files_List,r:(_:>_Association),datakey:"data",OptionsPattern[]]:=
     Dataset[
       files][
       All,
-      (*import all files*)Step@*(Append[First[StringCases[#,r],<||>],datakey->OptionValue["Importer"]@#]&)@*SetCurrent][
-      KeyMap[(*transform the keys*)First[StringCases[#,r],#]&]
+      (*import all files*)Step@*(Append[First[StringCases[#,r],<||>],datakey->OptionValue["Importer"]@#]&)@*SetCurrent
     ],
     Length@files
   ]
