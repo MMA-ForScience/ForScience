@@ -31,7 +31,7 @@ StringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
 FormatUsageCase[str_String]:=StringReplace[
   str,
   RegularExpression@
-  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=]|(?P>P))*\\])"
+  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=>-]|(?P>P))*\\])"
   :>"$1'''$2"
     <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
@@ -92,6 +92,10 @@ Step::usage=FormatUsage@"'''Step''' is used inside '''ProgressReport''' to indic
 SetCurrent::usage=FormatUsage@"SetCurrent[curVal] sets the currently processed item (displayed by '''ProgressReport''') to the specified value";
 SetCurrentBy::usage=FormatUsage@"SetCurrentBy[curFunc] sets the currently processed item (displayed by '''ProgressReport''') by applying ```curFunc``` to its argument (the argument is also returned). A typical use would be e.g. '''Step@*proc@*SetCurrentrent[```curFunc```]''';
 SetCurrentBy[] defaults ```curFunc``` to the identity function";
+AddKey::usage=FormatUsage@"AddKey[key,f] is an operator that appends the specified key where the value is obtained by applying ```f``` to the argument
+AddKey[{key1,...},{f1,...}] works similar, but operates on all pairs '''{```keyi```,```fi```}'''
+AddKey[key1->f1,key2->f2,...] works on the pairs '''{```keyi```,```fi```}'''"; 
+
 
 
 Begin["Private`"]
@@ -516,6 +520,11 @@ SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
 ISetCurrentBy[cur_Symbol,curFunc_][expr_]:=(cur=curFunc@expr;expr)
 SetAttributes[ISetCurrentBy,HoldFirst]
 SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
+
+
+AddKey[r__Rule]:=AddKey@@((List@@@{r})\[Transpose])
+AddKey[key_,f_]:=#~Append~(key->f@#)&
+AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
 
 
 End[]
