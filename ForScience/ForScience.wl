@@ -31,7 +31,7 @@ StringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
 FormatUsageCase[str_String]:=StringReplace[
   str,
   RegularExpression@
-  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=>-]|(?P>P))*\\])"
+  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=\[Rule]]|(?P>P))*\\])"
   :>"$1'''$2"
     <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
@@ -93,9 +93,8 @@ SetCurrent::usage=FormatUsage@"SetCurrent[curVal] sets the currently processed i
 SetCurrentBy::usage=FormatUsage@"SetCurrentBy[curFunc] sets the currently processed item (displayed by '''ProgressReport''') by applying ```curFunc``` to its argument (the argument is also returned). A typical use would be e.g. '''Step@*proc@*SetCurrentrent[```curFunc```]''';
 SetCurrentBy[] defaults ```curFunc``` to the identity function";
 AddKey::usage=FormatUsage@"AddKey[key,f] is an operator that appends the specified key where the value is obtained by applying ```f``` to the argument
-AddKey[{key1,...},{f1,...}] works similar, but operates on all pairs '''{```keyi```,```fi```}'''
-AddKey[key1->f1,key2->f2,...] works on the pairs '''{```keyi```,```fi```}'''"; 
-
+AddKey[{key_1,\[Ellipsis]},{f_1,\[Ellipsis]}] works similar, but operates on all pairs '''{```key_i```,```f_i```}'''
+AddKey[key_1\[Rule]f_1,key_2\[Rule]f_2,\[Ellipsis]] works on the pairs '''{```key_i```,```f_i```}'''"; 
 
 
 Begin["Private`"]
