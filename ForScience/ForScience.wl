@@ -31,7 +31,7 @@ StringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
 FormatUsageCase[str_String]:=StringReplace[
   str,
   RegularExpression@
-  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=\[Rule]]|(?P>P))*\\])"
+  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=\[Rule]\[RuleDelayed]\[LeftAssociation]\[RightAssociation]]|(?P>P))*\\])"
   :>"$1'''$2"
     <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
@@ -95,6 +95,12 @@ SetCurrentBy[] defaults ```curFunc``` to the identity function";
 AddKey::usage=FormatUsage@"AddKey[key,f] is an operator that appends the specified key where the value is obtained by applying ```f``` to the argument
 AddKey[{key_1,\[Ellipsis]},{f_1,\[Ellipsis]}] works similar, but operates on all pairs '''{```key_i```,```f_i```}'''
 AddKey[key_1\[Rule]f_1,key_2\[Rule]f_2,\[Ellipsis]] works on the pairs '''{```key_i```,```f_i```}'''"; 
+ImportDataset::usage=FormatUsage@"ImportDataset[f] imports the files specified by ```f``` into a '''Dataset''' and displays a progress bar while doing so. The importing function can be specified using the '''\"Importer\"''' option
+ImportDataset[f,dirs] imports files from any of the directories specified.
+ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
+ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
+ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
+ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applied the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')";
 
 
 Begin["Private`"]
@@ -524,6 +530,34 @@ SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 AddKey[r__Rule]:=AddKey@@((List@@@{r})\[Transpose])
 AddKey[key_,f_]:=#~Append~(key->f@#)&
 AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
+
+
+(*handle syntaxes without rules by defaulting the rule to the identity*)
+ImportDataset[f_,dirs_:"",o:OptionsPattern[]]:=ImportDataset[p:f:>p,dirs,o]
+(*get list of files if not provided*)
+ImportDataset[r:(PatternSequence[pat_:>_Association,_.]|pat_:>Except[_Association]),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
+(*handle key transformation rules*)
+ImportDataset[files_List,o:OptionsPattern[]]:=ImportDataset[files,p_:>p,o]
+(*handle association type rules*)
+ImportDataset[files_List,r:(_:>Except[_Association]),OptionsPattern[]]:=
+  ProgressReport[
+    Dataset[
+      files][
+      AssociationMap[(*import all files*)Step@*OptionValue["Importer"]@*SetCurrent]][
+      KeyMap[(*transform the keys*)First[StringCases[#,r],#]&]
+    ],
+    Length@files
+  ]
+ImportDataset[files_List,r:(_:>_Association),datakey:"data",OptionsPattern[]]:=
+  ProgressReport[
+    Dataset[
+      files][
+      (*import all files*)Step@*(Append[First[StringCases[#,r],<||>],datakey->OptionValue["Importer"]@#]&)@*SetCurrent][
+      KeyMap[(*transform the keys*)First[StringCases[#,r],#]&]
+    ],
+    Length@files
+  ]
+Options[ImportDataset]={"Importer"->Import};
 
 
 End[]
