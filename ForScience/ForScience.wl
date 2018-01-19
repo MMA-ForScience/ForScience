@@ -430,92 +430,120 @@ PrettyTime[time_]:=PrettyUnit[time,$PrettyTimeUnits]
 SyntaxInformation[PrettyTime]={"ArgumentsPattern"->{_}};
 
 
-ProgressReport[expr_,len_]:=Module[
+PRPrettyTime[time_]:=With[
+  {s=time},
+  Which[
+    s>86400,
+    SPrintF["``days",Round[s/86400,0.1]],
+    s>3600,
+    SPrintF["``h",Round[s/3600,0.1]],
+    s>60,
+    SPrintF["``min",Round[s/60,0.1]],
+    s>1,
+    SPrintF["``s",Round[s,0.1]],
+    True,
+    SPrintF["``ms",Round[1000s,0.1]]
+  ]
+]
+ProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   {
     i,
     start,
     pExpr,
     cur,
-    durations={},
-    totals={}
+    time,
+    times=<||>,
+    durations=<|0->0|>,
+    totals=<||>,
+    prevProg=0
   },
   pExpr=HoldComplete[expr]/.
   {
     SetCurrent:>ISetCurrent[cur],
     SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
-    Step->IStep[i]
+    Step->IStep[i,Evaluate[OptionValue["Resolution"]/len],time,times]
   };
+  SetSharedVariable[i,times,time,cur];
   i=0;
   cur=None;
   Return@Monitor[
-    start=CurrentDate[];
+    time=start=CurrentDate[];
     ReleaseHold@pExpr,
-    Refresh[
-      With[
-        {
-          dur=UnitConvert[CurrentDate[]-start]
-        },
-        If[i!=0,
-          AppendTo[durations,dur];
-          AppendTo[totals,len*dur/i];
-        ];
-        Panel@Row@{
+    Panel@Row@{
+      Dynamic[
+        With[
+          {
+            dur=QuantityMagnitude@UnitConvert[time-start],
+            pdur=QuantityMagnitude@UnitConvert[Last[times,0]-start],
+            prog=Last[Keys@times,0]
+          },
+          If[prog>prevProg,
+            AppendTo[durations,prog->pdur];
+            AppendTo[totals,prog->len*durations[[-1]]/prog];
+            If[prevProg==0,PrependTo[totals,0->totals[[1]]]];
+            prevProg=prog;
+          ];
           Grid[
             {
-              If[cur=!=None,{"Current item:",cur},Unevaluated@Sequence[]],
+              If[cur=!=None,{"Current item:",Tooltip[Short[cur,0.3],cur]},Nothing],
               {"Progess:",StringForm["``/``",i,len]},
-              {"Time elapsed:",If[i==0,"NA",PrettyTime@dur]},
-              {"Time per Step:",If[i==0,"NA",PrettyTime[dur/i]]},
-              {"Est. time remaining:",If[i==0,"NA",PrettyTime[(len-i)*dur/i]]},
-              {"Est. total time:",If[i==0,"NA",PrettyTime[len*dur/i]]}
+              {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
+              {"Time per Step:",If[i==0,"NA",PRPrettyTime[dur/i]]},
+              {"Est. time remaining:",If[i==0,"NA",PRPrettyTime[(len-i)*dur/i]]},
+              {"Est. total time:",If[i==0,"NA",PRPrettyTime[len*dur/i]]}
             },
             Alignment->{{Left,Right}},
-            ItemSize->{{10,10},{2,2,2,2,2}}
-          ],
-          Spacer@10,
-          ListLinePlot[
-            {{Range@Length@durations,durations}\[Transpose],{Range@Length@totals,totals}\[Transpose]},
-            FrameTicks->None,
-            Axes->None,
-            PlotRangePadding->0,
-            ImageSize->300,
-            PlotStyle->{White,{White,Dashed}},
-            PlotRange->{{1,len},All},
-            GridLines->Automatic,
-            GridLinesStyle->Directive[White,Opacity@0.75],
-            Method -> {"GridLinesInFront" -> True},
-            Background->GrayLevel@0.9,
-            Filling->{1->{Bottom,Directive[Darker@Green,Opacity@1]},2->Top,2->{Bottom,{Directive[Darker@Green,Opacity@0.4],Directive[Darker@Green,Opacity@0.65]}}}
+            ItemSize->{{10,10},{1.5,1.5,1.5,1.5,1.5,1.5}}
           ]
-        }
+        ],
+        TrackedSymbols:>{i,cur}
       ],
-      TrackedSymbols:>{i,cur}
-    ]
+      Spacer@10,
+      Dynamic[
+        ListLinePlot[
+          {durations,If[Length@totals>0,totals,Nothing]},
+          FrameTicks->None,
+          Frame->False,
+          Axes->None,
+          PlotRangePadding->0,
+          ImageSize->300,
+          PlotStyle->{White,{White,Dashed}},
+          PlotRange->{{0,len},All},
+          GridLines->Automatic,
+          GridLinesStyle->Directive[White,Opacity@0.75],
+          Method -> {"GridLinesInFront" -> True},
+          Background->GrayLevel@0.9,
+          Filling->{1->{Bottom,Directive[Darker@Green,Opacity@1]},2->Top,2->{Bottom,{Directive[Darker@Green,Opacity@0.4],Directive[Darker@Green,Opacity@0.65]}}}
+        ]
+      ]
+    }
   ]
 ]
+Options[ProgressReport]={"Resolution"->20};
 
 Attributes[ProgressReportTransform]={HoldFirst};
-ProgressReportTransform[Map[func_,list_]]:=ProgressReport[Map[Step@*func@*SetCurrentBy[],list],Length@list]
-ProgressReportTransform[Table[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..]]:=Let[
+ProgressReportTransform[(m:Map|ParallelMap)[func_,list_],o:OptionsPattern[ProgressReport]]:=ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o]
+ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
     pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
     symbols=List@@(First/@pSpec)
   },
   ProgressReport[
-    Table@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
-    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{Optional@_Symbol,s__}:>Length@Range@s})
+    t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
+    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{Optional@_Symbol,s__}:>Length@Range@s}),
+    o
   ]
 ]
-ProgressReportTransform[expr_]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
+ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
 
 ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for currently supported types.";
-ProgressReport[expr_]:=ProgressReportTransform@expr
+ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
 
 SetAttributes[ProgressReport,HoldFirst]
-SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.}};
+SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
-IStep[i_][expr_]:=(++i;expr)
-SetAttributes[IStep,HoldFirst]
+IStep[i_,res_,time_,times_][expr_]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];expr)
+SetAttributes[IStep,HoldAll]
 SyntaxInformation[Step]={"ArgumentsPattern"->{_}};
 
 ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
