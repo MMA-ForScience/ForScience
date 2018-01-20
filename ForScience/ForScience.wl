@@ -100,7 +100,8 @@ ImportDataset[f,dirs] imports files from any of the directories specified.
 ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
 ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
-ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applied the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')";
+ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
+ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.";
 
 
 Begin["Private`"]
@@ -561,10 +562,11 @@ AddKey[key_,f_]:=#~Append~(key->f@#)&
 AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
 
 
-(*handle syntaxes without rules by defaulting the rule to the identity*)
-ImportDataset[f_,dirs_:"",o:OptionsPattern[]]:=ImportDataset[p:f:>p,dirs,o]
 (*get list of files if not provided*)
-ImportDataset[r:(PatternSequence[pat_:>_Association,_.]|pat_:>Except[_Association]),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
+ImportDataset[pat_,dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],x__:>x,o]
+ImportDataset[r:(pat_:>Except[_Association]),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
+ImportDataset[r:(pat_:>_Association),datakey_:"data",dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,datakey,o]
+ImportDataset[r:({pat_,_}:>_Association),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
 (*handle key transformation rules*)
 ImportDataset[files_List,o:OptionsPattern[]]:=ImportDataset[files,p_:>p,o]
 (*handle association type rules*)
@@ -583,6 +585,15 @@ ImportDataset[files_List,r:(_:>_Association),datakey:"data",OptionsPattern[]]:=
       files][
       All,
       (*import all files*)Step@*(Append[First[StringCases[#,r],<||>],datakey->OptionValue["Importer"]@#]&)@*SetCurrent
+    ],
+    Length@files
+  ]
+ImportDataset[files_List,{fp_,dp_}:>r_Association,OptionsPattern[]]:=
+  ProgressReport[
+    Dataset[
+      files][
+      All,
+      (*import all files*)Step@*(First[StringCases[#,fp:>(OptionValue["Importer"]@#/.dp:>r)],<||>]&)@*SetCurrent
     ],
     Length@files
   ]
