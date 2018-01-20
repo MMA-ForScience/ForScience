@@ -556,6 +556,8 @@ ISetCurrentBy[cur_Symbol,curFunc_][expr_]:=(cur=curFunc@expr;expr)
 SetAttributes[ISetCurrentBy,HoldFirst]
 SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 
+DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
+
 
 AddKey[r__Rule]:=AddKey@@((List@@@{r})\[Transpose])
 AddKey[key_,f_]:=#~Append~(key->f@#)&
