@@ -519,6 +519,7 @@ ProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     }
   ]
 ]
+ProgressReport[expr_,0,OptionsPattern[]]:=expr
 Options[ProgressReport]={"Resolution"->20};
 
 Attributes[ProgressReportTransform]={HoldFirst};
