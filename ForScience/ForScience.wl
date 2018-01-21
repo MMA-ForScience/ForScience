@@ -446,7 +446,14 @@ PRPrettyTime[time_]:=With[
     SPrintF["``ms",Round[1000s,0.1]]
   ]
 ]
-ProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
+ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
+  If[OptionValue[Timing],
+  iTimedProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]],
+  iProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]]]
+ProgressReport[expr_,0,OptionsPattern[]]:=expr
+Options[ProgressReport]={"Resolution"->20,Timing->True};
+
+iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   {
     i,
     start,
@@ -494,7 +501,7 @@ ProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
               {"Est. total time:",If[i==0,"NA",PRPrettyTime[len*dur/i]]}
             },
             Alignment->{{Left,Right}},
-            ItemSize->{{10,10},{1.5,1.5,1.5,1.5,1.5,1.5}}
+            ItemSize->{{10,13},{1.5,1.5,1.5,1.5,1.5,1.5}}
           ]
         ],
         TrackedSymbols:>{i,cur}
@@ -520,11 +527,47 @@ ProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     }
   ]
 ]
-ProgressReport[expr_,0,OptionsPattern[]]:=expr
-Options[ProgressReport]={"Resolution"->20};
+Attributes[iTimedProgressReport]={HoldFirst};
+Options[iTimedProgressReport]=Options[ProgressReport];
+iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
+  {
+    i,
+    pExpr,
+    cur
+  },
+  pExpr=HoldComplete[expr]/.
+  {
+    SetCurrent:>ISetCurrent[cur],
+    SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
+    Step->IStep[i]
+  };
+  SetSharedVariable[i,cur];
+  i=0;
+  cur=None;
+  Return@Monitor[
+    ReleaseHold@pExpr,
+    Dynamic[
+      Panel@Row@{
+        Grid[
+          {
+            If[cur=!=None,{"Current item:",Tooltip[Short[cur,0.3],cur]},Nothing],
+            {"Progess:",StringForm["``/``",i,len]}
+          },
+          Alignment->{{Left,Right}},
+          ItemSize->{{10,13},{1.5,1.5}}
+        ],
+        Spacer@10,
+        ProgressIndicator[i,{0,len},ImageSize->300]
+      },
+      TrackedSymbols:>{i,cur}
+    ]
+  ]
+]
+Attributes[iProgressReport]={HoldFirst};
+Options[iProgressReport]=Options[ProgressReport];
 
 Attributes[ProgressReportTransform]={HoldFirst};
-ProgressReportTransform[(m:Map|ParallelMap)[func_,list_],o:OptionsPattern[ProgressReport]]:=ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o]
+ProgressReportTransform[(m:Map|ParallelMap|AssociationMap)[func_,list_],o:OptionsPattern[ProgressReport]]:=ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o]
 ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
     pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
@@ -541,19 +584,20 @@ ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::inject
 ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for currently supported types.";
 ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
 
-SetAttributes[ProgressReport,HoldFirst]
+Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 IStep[i_,res_,time_,times_][expr_]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];expr)
-SetAttributes[IStep,HoldAll]
+IStep[i_][expr_]:=(++i;expr)
+Attributes[IStep]={HoldAll};
 SyntaxInformation[Step]={"ArgumentsPattern"->{_}};
 
 ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
-SetAttributes[ISetCurrent,HoldFirst]
+Attributes[ISetCurrent]={HoldFirst};
 SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
 
 ISetCurrentBy[cur_Symbol,curFunc_][expr_]:=(cur=curFunc@expr;expr)
-SetAttributes[ISetCurrentBy,HoldFirst]
+Attributes[ISetCurrentBy]={HoldFirst};
 SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 
 DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
@@ -565,41 +609,52 @@ AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
 
 
 (*get list of files if not provided*)
-ImportDataset[pat_,dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],x__:>x,o]
-ImportDataset[r:(pat_:>Except[_Association]),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
-ImportDataset[r:(pat_:>_Association),datakey_:"data",dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,datakey,o]
-ImportDataset[r:({pat_,_}:>_Association),dirs_:"",o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
+ImportDataset[pat_,Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],x__:>x,o]
+ImportDataset[r:(pat_:>Except[_Association]),Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
+ImportDataset[r:(pat_:>_Association),Shortest[datakey_:"data"],Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,datakey,o]
+ImportDataset[r:({pat_,_}:>_Association),Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
 (*handle key transformation rules*)
 ImportDataset[files_List,o:OptionsPattern[]]:=ImportDataset[files,p_:>p,o]
 (*handle association type rules*)
-ImportDataset[files_List,r:(_:>Except[_Association]),OptionsPattern[]]:=
-  ProgressReport[
-    Dataset[
-      files][
-      AssociationMap[(*import all files*)Step@*OptionValue["Importer"]@*SetCurrent]][
-      KeyMap[(*transform the keys*)First[StringCases[#,r],#]&]
-    ],
-    Length@files
+
+iImportDataset[mf_,func_,files_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
+  ProgressReport[ProgressReport[mf[func,#]]&/@GroupBy[files,DirectoryName],Timing->OptionValue["FullFolderProgress"]],
+  ProgressReport[mf[func,files]]
+]
+
+ImportDataset[files_List,r:(_:>Except[_Association]),o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@KeyMap[
+    First[StringCases[pTrans@#,r],#]&
+  ]@iImportDataset[
+    AssociationMap,
+    OptionValue["Importer"],files,
+    FilterRules[{o,Options[ImportDataset]},_]
   ]
-ImportDataset[files_List,r:(_:>_Association),datakey:"data",OptionsPattern[]]:=
-  ProgressReport[
-    Dataset[
-      files][
-      All,
-      (*import all files*)Step@*(Append[First[StringCases[#,r],<||>],datakey->OptionValue["Importer"]@#]&)@*SetCurrent
-    ],
-    Length@files
+]
+ImportDataset[files_List,r:(_:>_Association),datakey:"data",o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@iImportDataset[
+    Map,
+    Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
+    files,
+    FilterRules[{o,Options[ImportDataset]},_]
   ]
-ImportDataset[files_List,{fp_,dp_}:>r_Association,OptionsPattern[]]:=
-  ProgressReport[
-    Dataset[
-      files][
-      All,
-      (*import all files*)Step@*(First[StringCases[#,fp:>(OptionValue["Importer"]@#/.dp:>r)],<||>]&)@*SetCurrent
-    ],
-    Length@files
+]
+ImportDataset[files_List,{fp_,dp_}:>r_Association,o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@iImportDataset[
+    Map,
+    First[StringCases[pTrans@#,fp:>(OptionValue["Importer"]@#/.dp:>r)],<||>]&,
+    files,
+    FilterRules[{o,Options[ImportDataset]},_]
   ]
-Options[ImportDataset]={"Importer"->Import};
+]
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False};
+Options[iImportDataset]=Options[ImportDataset];
 
 
 End[]
