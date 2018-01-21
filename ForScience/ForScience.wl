@@ -622,17 +622,16 @@ ImportDataset[r:({pat_,_}:>_Association),Shortest[dirs_:""],o:OptionsPattern[]]:
 ImportDataset[files_List,o:OptionsPattern[]]:=ImportDataset[files,p_:>p,o]
 (*handle association type rules*)
 
-iImportDataset[mf_,func_,files_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
-  ProgressReport[ProgressReport[mf[func,#]]&/@GroupBy[files,DirectoryName],Timing->OptionValue["FullFolderProgress"]],
+iImportDataset[pProc_,mf_,func_,files_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
+  ProgressReport[pProc@ProgressReport[mf[func,#]]&/@GroupBy[files,DirectoryName],Timing->OptionValue["FullFolderProgress"]],
   ProgressReport[mf[func,files]]
 ]
 
 ImportDataset[files_List,r:(_:>Except[_Association]),o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
-  Dataset@KeyMap[
-    First[StringCases[pTrans@#,r],#]&
-  ]@iImportDataset[
+  Dataset@iImportDataset[
+    KeyMap[First[StringCases[pTrans@#,r],#]&],
     AssociationMap,
     OptionValue["Importer"],files,
     FilterRules[{o,Options[ImportDataset]},_]
@@ -642,6 +641,7 @@ ImportDataset[files_List,r:(_:>_Association),datakey:"data",o:OptionsPattern[]]:
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
+    #&,
     Map,
     Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
     files,
@@ -652,6 +652,7 @@ ImportDataset[files_List,{fp_,dp_}:>r_Association,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
+    #&,
     Map,
     First[StringCases[pTrans@#,fp:>(OptionValue["Importer"]@#/.dp:>r)],<||>]&,
     files,
