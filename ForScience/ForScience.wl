@@ -567,11 +567,11 @@ Attributes[iProgressReport]={HoldFirst};
 Options[iProgressReport]=Options[ProgressReport];
 
 Attributes[ProgressReportTransform]={HoldFirst};
-ProgressReportTransform[(m:Map|ParallelMap|AssociationMap)[func_,list_],o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],o:OptionsPattern[ProgressReport]]:=
 ProgressReportTransform[m[func,Evaluate@list],Evaluated,o]
-ProgressReportTransform[(m:Map|ParallelMap|AssociationMap)[func_,list_],Evaluated,o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],Evaluated,o:OptionsPattern[ProgressReport]]:=
 ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o]
-ProgressReportTransform[(m:Map|ParallelMap)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[(m:Map|ParallelMap|MapIndexed)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=
 ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*SetCurrentBy[#&@@#2&],ass],Length@ass,o]
 ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
@@ -592,8 +592,8 @@ ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
 Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
-IStep[i_,res_,time_,times_][expr___]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];expr)
-IStep[i_][expr___]:=(++i;expr)
+IStep[i_,res_,time_,times_][expr___]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];Unevaluated@expr)
+IStep[i_][expr___]:=(++i;Unevaluated@expr)
 Attributes[IStep]={HoldAll};
 SyntaxInformation[Step]={"ArgumentsPattern"->{_}};
 
@@ -601,7 +601,7 @@ ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
 Attributes[ISetCurrent]={HoldFirst};
 SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
 
-ISetCurrentBy[cur_Symbol,curFunc_][expr___]:=(cur=curFunc@expr;expr)
+ISetCurrentBy[cur_Symbol,curFunc_][expr___]:=(cur=curFunc@expr;Unevaluated@expr)
 Attributes[ISetCurrentBy]={HoldFirst};
 SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 
