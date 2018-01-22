@@ -677,15 +677,6 @@ Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPa
 Options[iImportDataset]=Options[ImportDataset];
 
 
-(*get a clean context, to ensure symbols are properly prefixed in CompileUsages*)
-If[OwnValues@cuDefContext==={},
-  cuDefContext:=cuDefContext=Module[
-    {k=LaunchKernels[1],ret},
-    ret=Cases[First@ParallelEvaluate[$ContextPath,k],Except@"Global`"];
-    CloseKernels@k;
-    ret
-  ]
-];
 PrepareCompileUsages[package_]:=(
   Quiet@DeleteDirectory["build",DeleteContents->True];
   CopyDirectory[package,"build"];
@@ -693,7 +684,7 @@ PrepareCompileUsages[package_]:=(
 SyntaxInformation[PrepareCompileUsages]={"ArgumentsPattern"->{_}};
 CompileUsages[file_]:=Block[
   (*set context to ensure proper context prefixes for symbols. Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
-  {$ContextPath=cuDefContext~Prepend~"cuBuild`",$Context="cuBuild`"},
+  {$ContextPath={"cuBuild`"},$Context="cuBuild`"},
   SetDirectory["build"];
   Quiet[
     With[
