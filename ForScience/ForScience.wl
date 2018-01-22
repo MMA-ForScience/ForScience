@@ -75,6 +75,7 @@ AutoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
 Private`ProcessingAutoSlot=False;
 ToFunction::usage=FormatUsage@"ToFunction[expr] attempts to convert any function constructs inside '''expr''' to pure Functions. Can't convert functions containing SlotSequence. For functions using only indexed Slots, the returned pure function is fully equivalent. If named slots are used, the handling of missing keys/associations is altered.";
 TableToTexForm::usage=FormatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
+FixedShort::usage=FormatUsage@"FixedShort[expr_,w_,pw_] displays ```expr``` like '''Short[```expr```,```w```], but relative to the pagewidth ```pw```. ```w``` defaults to 1.";
 FancyTrace::usage=FormatUsage@"FancyTrace[expr] produces an interactive version of the Trace output";
 WindowedMap::usage=FormatUsage@"WindowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list
 WindowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```,```\[Ellipsis]``` wide windows of arbitrary dimension
@@ -342,6 +343,17 @@ If[OptionValue["hline"]=="auto",
 
 
 TableToTexForm[args___]:=TableToTexFormCore[TableToTexForm,args];
+
+
+(*adapted from https://mathematica.stackexchange.com/a/164228/36508*)
+FixedShort/:MakeBoxes[FixedShort[expr_,w_:1,pw_],StandardForm]:=With[
+  {oldWidth=Options[$Output,PageWidth]},
+  Internal`WithLocalSettings[
+    SetOptions[$Output,PageWidth->pw],
+    MakeBoxes[Short[expr,w],StandardForm],
+    SetOptions[$Output,oldWidth]
+  ]
+]
 
 
 FancyTraceStyle[i_,o:OptionsPattern[FancyTrace]]:=Style[i,o,FontFamily->"Consolas",Bold]
