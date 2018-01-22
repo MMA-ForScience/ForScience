@@ -19,9 +19,10 @@ A list of the most noteworthy functions:
 
 ### Latest version
 - Download the zip (and uncompress it) of this repo or clone it to your computer
-- open build.nb with Mathematica
-- evaluate the notbook
-- check in a new notebook with PacletFind[] if it is correctly insalled.
+- Open build.nb with Mathematica
+- Evaluate the notbook
+- Evaluate the notebook again. The second pass uses `CompileUsages` to precompile the formatted usage messages to decrease subsequent package load times.
+- Check in a new notebook with PacletFind[] if it is correctly insalled.
   (correct if it apears on top of the list)
 
 ## Prerequisites
