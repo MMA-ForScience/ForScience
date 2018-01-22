@@ -13,9 +13,15 @@ Notebook[{
 
 	Cell["Build", "Subsubsection"],
 
-	Cell[BoxData[RowBox[{"DeleteFile", "/@", RowBox[{"FileNames", "[", "\"\<*.paclet\>\"", "]"}]}]], "Input"],
+	Cell[BoxData[RowBox[{RowBox[{"DeleteFile", "/@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}], ";"}]], "Input"],
 
-	Cell[BoxData[RowBox[{RowBox[{"paclet", "=", RowBox[{"PackPaclet", "[", "\"\<ForScience\>\"", "]"}]}], ";"}]], "Input"]
+	Cell[BoxData[RowBox[{"paclet", "=", RowBox[{"Check", "[", " ", "\[IndentingNewLine]", 
+		RowBox[{RowBox[{RowBox[{"<<", "\"ForScience`\""}], ";", "\[IndentingNewLine]", 
+		RowBox[{"ForScience`Util`PrepareCompileUsages", "[", "\"ForScience\"", "]"}], ";", "\[IndentingNewLine]", 
+		RowBox[{"ForScience`Util`CompileUsages", "[", "\"ForScience.wl\"", "]"}], ";", "\[IndentingNewLine]", 
+		RowBox[{"PackPaclet", "[", "\"build\"", "]"}]}], ",", "\[IndentingNewLine]", 
+		RowBox[{"PackPaclet", "[", "\"ForScience\"", "]"}]}], "\[IndentingNewLine]", "]"}], ";"}]
+    ], "Input"]
 	 
 	}, Open  ]],
 
@@ -23,9 +29,9 @@ Notebook[{
 
 	Cell["Install", "Subsubsection"],
 
-	Cell[BoxData[RowBox[{"PacletUninstall", "/@", RowBox[{"PacletFind", "[", "\"\<ForScience\>\"", "]"}]}]], "Input"],
+	Cell[BoxData[RowBox[{RowBox[{"PacletUninstall", "/@", RowBox[{"PacletFind", "[", "\"ForScience\"", "]"}]}], ";"}]], "Input"],
 
-	Cell[BoxData[RowBox[{"paclet", "=", RowBox[{"Last", "@", RowBox[{"Sort", "@", RowBox[{"FileNames", "[", "\"\<*.paclet\>\"", "]"}]}]}]}]], "Input"],
+	Cell[BoxData[RowBox[{"Last", "@", RowBox[{"Sort", "@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}]}]], "Input"],
 
 	Cell[BoxData[RowBox[{"PacletInstall", "[", "paclet", "]"}]], "Input"]
 

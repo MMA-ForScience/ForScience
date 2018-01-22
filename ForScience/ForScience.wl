@@ -102,6 +102,8 @@ ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the fi
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.";
+PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
+CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
 
 
 Begin["Private`"]
@@ -661,6 +663,37 @@ With[
 ]
 Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False};
 Options[iImportDataset]=Options[ImportDataset];
+
+
+(*get a clean context, to ensure symbols are properly prefixed in CompileUsages*)
+If[OwnValues@cuDefContext==={},
+  cuDefContext:=cuDefContext=Module[
+    {k=LaunchKernels[1],ret},
+    ret=Cases[First@ParallelEvaluate[$ContextPath,k],Except@"Global`"];
+    CloseKernels@k;
+    ret
+  ]
+];
+PrepareCompileUsages[package_]:=(
+  Quiet@DeleteDirectory["build",DeleteContents->True];
+  CopyDirectory[package,"build"];
+)
+SyntaxInformation[PrepareCompileUsages]={"ArgumentsPattern"->{_}};
+CompileUsages[file_]:=Block[
+  (*set context to ensure proper context prefixes for symbols. Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
+  {$ContextPath=cuDefContext~Prepend~"cuBuild`",$Context="cuBuild`"},
+  SetDirectory["build"];
+  Quiet[
+    With[
+      {fu=Symbol@"cuBuild`FormatUsage"},
+      Export[file,Import[file,"HeldExpressions"]/.HoldPattern[s_::usage=fu@u_String]:>With[{cu=ForScience`Util`FormatUsage@u},(s::usage=cu)/;True],"HeldExpressions",PageWidth->Infinity]
+    ],
+    {General::shdw}
+  ];
+  ResetDirectory[];
+  Remove["cuBuild`*"];
+]
+SyntaxInformation[CompileUsages]={"ArgumentsPattern"->{_}};
 
 
 End[]
