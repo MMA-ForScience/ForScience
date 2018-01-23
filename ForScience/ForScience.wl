@@ -507,7 +507,7 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
           ];
           Grid[
             {
-              If[cur=!=None,{"Current item:",Tooltip[Short[cur,0.3],cur]},Nothing],
+              If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
               {"Progess:",StringForm["``/``",i,len]},
               {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
               {"Time per Step:",If[i==0,"NA",PRPrettyTime[dur/i]]},
@@ -564,7 +564,7 @@ iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
       Panel@Row@{
         Grid[
           {
-            If[cur=!=None,{"Current item:",Tooltip[Short[cur,0.3],cur]},Nothing],
+            If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
             {"Progess:",StringForm["``/``",i,len]}
           },
           Alignment->{{Left,Right}},
