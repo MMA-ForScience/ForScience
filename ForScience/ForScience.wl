@@ -465,7 +465,7 @@ ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
   iTimedProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]],
   iProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]]]
 ProgressReport[expr_,0,OptionsPattern[]]:=expr
-Options[ProgressReport]={"Resolution"->20,Timing->True};
+Options[ProgressReport]={"Resolution"->20,Timing->True,"Parallel"->False};
 
 iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   {
@@ -485,7 +485,7 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
     Step->IStep[i,Evaluate[OptionValue["Resolution"]/len],time,times]
   };
-  SetSharedVariable[i,times,time,cur];
+  If[OptionValue["Parallel"],SetSharedVariable[i,times,time,cur]];
   i=0;
   cur=None;
   Return@Monitor[
@@ -584,9 +584,9 @@ Attributes[ProgressReportTransform]={HoldFirst};
 ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],o:OptionsPattern[ProgressReport]]:=
 With[{elist=list},ProgressReportTransform[m[func,elist],Evaluated,o]]
 ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o]
+ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o,"Parallel"->m===ParallelMap]
 ProgressReportTransform[(m:Map|ParallelMap|MapIndexed)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o]
+ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o,"Parallel"->m===ParallelMap]
 ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
     pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
@@ -595,7 +595,8 @@ ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,
   ProgressReport[
     t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
     Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{Optional@_Symbol,s__}:>Length@Range@s}),
-    o
+    o,
+    "Parallel"->m===ParallelTable
   ]
 ]
 ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
