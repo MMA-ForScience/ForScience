@@ -105,7 +105,9 @@ ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[E
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
-FirstHead::usage="FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
+FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
+DefTo::usage=FormatUsage@"DefTo[arg_1,arg_2,\[Ellipsis]] returns ```arg_1```. Useful in complex patterns to assign defaults to empty matches.";
+CondDef::usage=FormatUsage@"CondDef[cond][```arg_1```,\[Ellipsis]] is the conditional version of '''DefTo'''. Returns ```arg_1``` only if ```cond``` is not empty, otherwise returns an empty sequence.";
 
 
 Begin["Private`"]
@@ -631,6 +633,13 @@ AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
 
 FirstHead[h_[___]]:=FirstHead[Unevaluated@h]
 FirstHead[h_]:=h
+
+
+DefTo[v_,___]:=v
+SyntaxInformation[DefTo]={"ArgumentsPattern"->{__}};
+CondDef[_][v_,___]:=v
+CondDef[][__]:=Sequence[]
+SyntaxInformation[CondDef]={"ArgumentsPattern"->{_}};
 
 
 (*get list of files if not provided*)
