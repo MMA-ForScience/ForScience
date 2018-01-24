@@ -105,6 +105,7 @@ ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[E
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
+FirstHead::usage="FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
 
 
 Begin["Private`"]
@@ -626,6 +627,10 @@ DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
 AddKey[r__Rule]:=AddKey@@((List@@@{r})\[Transpose])
 AddKey[key_,f_]:=#~Append~(key->f@#)&
 AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
+
+
+FirstHead[h_[___]]:=FirstHead[Unevaluated@h]
+FirstHead[h_]:=h
 
 
 (*get list of files if not provided*)
