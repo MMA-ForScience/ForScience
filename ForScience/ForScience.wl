@@ -753,25 +753,15 @@ Plots3D={ListPlot3D,ListPointPlot3D,ParametricPlot3D};
 HistogramType={Histogram,BarChart,PieChart};
 
 
-Themes`AddThemeRules["ForScience",Plots3D,
-	  LabelStyle->ThemeFontStyle,PlotRangePadding->0
-]
-
-
-Themes`AddThemeRules["ForScience",ThemedPlots,
-	  LabelStyle->ThemeFontStyle,PlotRangePadding->0,
-	  PlotTheme->"VibrantColors"
+Themes`AddThemeRules["ForScience",#,
 	  LabelStyle->ThemeFontStyle,
-	  FrameStyle->ThemeFontStyle,
-	  FrameTicksStyle->SmallThemeFontStyle,
-	  Frame->True,
+	  PlotRangePadding->0
+]&/@Plots3D
+
+
+Themes`AddThemeRules["ForScience",#,
+	  LabelStyle->ThemeFontStyle,
 	  PlotRangePadding->0,
-	  Axes->False
-]
-
-
-Themes`AddThemeRules["ForScience",BasicPlots,
-	  LabelStyle->ThemeFontStyle,PlotRangePadding->0,
 	  PlotTheme->"VibrantColors",
 	  LabelStyle->ThemeFontStyle,
 	  FrameStyle->ThemeFontStyle,
@@ -779,10 +769,23 @@ Themes`AddThemeRules["ForScience",BasicPlots,
 	  Frame->True,
 	  PlotRangePadding->0,
 	  Axes->False
-]
+]&/@ThemedPlots
 
 
-Themes`AddThemeRules["ForScience",PolarPlots,
+Themes`AddThemeRules["ForScience",#,
+	  LabelStyle->ThemeFontStyle,
+	  PlotRangePadding->0,
+	  PlotTheme->"VibrantColors",
+	  LabelStyle->ThemeFontStyle,
+	  FrameStyle->ThemeFontStyle,
+	  FrameTicksStyle->SmallThemeFontStyle,
+	  Frame->True,
+	  PlotRangePadding->0,
+	  Axes->False
+]&/@BasicPlots
+
+
+Themes`AddThemeRules["ForScience",#,
 	  Joined->True,
 	  Mesh->All,
 	  PolarGridLines->Automatic,
@@ -791,10 +794,10 @@ Themes`AddThemeRules["ForScience",PolarPlots,
 	  Frame->False,
 	  PolarAxes->True,
 	  PlotRangePadding->Scaled[0.1]
-]
+]&/@PolarPlots
 
 
-Themes`AddThemeRules["ForScience",PolarPlotsNoJoin,
+Themes`AddThemeRules["ForScience",#,
 	  Mesh->All,
 	  PolarGridLines->Automatic,
 	  PolarTicks->{"Degrees",NiceRadialTicks},
@@ -802,12 +805,12 @@ Themes`AddThemeRules["ForScience",PolarPlotsNoJoin,
 	  Frame->False,
 	  PolarAxes->True,
 	  PlotRangePadding->Scaled[0.1]
-]
+]&/@PolarPlotsNoJoin
 
 
-Themes`AddThemeRules["ForScience",HistogramType,
+Themes`AddThemeRules["ForScience",#,
 	  ChartStyle -> {Pink} (* Placeholder *)
-]
+]&/@HistogramType
 
 
 End[]
