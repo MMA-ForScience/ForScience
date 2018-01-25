@@ -110,6 +110,7 @@ CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified fi
 FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
 DefTo::usage=FormatUsage@"DefTo[arg_1,arg_2,\[Ellipsis]] returns ```arg_1```. Useful in complex patterns to assign defaults to empty matches.";
 CondDef::usage=FormatUsage@"CondDef[cond][```arg_1```,\[Ellipsis]] is the conditional version of '''DefTo'''. Returns ```arg_1``` only if ```cond``` is not empty, otherwise returns an empty sequence.";
+InvCondDef::usage=FormatUsage@"InvCondDef[cond][```arg_1```,\[Ellipsis]] is the inverse of '''CondDef'''. Returns ```arg_1``` only if ```cond``` is empty, otherwise returns an empty sequence.";
 
 
 Begin["Private`"]
@@ -641,11 +642,24 @@ DefTo[v_,___]:=v
 SyntaxInformation[DefTo]={"ArgumentsPattern"->{__}};
 CondDef[__][v_,___]:=v
 CondDef[][__]:=Sequence[]
+InvCondDef[][v_,___]:=v
+InvCondDef[__][__]:=Sequence[]
 SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
 
 
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
+ImportDataset[
+  files_List,
+  (dm:(r:({_,pat_,_}:>_Association)))|
+   RepeatedNull[PatternSequence[
+     (r:({pat_,_}:>_Association))|
+      PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
+     (r:(pat_:>Except[_Association])),
+     Shortest[dirrule_RuleDelayed:(x__:>x)]
+  ],1],
+  o:$IDOptionsPattern
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],o]
 ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_Association)),
@@ -660,17 +674,6 @@ ImportDataset[
   ],
   o:$IDOptionsPattern
 ]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
-ImportDataset[
-  files_List,
-  (r:({_,pat_,_}:>_Association))|
-   dm:PatternSequence[
-     (r:({pat_,_}:>_Association))|
-      PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
-     ( r:(pat_:>Except[_Association])),
-     Shortest[dirrule_RuleDelayed:(x__:>x)]
-  ],
-  o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
 
 iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
   KeyMap[First[StringCases[#,dirrule],#]&]@
