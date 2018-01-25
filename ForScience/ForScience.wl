@@ -830,7 +830,8 @@ $PolarPlots={ListPolarPlot};
 $PolarPlotsNoJoin={PolarPlot};
 $ThemedPlots={LogLogPlot,LogPlot,ListLogLogPlot,ListLogPlot,ListLinePlot,ListPlot,Plot,ParametricPlot,SmoothHistogram};
 $Plots3D={ListPlot3D,ListPointPlot3D,ParametricPlot3D};
-$HistogramType={Histogram,BarChart,PieChart};
+$HistogramType={Histogram,BarChart};
+$Histogram3DType={Histogram3D};
 
 
 SetupForSciencePlotTheme[o:OptionsPattern[]]:=Module[
@@ -893,8 +894,19 @@ SetupForSciencePlotTheme[o:OptionsPattern[]]:=Module[
   ]&/@$PolarPlotsNoJoin;
   
   Themes`AddThemeRules["ForScience",#,
-	  ChartStyle -> {Pink} (* Placeholder *)
+      ChartStyle->{ColorData[112,"ColorList"],None},
+	  LabelStyle->ThemeFontStyle,
+	  Frame->True,
+	  FrameStyle->ThemeFontStyle,
+	  FrameTicksStyle->SmallThemeFontStyle
   ]&/@$HistogramType;
+  
+  Themes`AddThemeRules["ForScience",#,
+      ChartStyle->{ColorData[112,"ColorList"],None},
+	  LabelStyle->ThemeFontStyle,
+	  FrameStyle->ThemeFontStyle,
+	  FrameTicksStyle->SmallThemeFontStyle
+  ]&/@$Histogram3DType;
 ]
 ResetForSciencePlotTheme[]:=(
   Options[SetupForSciencePlotTheme]={FontSize->20,FontFamily->"Times","FontRatio"->0.9,"Thickness"->0.005};
