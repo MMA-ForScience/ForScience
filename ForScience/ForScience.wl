@@ -98,11 +98,13 @@ AddKey[{key_1,\[Ellipsis]},{f_1,\[Ellipsis]}] works similar, but operates on all
 AddKey[key_1\[Rule]f_1,key_2\[Rule]f_2,\[Ellipsis]] works on the pairs '''{```key_i```,```f_i```}'''"; 
 ImportDataset::usage=FormatUsage@"ImportDataset[f] imports the files specified by ```f``` into a '''Dataset''' and displays a progress bar while doing so. The importing function can be specified using the '''\"Importer\"''' option
 ImportDataset[f,dirs] imports files from any of the directories specified.
+ImportDataset[f,dirps\[RuleDelayed]rep] imports files from any of the directories specified and applies the specified rule to the directory names.
 ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
 ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
-ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.";
+ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
+ImportDataset[\[Ellipsis],{dir,f,d}ata\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
 FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
@@ -637,54 +639,133 @@ FirstHead[h_]:=h
 
 DefTo[v_,___]:=v
 SyntaxInformation[DefTo]={"ArgumentsPattern"->{__}};
-CondDef[_][v_,___]:=v
+CondDef[__][v_,___]:=v
 CondDef[][__]:=Sequence[]
-SyntaxInformation[CondDef]={"ArgumentsPattern"->{_}};
+SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
 
 
-(*get list of files if not provided*)
-ImportDataset[pat_,Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],x__:>x,o]
-ImportDataset[r:(pat_:>Except[_Association]),Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
-ImportDataset[r:(pat_:>_Association),Shortest[datakey_:"data"],Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,datakey,o]
-ImportDataset[r:({pat_,_}:>_Association),Shortest[dirs_:""],o:OptionsPattern[]]:=ImportDataset[FileNames[pat,dirs],r,o]
-(*handle key transformation rules*)
-ImportDataset[files_List,o:OptionsPattern[]]:=ImportDataset[files,p_:>p,o]
-(*handle association type rules*)
+(*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
+$IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
+ImportDataset[
+  PatternSequence[
+    (r:({_,pat_,_}:>_Association)),
+    Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
+  ]|
+   dm:PatternSequence[
+     (r:({pat_,_}:>_Association))|
+      PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
+     ( r:(pat_:>Except[_Association]))|
+      pat:Except[_RuleDelayed],
+     Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
+  ],
+  o:$IDOptionsPattern
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
+ImportDataset[
+  files_List,
+  (r:({_,pat_,_}:>_Association))|
+   dm:PatternSequence[
+     (r:({pat_,_}:>_Association))|
+      PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
+     ( r:(pat_:>Except[_Association])),
+     Shortest[dirrule_RuleDelayed:(x__:>x)]
+  ],
+  o:$IDOptionsPattern
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
 
-iImportDataset[pProc_,mf_,func_,files_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
-  ProgressReport[pProc@ProgressReport[mf[func,#]]&/@GroupBy[files,DirectoryName],Timing->OptionValue["FullFolderProgress"]],
+iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
+  KeyMap[First[StringCases[#,dirrule],#]&]@
+   ProgressReport[
+   pProc@
+     ProgressReport[mf[func,#]]&/@
+      GroupBy[files,DirectoryName],
+     Timing->OptionValue["FullFolderProgress"]
+  ],
   ProgressReport[mf[func,files]]
 ]
 
-ImportDataset[files_List,r:(_:>Except[_Association]),o:OptionsPattern[]]:=
+iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@Apply[Join]@Values@iImportDataset[
+    Identity,
+    Map,
+    First[
+      StringCases[
+        pTrans@#,
+        fp:>First[
+          StringCases[
+            DirectoryName@#,
+            dirp:>First[
+              Cases[
+                OptionValue["Importer"]@#,
+                datp:>r,
+                {0},
+                1
+              ],
+              <||>
+            ],
+            1
+          ],
+          <||>
+        ],
+        1
+      ],
+      <||>
+    ]&,
+    files,
+    x__:>x,
+    "GroupFolders"->True,
+    FilterRules[{o,Options[ImportDataset]},_]
+  ]
+]
+iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@iImportDataset[
+    Identity,
+    Map,
+    First[
+      StringCases[
+        pTrans@#,
+        fp:>First[
+          Cases[
+            OptionValue["Importer"]@#,
+            dp:>r,
+            {0},
+            1
+          ],
+          <||>
+        ],
+        1
+      ],
+      <||>
+    ]&,
+    files,
+    dirrule,
+    FilterRules[{o,Options[ImportDataset]},_]
+  ]
+]
+iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[]]:=
+With[
+  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  Dataset@iImportDataset[
+    Identity,
+    Map,
+    Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
+    files,
+    dirrule,
+    FilterRules[{o,Options[ImportDataset]},_]
+  ]
+]
+iImportDataset[files_,r_,dirrule_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     KeyMap[First[StringCases[pTrans@#,r],#]&],
     AssociationMap,
-    OptionValue["Importer"],files,
-    FilterRules[{o,Options[ImportDataset]},_]
-  ]
-]
-ImportDataset[files_List,r:(_:>_Association),datakey:"data",o:OptionsPattern[]]:=
-With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
-  Dataset@iImportDataset[
-    #&,
-    Map,
-    Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
+    OptionValue["Importer"],
     files,
-    FilterRules[{o,Options[ImportDataset]},_]
-  ]
-]
-ImportDataset[files_List,{fp_,dp_}:>r_Association,o:OptionsPattern[]]:=
-With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
-  Dataset@iImportDataset[
-    #&,
-    Map,
-    First[StringCases[pTrans@#,fp:>(OptionValue["Importer"]@#/.dp:>r)],<||>]&,
-    files,
+    dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
