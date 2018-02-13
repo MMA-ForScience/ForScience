@@ -591,8 +591,10 @@ ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list
 With[{elist=list},ProgressReportTransform[m[func,elist],Evaluated,o]]
 ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],Evaluated,o:OptionsPattern[ProgressReport]]:=
 ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o,"Parallel"->m===ParallelMap]
-ProgressReportTransform[(m:Map|ParallelMap|MapIndexed)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o,"Parallel"->m===ParallelMap]
+ProgressReportTransform[(m:Map|ParallelMap|MapIndexed)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=With[
+  {argProc=If[m===MapIndexed,##&,#&]},
+  ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*argProc@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o,"Parallel"->m===ParallelMap]
+]
 ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
     pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
