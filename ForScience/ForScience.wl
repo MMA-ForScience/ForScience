@@ -111,6 +111,7 @@ FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr
 DefTo::usage=FormatUsage@"DefTo[arg_1,arg_2,\[Ellipsis]] returns ```arg_1```. Useful in complex patterns to assign defaults to empty matches.";
 CondDef::usage=FormatUsage@"CondDef[cond][```arg_1```,\[Ellipsis]] is the conditional version of '''DefTo'''. Returns ```arg_1``` only if ```cond``` is not empty, otherwise returns an empty sequence.";
 InvCondDef::usage=FormatUsage@"InvCondDef[cond][```arg_1```,\[Ellipsis]] is the inverse of '''CondDef'''. Returns ```arg_1``` only if ```cond``` is empty, otherwise returns an empty sequence.";
+UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer version of the ForScience package is available. If one is found, it can be downloaded by pressing a button. Use the option '''\"IncludePreReleases\"``` to control whether pre-releases should be ignored.";
 
 
 Begin["Private`"]
@@ -799,6 +800,43 @@ CompileUsages[file_]:=Block[
   Remove["cuBuild`*"];
 ]
 SyntaxInformation[CompileUsages]={"ArgumentsPattern"->{_}};
+
+
+UpdateForScience[OptionsPattern[]]:=Let[
+  {
+    latest=First[
+      MaximalBy[DateObject@#["published_at"]&]@
+       If[OptionValue["IncludePreReleases"],Identity,Select[!#prerelease&]]
+        [
+          Association@@@Import["https://api.github.com/repos/lukas-lang/ForScience/releases","JSON"]
+        ],
+      <|"tag_name"->"v0.0.0","name"->"","assets"->{}|>
+    ],
+    file=SelectFirst[Association@@@#assets,StringMatchQ[#name,__~~".paclet"]&,None]&@latest,
+    preRel=latest["prerelease"],
+    version=StringDrop[latest["tag_name"],1],
+    curVer=First[PacletFind["ForScience"],<|"Version"->"0.0.0"|>]["Version"]
+  },
+  If[
+    Order@@(FromDigits/@StringSplit[#,"."]&/@{curVer,version})>0,
+    Row@{
+      SPrintF["Found version ````, current version is ``.",version,If[preRel," (pre-release)",""],curVer],
+      Button[
+        "Download & Install",
+        PacletUninstall/@PacletFind["ForScience"];
+        PacletInstall[URLDownload[#["browser_download_url"],FileNameJoin@{$TemporaryDirectory,#name}]]&@file;
+        Print@If[
+          PacletFind["ForScience"][[1]]["Version"]==version,
+          "Successfully updated",
+          "Something went wrong, check manually."
+        ];
+      ]
+    },
+    "No newer version available"
+  ]
+]
+Options[UpdateForScience]={"IncludePreReleases"->True};
+SyntaxInformation[UpdateForScience]={"ArgumentsPattern"->{OptionsPattern[]}};
 
 
 End[]
