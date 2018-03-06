@@ -289,6 +289,7 @@ expr//.func:fType_[funcExpr_,fData___]:>
   res/;res=!=$Failed
 ]
 Attributes[ToFunction]={HoldFirst};
+Attributes[funcData]={HoldAll};
 
 
 TableToTexFormCore[TableToTexForm,data_,OptionsPattern[{"position"->"c","hline"->"auto","vline"->"auto"}]]:=Module[
