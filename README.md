@@ -10,7 +10,7 @@ A list of the most noteworthy functions:
 - `IndexedFunction` (indexed (#) and (&))
 - `ImportDataset` (imports files or complex file structures into one Dataset
 - `TableToTex` function
-- `GROMOS` overs basic functions assisting in the work with the Molecular Dynamics program GROMOS
+- `GROMOS` offers basic functions assisting in the work with the Molecular Dynamics program GROMOS
 - ...
 
 ## Installation
