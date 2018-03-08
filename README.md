@@ -8,7 +8,9 @@ This paclet aims to be a aid for the daily life of a scientist. It consist of us
 A list of the most noteworthy functions:
 - Plot theme "For Science"
 - `IndexedFunction` (indexed (#) and (&))
+- `ImportDataset` (imports files or complex file structures into one Dataset
 - `TableToTex` function
+- `GROMOS` overs basic functions assisting in the work with the Molecular Dynamics program GROMOS
 - ...
 
 ## Installation
