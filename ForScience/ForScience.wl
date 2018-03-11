@@ -839,7 +839,7 @@ UpdateForScience[OptionsPattern[]]:=Let[
       MaximalBy[DateObject@#["published_at"]&]@
        If[OptionValue["IncludePreReleases"],Identity,Select[!#prerelease&]]
         [
-          Association@@@Import["https://api.github.com/repos/lukas-lang/ForScience/releases","JSON"]
+          Association@@@Import["https://api.github.com/repos/MMA-ForScience/ForScience/releases","JSON"]
         ],
       <|"tag_name"->"v0.0.0","name"->"","assets"->{}|>
     ],
@@ -957,7 +957,7 @@ PublishRelease[OptionsPattern[]]:=Let[
     ]
   ]
 ]
-Options[PublishRelease]={"Token"->None,"Branch"->"master","Repository"->"lukas-lang/ForScience","PackageName"->Automatic};
+Options[PublishRelease]={"Token"->None,"Branch"->"master","Repository"->"MMA-ForScience/ForScience","PackageName"->Automatic};
 SyntaxInformation[PublishRelease]={"ArgumentsPattern"->{OptionsPattern[]}};
 
 
