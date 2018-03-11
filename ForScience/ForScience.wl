@@ -883,7 +883,7 @@ PublishRelease[OptionsPattern[]]:=Let[
     pacletFile=First@FileNames@"*.paclet",
     packageName=OptionValue@"PackageName"/.Automatic->First@StringCases[pacletFile,RegularExpression["(.*)-[^-]*"]->"$1"],
     localVerStr=StringTake[pacletFile,{12,-8}],
-    localVer=ToExpression/@StringSplit[\[Bullet],"."]@localVerStr,
+    localVer=ToExpression/@StringSplit[localVerStr,"."],
     remoteVerStr=Lookup[
       Association@@Import[
         SPrintF["https://raw.githubusercontent.com/``/``/``/PacletInfo.m",repo,branch,packageName]
@@ -891,7 +891,7 @@ PublishRelease[OptionsPattern[]]:=Let[
       Key@Version,
       Message[PublishRelease::checkFailed];Abort[];
     ],
-    remoteVer=ToExpression/@StringSplit[\[Bullet],"."]@remoteVerStr,
+    remoteVer=ToExpression/@StringSplit[remoteVerStr,"."],
     headers="Headers"->{"Authorization"->"token "<>OptionValue@"Token"}
   },
   Switch[Order[localVer,remoteVer],
@@ -909,7 +909,7 @@ PublishRelease[OptionsPattern[]]:=Let[
                 SPrintF["https://api.github.com/repos/``/releases",repo],
                 <|
                   "Body"->ExportString[<|
-                    "tag_name"->"v1"<>localVerStr,
+                    "tag_name"->"v"<>localVerStr,
                     "target_commitish"->branch,
                     "name"->"Version "<>localVerStr,
                     "draft"->True,
@@ -940,7 +940,7 @@ PublishRelease[OptionsPattern[]]:=Let[
               HTTPRequest[
                 createResponse@"url",
                 <|
-                  "Body"->ExportString[<|"draft"->True|>,"RawJSON"],
+                  "Body"->ExportString[<|"draft"->False|>,"RawJSON"],
                   headers
               |>
               ],
