@@ -35,6 +35,14 @@ Notebook[{
 
 	Cell[BoxData[RowBox[{"PacletInstall", "[", "paclet", "]"}]], "Input"]
 
+	}, Open  ]],
+	
+	Cell[CellGroupData[{
+	
+	Cell["Publish", "Subsubsection"],
+	
+	Cell[BoxData[RowBox[{"PublishRelease", "[", RowBox[{"\"Token\"", "\[Rule]", RowBox[{"Import", "[", "\"token\"", "]"}]}], "]"}]], "Input"]
+	
 	}, Open  ]]
 },
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (April 18, 2017)",
