@@ -1,0 +1,8 @@
+Resources[
+    Version[1],
+    ExecutionBuildCommand["<<ForScience`"],
+    Paclet[
+        PacletFolder["ForScience"],
+        FunctionPaclet[False]
+    ]
+]
