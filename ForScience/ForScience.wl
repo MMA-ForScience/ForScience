@@ -883,7 +883,7 @@ BeginPackage["ForScience`PlotUtils`"]
 
 Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
 SetupForSciencePlotTheme::usage=FormatUsage@"SetupForSciencePlotTheme[opt_1\[Rule]val_1,\[Ellipsis]] changes options of the ForScience plot theme. See '''Options[SetupForSciencePlotTheme]''' for possible options.";
-ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plto theme.";
+ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plot theme.";
 
 
 Begin["Private`"]
@@ -1041,7 +1041,7 @@ Switch[title,
 ]
 
 ParseGromosTitle[block_]:=StringJoin@block
-ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],,StringSplit[#,WhitespaceCharacter..]]&,block]
+ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],StringSplit[#,WhitespaceCharacter..]]&,block]
 ParseGromosPosition[block_]:=Module[{block2},
   If[StringContainsQ[block[[1]],"#"],block2=Drop[block,1]];
   Map[
