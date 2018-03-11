@@ -878,7 +878,7 @@ EndPackage[]
 (* --- Styling Part --- *)
 
 
-BeginPackage["ForScience`PlotUtils`"]
+BeginPackage["ForScience`PlotUtils`",{"ForScience`Util`"}]
 
 
 Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
@@ -995,7 +995,7 @@ EndPackage[]
 (* --- GROMOS --- *)
 
 
-BeginPackage["ForScience`GROMOS`"]
+BeginPackage["ForScience`GROMOS`",{"ForScience`Util`"}]
 
 
 GromosImport::usage="Import GROMOS style block format and parse it"
