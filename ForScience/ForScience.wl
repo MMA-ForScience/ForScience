@@ -926,9 +926,9 @@ PublishRelease[OptionsPattern[]]:=Let[
               HTTPRequest[
                 uploadUrl,
                 <|
-                  "Body"->StringToByteArray@Import[pacletFile,"String"],
+                  "Body"->ByteArray@BinaryReadList[pacletFile,"Byte"],
                   headers,
-                  "ContentType"->"application/octet-stream",
+                  "ContentType"->"application/zip",
                   Method->"POST"
                 |>
               ],
