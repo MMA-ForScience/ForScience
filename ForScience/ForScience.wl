@@ -105,6 +105,7 @@ ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
 ImportDataset[\[Ellipsis],{dir,f,d}ata\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
+$ImportDatasetCache::usage="$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
 FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
@@ -653,7 +654,18 @@ SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
 
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
-ImportDataset[
+
+Module[
+  {clearing=False},
+  setupIDCache:=(
+    Clear[$ImportDatasetCache]/;!clearing^:=Block[{clearing=True},Clear@$ImportDatasetCache;setupIDCache];
+    $ImportDatasetCache[_]:=<||>;
+  );
+  Block[{clearing=True},Clear@$ImportDatasetCache]
+]
+setupIDCache
+
+q:ImportDataset[
   files_List,
   (dm:(r:({_,pat_,_}:>_Association)))|
    RepeatedNull[PatternSequence[
@@ -663,8 +675,8 @@ ImportDataset[
      Shortest[dirrule_RuleDelayed:(x__:>x)]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],o]
-ImportDataset[
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],Hold[q],o]
+q:ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_Association)),
     Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
@@ -677,7 +689,24 @@ ImportDataset[
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],Hold[q],o]
+
+idImporter[query_,OptionsPattern[]][file_]:=With[
+{importer=OptionValue["Importer"]},
+  If[
+    OptionValue["CacheImports"],
+    Lookup[
+      $ImportDatasetCache[query],
+      file,
+      With[
+        {res=importer@file},
+        AppendTo[$ImportDatasetCache[query],file->res];
+        res
+      ]
+    ],
+    importer@file
+  ]
+]
 
 iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
   KeyMap[First[StringCases[#,dirrule],#]&]@
@@ -690,7 +719,7 @@ iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[Option
   ProgressReport[mf[func,files]]
 ]
 
-iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@Apply[Join]@Values@iImportDataset[
@@ -704,7 +733,7 @@ With[
             DirectoryName@#,
             dirp:>First[
               Cases[
-                OptionValue["Importer"]@#,
+                idImporter[query,o]@#,
                 datp:>r,
                 {0},
                 1
@@ -725,7 +754,7 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -736,7 +765,7 @@ With[
         pTrans@#,
         fp:>First[
           Cases[
-            OptionValue["Importer"]@#,
+            idImporter[query,o]@#,
             dp:>r,
             {0},
             1
@@ -752,32 +781,33 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     Identity,
     Map,
-    Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
+    Append[First[StringCases[pTrans@#,r],<||>],datakey->idImporter[query,o]@#]&,
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_,r_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     KeyMap[First[StringCases[pTrans@#,r],#]&],
     AssociationMap,
-    OptionValue["Importer"],
+    idImporter[query,o],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
 Options[iImportDataset]=Options[ImportDataset];
+Options[idImporter]=Options[ImportDataset];
 
 
 PrepareCompileUsages[package_]:=(
