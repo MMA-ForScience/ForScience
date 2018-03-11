@@ -7,7 +7,7 @@ EndPackage[]
 
 
 Block[{Notation`AutoLoadNotationPalette=False},
-  BeginPackage["ForScience`Util`",{"Notation`"}]
+  BeginPackage["ForScience`Util`",{"Notation`","PacletManager`"}]
 ]
 
 
