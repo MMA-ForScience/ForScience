@@ -1015,7 +1015,7 @@ ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],,StringSplit[#,Whitesp
 ParseGromosPosition[block_]:=Module[{block2},
   If[StringContainsQ[block[[1]],"#"],block2=Drop[block,1]];
   Map[
-    AssociationThread[{"CG","CG_Name","Atom","No","x","y","z"},StringSplit[#,WhitespaceCharacter..]]&,
+    AssociationThread[{"CG","CGName","Atom","No","x","y","z"},ToExpression/@StringSplit[#,WhitespaceCharacter..]]&,
     block2
   ]
 ]
