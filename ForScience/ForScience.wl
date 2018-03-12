@@ -857,10 +857,11 @@ UpdateForScience[OptionsPattern[]]:=Let[
         PacletUninstall/@PacletFind["ForScience"];
         PacletInstall[URLDownload[#["browser_download_url"],FileNameJoin@{$TemporaryDirectory,#name}]]&@file;
         Print@If[
-          PacletFind["ForScience"][[1]]["Version"]==version,
+          PacletFind["ForScience"][[1]]["Version"]===version,
           "Successfully updated",
           "Something went wrong, check manually."
-        ];
+        ];,
+        Method->"Queued"
       ]
     },
     "No newer version available"
