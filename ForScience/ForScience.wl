@@ -7,7 +7,7 @@ EndPackage[]
 
 
 Block[{Notation`AutoLoadNotationPalette=False},
-  BeginPackage["ForScience`Util`",{"Notation`"}]
+  BeginPackage["ForScience`Util`",{"Notation`","PacletManager`"}]
 ]
 
 
@@ -105,6 +105,7 @@ ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
 ImportDataset[\[Ellipsis],{dir,f,d}ata\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
+$ImportDatasetCache::usage="$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
 FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
@@ -112,6 +113,7 @@ DefTo::usage=FormatUsage@"DefTo[arg_1,arg_2,\[Ellipsis]] returns ```arg_1```. Us
 CondDef::usage=FormatUsage@"CondDef[cond][```arg_1```,\[Ellipsis]] is the conditional version of '''DefTo'''. Returns ```arg_1``` only if ```cond``` is not empty, otherwise returns an empty sequence.";
 InvCondDef::usage=FormatUsage@"InvCondDef[cond][```arg_1```,\[Ellipsis]] is the inverse of '''CondDef'''. Returns ```arg_1``` only if ```cond``` is empty, otherwise returns an empty sequence.";
 UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer version of the ForScience package is available. If one is found, it can be downloaded by pressing a button. Use the option '''\"IncludePreReleases\"``` to control whether pre-releases should be ignored.";
+PublishRelease::usage=FormatUsage@"PublishRelease[opts] creates a new GitHub release for a paclet file in the current folder. Requires access token with public_repo access.";
 
 
 Begin["Private`"]
@@ -653,7 +655,18 @@ SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
 
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
-ImportDataset[
+
+Module[
+  {clearing=False},
+  setupIDCache:=(
+    Clear[$ImportDatasetCache]/;!clearing^:=Block[{clearing=True},Clear@$ImportDatasetCache;setupIDCache];
+    $ImportDatasetCache[_]:=<||>;
+  );
+  Block[{clearing=True},Clear@$ImportDatasetCache]
+]
+setupIDCache
+
+q:ImportDataset[
   files_List,
   (dm:(r:({_,pat_,_}:>_Association)))|
    RepeatedNull[PatternSequence[
@@ -663,8 +676,8 @@ ImportDataset[
      Shortest[dirrule_RuleDelayed:(x__:>x)]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],o]
-ImportDataset[
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],Hold[q],o]
+q:ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_Association)),
     Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
@@ -677,7 +690,24 @@ ImportDataset[
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],Hold[q],o]
+
+idImporter[query_,OptionsPattern[]][file_]:=With[
+{importer=OptionValue["Importer"]},
+  If[
+    OptionValue["CacheImports"],
+    Lookup[
+      $ImportDatasetCache[query],
+      file,
+      With[
+        {res=importer@file},
+        AppendTo[$ImportDatasetCache[query],file->res];
+        res
+      ]
+    ],
+    importer@file
+  ]
+]
 
 iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
   KeyMap[First[StringCases[#,dirrule],#]&]@
@@ -690,7 +720,7 @@ iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[Option
   ProgressReport[mf[func,files]]
 ]
 
-iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@Apply[Join]@Values@iImportDataset[
@@ -704,7 +734,7 @@ With[
             DirectoryName@#,
             dirp:>First[
               Cases[
-                OptionValue["Importer"]@#,
+                idImporter[query,o]@#,
                 datp:>r,
                 {0},
                 1
@@ -725,7 +755,7 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -736,7 +766,7 @@ With[
         pTrans@#,
         fp:>First[
           Cases[
-            OptionValue["Importer"]@#,
+            idImporter[query,o]@#,
             dp:>r,
             {0},
             1
@@ -752,32 +782,33 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     Identity,
     Map,
-    Append[First[StringCases[pTrans@#,r],<||>],datakey->OptionValue["Importer"]@#]&,
+    Append[First[StringCases[pTrans@#,r],<||>],datakey->idImporter[query,o]@#]&,
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r_,dirrule_,o:OptionsPattern[]]:=
+iImportDataset[files_,r_,dirrule_,query_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     KeyMap[First[StringCases[pTrans@#,r],#]&],
     AssociationMap,
-    OptionValue["Importer"],
+    idImporter[query,o],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
 Options[iImportDataset]=Options[ImportDataset];
+Options[idImporter]=Options[ImportDataset];
 
 
 PrepareCompileUsages[package_]:=(
@@ -808,7 +839,7 @@ UpdateForScience[OptionsPattern[]]:=Let[
       MaximalBy[DateObject@#["published_at"]&]@
        If[OptionValue["IncludePreReleases"],Identity,Select[!#prerelease&]]
         [
-          Association@@@Import["https://api.github.com/repos/lukas-lang/ForScience/releases","JSON"]
+          Association@@@Import["https://api.github.com/repos/MMA-ForScience/ForScience/releases","JSON"]
         ],
       <|"tag_name"->"v0.0.0","name"->"","assets"->{}|>
     ],
@@ -839,6 +870,97 @@ Options[UpdateForScience]={"IncludePreReleases"->True};
 SyntaxInformation[UpdateForScience]={"ArgumentsPattern"->{OptionsPattern[]}};
 
 
+PublishRelease::remoteNewer="The online version of the source code (`2`) is newer than the version of the local paclet file (`1`). Ensure that the latest version is built.";
+PublishRelease::localNewer="The version of the local paclet file (`1`) is newer than the online version of the source code (`2`). Ensure that the latest changes have been pushed.";
+PublishRelease::checkFailed="Could not connect to GitHub.";
+PublishRelease::createFailed="Could not create new release draft. Failed with message: ``";
+PublishRelease::uploadFailed="Could not upload paclet file. Failed with message: ``";
+PublishRelease::publishFailed="Could not publish release. Failed with message: ``";
+PublishRelease[OptionsPattern[]]:=Let[
+  {
+    repo=OptionValue@"Repository",
+    branch=OptionValue@"Branch",
+    pacletFile=First@FileNames@"*.paclet",
+    packageName=OptionValue@"PackageName"/.Automatic->First@StringCases[pacletFile,RegularExpression["(.*)-[^-]*"]->"$1"],
+    localVerStr=StringTake[pacletFile,{12,-8}],
+    localVer=ToExpression/@StringSplit[localVerStr,"."],
+    remoteVerStr=Lookup[
+      Association@@Import[
+        SPrintF["https://raw.githubusercontent.com/``/``/``/PacletInfo.m",repo,branch,packageName]
+      ],
+      Key@Version,
+      Message[PublishRelease::checkFailed];Abort[];
+    ],
+    remoteVer=ToExpression/@StringSplit[remoteVerStr,"."],
+    headers="Headers"->{"Authorization"->"token "<>OptionValue@"Token"}
+  },
+  Switch[Order[localVer,remoteVer],
+    1,Message[PublishRelease::remoteNewer,localVerStr,remoteVerStr],
+    -1,Message[PublishRelease::localNewer,localVerStr,remoteVerStr],
+    0,DynamicModule[
+      {prerelease=True},
+      Row@{
+        Button[SPrintF["Publish `` version `` on GitHub",packageName,localVerStr],
+          Module[
+            {createResponse,uploadUrl,uploadFileRespone,publishResponse},
+            Echo["Creating release draft..."];
+            createResponse=Import[
+              HTTPRequest[
+                SPrintF["https://api.github.com/repos/``/releases",repo],
+                <|
+                  "Body"->ExportString[<|
+                    "tag_name"->"v"<>localVerStr,
+                    "target_commitish"->branch,
+                    "name"->"Version "<>localVerStr,
+                    "draft"->True,
+                    "prerelease"->prerelease
+                  |>,"RawJSON"],
+                  headers
+                |>
+              ],
+              "RawJSON"
+            ];
+            uploadUrl=StringReplace["{"~~__~~"}"->"?name="<>pacletFile]@Lookup[createResponse,"upload_url",Message[PublishRelease::createFailed,createResponse@"message"];Abort[]];
+            Echo["Uploading paclet file..."];
+            uploadFileRespone=Import[
+              HTTPRequest[
+                uploadUrl,
+                <|
+                  "Body"->ByteArray@BinaryReadList[pacletFile,"Byte"],
+                  headers,
+                  "ContentType"->"application/zip",
+                  Method->"POST"
+                |>
+              ],
+              "RawJSON"
+            ];
+            Lookup[uploadFileRespone,"url",Message[PublishRelease::uploadFailed,uploadFileRespone@"message"]Abort[];];
+            Echo["Publishing release..."];
+            publishResponse=Import[
+              HTTPRequest[
+                createResponse@"url",
+                <|
+                  "Body"->ExportString[<|"draft"->False|>,"RawJSON"],
+                  headers
+              |>
+              ],
+              "RawJSON"
+            ];
+            Lookup[publishResponse,"url",Message[PublishRelease::publishFailed,publishResponse@"message"]Abort[];];
+            Echo["Done."];
+          ],
+          Method->"Queued"
+        ],
+        "  Prerelease: ",
+        Checkbox@Dynamic@prerelease
+      }
+    ]
+  ]
+]
+Options[PublishRelease]={"Token"->None,"Branch"->"master","Repository"->"MMA-ForScience/ForScience","PackageName"->Automatic};
+SyntaxInformation[PublishRelease]={"ArgumentsPattern"->{OptionsPattern[]}};
+
+
 End[]
 
 
@@ -848,12 +970,12 @@ EndPackage[]
 (* --- Styling Part --- *)
 
 
-BeginPackage["ForScience`PlotUtils`"]
+BeginPackage["ForScience`PlotUtils`",{"ForScience`Util`"}]
 
 
 Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
 SetupForSciencePlotTheme::usage=FormatUsage@"SetupForSciencePlotTheme[opt_1\[Rule]val_1,\[Ellipsis]] changes options of the ForScience plot theme. See '''Options[SetupForSciencePlotTheme]''' for possible options.";
-ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plto theme.";
+ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plot theme.";
 
 
 Begin["Private`"]
@@ -965,7 +1087,7 @@ EndPackage[]
 (* --- GROMOS --- *)
 
 
-BeginPackage["ForScience`GROMOS`"]
+BeginPackage["ForScience`GROMOS`",{"ForScience`Util`"}]
 
 
 GromosImport::usage="Import GROMOS style block format and parse it"
@@ -1011,7 +1133,7 @@ Switch[title,
 ]
 
 ParseGromosTitle[block_]:=StringJoin@block
-ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],,StringSplit[#,WhitespaceCharacter..]]&,block]
+ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],StringSplit[#,WhitespaceCharacter..]]&,block]
 ParseGromosPosition[block_]:=Module[{block2},
   If[StringContainsQ[block[[1]],"#"],block2=Drop[block,1]];
   Map[
