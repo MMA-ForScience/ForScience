@@ -693,15 +693,15 @@ q:ImportDataset[
 ]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],Hold[q],o]
 
 idImporter[query_,OptionsPattern[]][file_]:=With[
-{importer=OptionValue["Importer"]},
+{importer=OptionValue["Importer"],path=AbsoluteFileName@file},
   If[
     OptionValue["CacheImports"],
     Lookup[
       $ImportDatasetCache[query],
-      file,
+      path,
       With[
         {res=importer@file},
-        AppendTo[$ImportDatasetCache[query],file->res];
+        AppendTo[$ImportDatasetCache[query],path->res];
         res
       ]
     ],
