@@ -660,13 +660,13 @@ Module[
   {clearing=False},
   setupIDCache:=(
     Clear[$ImportDatasetCache]/;!clearing^:=Block[{clearing=True},Clear@$ImportDatasetCache;setupIDCache];
-    $ImportDatasetCache[_]:=<||>;
+    $ImportDatasetCache[importer_,path_,file_]:=$ImportDatasetCache[importer,path,file]=importer@file;
   );
   Block[{clearing=True},Clear@$ImportDatasetCache]
 ]
 setupIDCache
 
-q:ImportDataset[
+ImportDataset[
   files_List,
   (dm:(r:({_,pat_,_}:>_Association)))|
    RepeatedNull[PatternSequence[
@@ -676,8 +676,8 @@ q:ImportDataset[
      Shortest[dirrule_RuleDelayed:(x__:>x)]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],Hold[q],o]
-q:ImportDataset[
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],o]
+ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_Association)),
     Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
@@ -690,21 +690,13 @@ q:ImportDataset[
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],Hold[q],o]
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
 
-idImporter[query_,OptionsPattern[]][file_]:=With[
+idImporter[OptionsPattern[]][file_]:=With[
 {importer=OptionValue["Importer"],path=AbsoluteFileName@file},
   If[
     OptionValue["CacheImports"],
-    Lookup[
-      $ImportDatasetCache[query],
-      path,
-      With[
-        {res=importer@file},
-        AppendTo[$ImportDatasetCache[query],path->res];
-        res
-      ]
-    ],
+    $ImportDatasetCache[importer,path,file],
     importer@file
   ]
 ]
@@ -720,7 +712,7 @@ iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[Option
   ProgressReport[mf[func,files]]
 ]
 
-iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,query_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@Apply[Join]@Values@iImportDataset[
@@ -734,7 +726,7 @@ With[
             DirectoryName@#,
             dirp:>First[
               Cases[
-                idImporter[query,o]@#,
+                idImporter[o]@#,
                 datp:>r,
                 {0},
                 1
@@ -755,7 +747,7 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,query_,o:OptionsPattern[]]:=
+iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -766,7 +758,7 @@ With[
         pTrans@#,
         fp:>First[
           Cases[
-            idImporter[query,o]@#,
+            idImporter[o]@#,
             dp:>r,
             {0},
             1
@@ -782,25 +774,25 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,query_,o:OptionsPattern[]]:=
+iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     Identity,
     Map,
-    Append[First[StringCases[pTrans@#,r],<||>],datakey->idImporter[query,o]@#]&,
+    Append[First[StringCases[pTrans@#,r],<||>],datakey->idImporter[o]@#]&,
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r_,dirrule_,query_,o:OptionsPattern[]]:=
+iImportDataset[files_,r_,dirrule_,o:OptionsPattern[]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
     KeyMap[First[StringCases[pTrans@#,r],#]&],
     AssociationMap,
-    idImporter[query,o],
+    idImporter[o],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
