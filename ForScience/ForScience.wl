@@ -19,7 +19,7 @@ FormatUsage;
 FormatCode;
 
 
-Begin["Private`"]
+Begin["`Private`"]
 
 
 FixUsage[usage_]:=If[StringMatchQ[usage,"\!\("~~__],"","\!\(\)"]<>StringReplace[usage,{p:("\!\(\*"~~__?(StringFreeQ["\*"])~~"\)"):>StringReplace[p,"\n"->""],"\n"->"\n\!\(\)"}]
@@ -116,7 +116,7 @@ UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer v
 PublishRelease::usage=FormatUsage@"PublishRelease[opts] creates a new GitHub release for a paclet file in the current folder. Requires access token with public_repo access.";
 
 
-Begin["Private`"]
+Begin["`Private`"]
 
 
 MergeRules[rules:(Rule|RuleDelayed)[_,_]..]:=With[
@@ -971,7 +971,7 @@ SetupForSciencePlotTheme::usage=FormatUsage@"SetupForSciencePlotTheme[opt_1\[Rul
 ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plot theme.";
 
 
-Begin["Private`"]
+Begin["`Private`"]
 
 
 Jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
@@ -1086,7 +1086,7 @@ BeginPackage["ForScience`GROMOS`",{"ForScience`Util`"}]
 GromosImport::usage="Import GROMOS style block format and parse it"
 
 
-Begin["Private`"]
+Begin["`Private`"]
 
 
 (* ::PageBreak:: *)
