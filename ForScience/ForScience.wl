@@ -660,7 +660,7 @@ Module[
   {clearing=False},
   setupIDCache:=(
     Clear[$ImportDatasetCache]/;!clearing^:=Block[{clearing=True},Clear@$ImportDatasetCache;setupIDCache];
-    $ImportDatasetCache[importer_,path_,file_]:=$ImportDatasetCache[importer,path,file]=importer@file;
+    $ImportDatasetCache[importer_,path_,file_]:=Check[$ImportDatasetCache[importer,path,file]=importer@file,With[{res=$ImportDatasetCache[importer,path,file]},$ImportDatasetCache[importer,path,file]=.;res]];
   );
   Block[{clearing=True},Clear@$ImportDatasetCache]
 ]
@@ -673,10 +673,10 @@ ImportDataset[
      (r:({pat_,_}:>_Association))|
       PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
      (r:(pat_:>Except[_Association])),
-     Shortest[dirrule_RuleDelayed:(x__:>x)]
+     Shortest[RepeatedNull[dirrule_RuleDelayed,1]]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],o]
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],CondDef[dirrule]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_Association)),
@@ -686,22 +686,22 @@ ImportDataset[
      (r:({pat_,_}:>_Association))|
       PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
      ( r:(pat_:>Except[_Association]))|
-      pat:Except[_RuleDelayed],
+      pat:Except[_RuleDelayed|_List],
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],o]
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 
 idImporter[OptionsPattern[]][file_]:=With[
-{importer=OptionValue["Importer"],path=AbsoluteFileName@file},
+{importer=OptionValue["Importer"],path=Quiet@AbsoluteFileName@file},
   If[
-    OptionValue["CacheImports"],
+    OptionValue["CacheImports"]&&path=!=$Failed,
     $ImportDatasetCache[importer,path,file],
     importer@file
   ]
 ]
 
-iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[OptionValue["GroupFolders"],
+iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[TrueQ@OptionValue["GroupFolders"],
   KeyMap[First[StringCases[#,dirrule],#]&]@
    ProgressReport[
    pProc@
@@ -743,7 +743,7 @@ With[
     ]&,
     files,
     x__:>x,
-    "GroupFolders"->True,
+    "GroupFolders"->All,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
@@ -798,7 +798,7 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->True,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
 Options[iImportDataset]=Options[ImportDataset];
 Options[idImporter]=Options[ImportDataset];
 
