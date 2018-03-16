@@ -103,8 +103,8 @@ ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
 ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
-ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
-ImportDataset[\[Ellipsis],{dir,f,d}ata\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
+ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
+ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
 $ImportDatasetCache::usage="$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
@@ -668,29 +668,29 @@ setupIDCache
 
 ImportDataset[
   files_List,
-  (dm:(r:({_,pat_,_}:>_Association)))|
+  (dm:(r:({_,pat_,_}:>_)))|
    RepeatedNull[PatternSequence[
-     (r:({pat_,_}:>_Association))|
+     (r:({pat_,_}:>_))|
       PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
      (r:(pat_:>Except[_Association])),
      Shortest[RepeatedNull[dirrule_RuleDelayed,1]]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"datakey"],InvCondDef[dm][dirrule,x__:>x],CondDef[dirrule]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
+]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"data"],InvCondDef[dm][dirrule,x__:>x],CondDef[dirrule]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 ImportDataset[
   PatternSequence[
-    (r:({_,pat_,_}:>_Association)),
+    (r:({_,pat_,_}:>_)),
     Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
   ]|
    dm:PatternSequence[
-     (r:({pat_,_}:>_Association))|
+     (r:({pat_,_}:>_))|
       PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
      ( r:(pat_:>Except[_Association]))|
       pat:Except[_RuleDelayed|_List],
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"datakey"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
+]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"data"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 
 idImporter[OptionsPattern[]][file_]:=With[
 {importer=OptionValue["Importer"],path=Quiet@AbsoluteFileName@file},
