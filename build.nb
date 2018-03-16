@@ -18,7 +18,7 @@ Notebook[{
 	Cell[BoxData[RowBox[{"paclet", "=", RowBox[{"Check", "[", " ", "\[IndentingNewLine]", 
 		RowBox[{RowBox[{RowBox[{"<<", "\"ForScience`\""}], ";", "\[IndentingNewLine]", 
 		RowBox[{"ForScience`Util`PrepareCompileUsages", "[", "\"ForScience\"", "]"}], ";", "\[IndentingNewLine]", 
-		RowBox[{"ForScience`Util`CompileUsages", "[", "\"ForScience.wl\"", "]"}], ";", "\[IndentingNewLine]", 
+		RowBox[{"ForScience`Util`CompileUsages", "[", RowBox[{"FileNameTake", "/@", RowBox[{"FileNames", "[", "\"build/*.wl\"", "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
 		RowBox[{"PackPaclet", "[", "\"build\"", "]"}]}], ",", "\[IndentingNewLine]", 
 		RowBox[{"PackPaclet", "[", "\"ForScience\"", "]"}]}], "\[IndentingNewLine]", "]"}], ";"}]
     ], "Input"]

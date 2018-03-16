@@ -758,13 +758,14 @@ CompileUsages[file_]:=Block[
   Quiet[
     With[
       {fu=Symbol@"cuBuild`FormatUsage"},
-      Export[file,Import[file,"HeldExpressions"]/.HoldPattern[s_::usage=fu@u_String]:>With[{cu=ForScience`Util`FormatUsage@u},(s::usage=cu)/;True],"HeldExpressions",PageWidth->Infinity]
+      Export[file,Import[file,"HeldExpressions"]/.HoldPattern[s_::usage=fu@u_String]:>With[{cu=ForScience`Usage`FormatUsage@u},(s::usage=cu)/;True],"HeldExpressions",PageWidth->Infinity]
     ],
     {General::shdw}
   ];
   ResetDirectory[];
   Remove["cuBuild`*"];
 ]
+Attributes[CompileUsages]={Listable};
 SyntaxInformation[CompileUsages]={"ArgumentsPattern"->{_}};
 
 
