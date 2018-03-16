@@ -1,0 +1,4 @@
+(* ::Package:: *)
+
+BeginPackage["testpaclet`"]
+EndPackage[]

@@ -8,6 +8,12 @@ Paclet[
   MathematicaVersion -> "11.1+",
   Extensions -> {
    { "Documentation", Language -> "English"},
-   { "Kernel", Context -> {"ForScience`","ForScience`Util`","ForScience`PlotUtils`","ForScience`GROMOS`"} }
+   { "Kernel", Context -> {
+     "ForScience`",
+     "ForScience`Usage`",
+     "ForScience`Util`",
+     "ForScience`PlotUtils`",
+     "ForScience`GROMOS`"
+   }}
   }
 ]
