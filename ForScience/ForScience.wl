@@ -4,7 +4,7 @@ ForScience`$Subpackages=  {
   "ForScience`Usage`",
   "ForScience`Util`",
   "ForScience`PlotUtils`",
-  "ForScience`GROMOS`"
+  "ForScience`ChemUtils`"
 };
 
 BeginPackage["ForScience`",ForScience`$Subpackages]

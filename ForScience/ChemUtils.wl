@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`GROMOS`",{"ForScience`Util`"}]
+BeginPackage["ForScience`ChemUtils`",{"ForScience`Util`"}]
 
 
 GromosImport::usage="Import GROMOS style block format and parse it"
