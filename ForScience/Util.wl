@@ -49,6 +49,7 @@ ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[E
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
 ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
 $ImportDatasetCache::usage=FormatUsage@"$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";
+ToAssociationRule::usage=FormatUsage@"ToAssociationRule[expr] creates a replacement rule of the form '''```expr```\[RuleDelayed]\[LeftAssociation]\[Ellipsis]\[RightAssociation]''', where each named part of the pattern is assigned to a key in the association.";
 PrepareCompileUsages::usage=FormatUsage@"PrepareCompileUsages[packagefolder] copies the specified folder into the '''build''' folder (which is cleared by this function), in preparation for '''CompileUsages'''.";
 CompileUsages::usage=FormatUsage@"CompileUsages[file] tranforms the specified file by precompiling all usage definitions using '''FormatUsage''' to increase load performance of the file/package.";
 FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in '''h[a]''' or '''h[a,b][c][d,e]'''.";
@@ -744,6 +745,21 @@ With[
 Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
 Options[iImportDataset]=Options[ImportDataset];
 Options[idImporter]=Options[ImportDataset];
+
+
+Module[
+{interpreter,stringPattern,assoc},
+  ToAssociationRule[expr_,OptionsPattern[]]:=
+    (expr:>Evaluate[assoc@@Cases[
+      expr//.StringExpression[pre___,Verbatim[Pattern][p_,t_],post___]:>StringExpression[pre,Pattern[p,t,stringPattern],post],
+      Verbatim[Pattern][p_,_,t_:Pattern]:>SymbolName@Unevaluated@p->If[t===stringPattern,interpreter@p,p],
+      {0,\[Infinity]},
+      Heads->True
+    ]])/.{interpreter->OptionValue[Interpreter],assoc->Association}
+]
+
+Options[ToAssociationRule]={Interpreter->Interpreter["Number"|"String"]};
+SyntaxInformation[ToAssociationRule]={"ArgumentsPattern"->{_,OptionsPattern[]}};
 
 
 PrepareCompileUsages[package_]:=(
