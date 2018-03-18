@@ -119,7 +119,7 @@ iGetBondNormal[{p1_,p2_},neigh_]:=Let[
 Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
 Options[Molecule]={BaseStyle->{},"SpaceFilling"->Automatic,Tooltip->False};
 SyntaxInformation[Molecule]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
-Normal[Molecule[atoms_,bonds_?ArrayQ,OptionsPattern[]]]^:=Let[
+Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),OptionsPattern[]]]^:=Let[
   {
     spaceFilling=OptionValue[Molecule,"SpaceFilling"]/.Automatic->If[bonds===None,True,False],
     elements=Interpreter["Element"][#]["Name"]&/@atoms[[All,1]],
@@ -153,7 +153,7 @@ Normal[Molecule[atoms_,bonds_?ArrayQ,OptionsPattern[]]]^:=Let[
 ]
 
 
-MoleculePlot3D[atoms:{__Rule},bonds_?ArrayQ,o:OptionsPattern[]]:=MoleculePlot3D[Molecule[atoms,bonds],o]
+MoleculePlot3D[atoms:{__Rule},bonds:(_?ArrayQ|None),o:OptionsPattern[]]:=MoleculePlot3D[Molecule[atoms,bonds],o]
 MoleculePlot3D[atoms:{__Rule},o:OptionsPattern[]]:=MoleculePlot3D[atoms,None,o]
 MoleculePlot3D[g_,o:OptionsPattern[]]:=
 Graphics3D[
