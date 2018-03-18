@@ -9,7 +9,9 @@ GromosImport::usage="Import GROMOS style block format and parse it"
 Bond::usage=FormatUsage@"Bond[a,b][t] represents a chemical bond between ```a``` and ```b```, where ```t``` is the type of bond (1,2,3 for single, double and triple)";
 ToBond::usage=FormatUsage@"ToBond[\[Ellipsis]] handles conversion of various formats to '''Bond''' specifications. See '''Definition@ToBond''' for supported format.";
 AdjacencyToBonds::usage=FormatUsage@"AdjacencyToBonds[mat] converts an adjancency matrix to a list of '''Bond''' specifications.";
-MoleculePlot3D::usage=FormatUsage@"MoleculePlot3D[atoms,bonds] plots the molecule specified by the atoms and bonds given. ```atoms``` is a list of rules of the the form '''{```element```_1->```pos```_1,\[Ellipsis]}'''. ```bonds``` (if not omitted) is an adjacency matrix or a list of bond specifications (see '''ToBond''').";
+Molecule::usage=FormatUsage@"Molecule[atoms,bonds] describes a molecule to be plotted with '''MoleculePlot3D'''. ```atoms``` is a list of rules of the the form '''{```element```_1->```pos```_1,\[Ellipsis]}'''. ```bonds``` (if not omitted) is an adjacency matrix or a list of bond specifications (see '''ToBond'''). Use '''Normal@Molecule[\[Ellipsis]]''' to convert to graphics primitives.";
+MoleculePlot3D::usage=FormatUsage@"MoleculePlot3D[atoms,bonds] plots the molecule specified by ```atoms``` and ```bonds``` given.
+MoleculePlot3D[graphics] plots ```graphics```, where '''Molecule[\[Ellipsis]]''' objects can be used as primitives. Options given are taken as defaults for all molecules.";
 
 
 Begin["`Private`"]
@@ -62,9 +64,9 @@ ParseGromosVelocity[block_]:=ParseGromosPosition[block];
 Attributes[Bond]={Orderless};
 SyntaxInformation[Bond]:={"ArgumentsPattern"->{_,_,_.}};
 
-Notation[ParsedBoxWrapper[RowBox[{"a_", "<->", "b_"}]]  \[DoubleLongLeftArrow] ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "1", "]"}]]]
-Notation[ParsedBoxWrapper[RowBox[{"a_", "\[DoubleLongLeftRightArrow]", "b_"}]]\[DoubleLongLeftArrow] ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "2", "]"}]]]
-Notation[ParsedBoxWrapper[RowBox[{"a_", "\[Congruent]", "b_"}]] \[DoubleLongLeftArrow] ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "3", "]"}]]]
+Notation[ParsedBoxWrapper[RowBox[{"a_", "<->", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "1", "]"}]]]
+Notation[ParsedBoxWrapper[RowBox[{"a_", "\[DoubleLongLeftRightArrow]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "2", "]"}]]]
+Notation[ParsedBoxWrapper[RowBox[{"a_", "\[Congruent]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "3", "]"}]]]
 AddInputAlias["sb"->ParsedBoxWrapper["<->"]]
 AddInputAlias["db"->ParsedBoxWrapper["\[DoubleLongLeftRightArrow]"]]
 AddInputAlias["tb"->ParsedBoxWrapper["\[Congruent]"]]
@@ -114,28 +116,31 @@ iGetBondNormal[{p1_,p2_},neigh_]:=Let[
   If[Length@offsets>0,Normalize[(p2-p1)\[Cross]avg],{0,0,0}]
 ]
 
-MoleculePlot3D[atoms_,bonds_?ArrayQ,o:OptionsPattern[]]:=Let[
-{
-  spaceFilling=OptionValue["SpaceFilling"]/.Automatic->If[bonds==={},True,False],
-  elements=Interpreter["Element"][#]["Name"]&/@atoms[[All,1]],
-  coords=If[Dimensions[#][[2]]==2,Append[0]/@#,#]&@Normal[atoms][[All,2]],
-  pBonds=With[
-    {check=IntegerQ@#&&1<=#<=Length@coords&},
-    Cases[Bond[_?check,_?check][_]]
-    ]@Select[
-      Not@*MatchQ[Bond[x_,x_][_]]
-    ]@If[MatrixQ@bonds,AdjacencyToBonds@bonds,ToBond[bonds]],
-  bondMap=Cases[pBonds,Bond[#,p_][_]:>p]&/@Range@Length@atoms
-},
-Graphics3D[
+Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
+Options[Molecule]={BaseStyle->{},"SpaceFilling"->Automatic,Tooltip->False};
+SyntaxInformation[Molecule]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
+Normal[Molecule[atoms_,bonds_?ArrayQ,OptionsPattern[]]]^:=Let[
+  {
+    spaceFilling=OptionValue[Molecule,"SpaceFilling"]/.Automatic->If[bonds===None,True,False],
+    elements=Interpreter["Element"][#]["Name"]&/@atoms[[All,1]],
+    coords=If[Dimensions[#][[2]]==2,Append[0]/@#,#]&@Normal[atoms][[All,2]],
+    pBonds=With[
+      {check=IntegerQ@#&&1<=#<=Length@coords&},
+      Cases[Bond[_?check,_?check][_]]
+      ]@Select[
+        Not@*MatchQ[Bond[x_,x_][_]]
+      ]@If[MatrixQ@bonds,AdjacencyToBonds@bonds,ToBond[bonds/.None->{}]],
+    bondMap=Cases[pBonds,Bond[#,p_][_]:>p]&/@Range@Length@atoms
+  },
   {
     If[spaceFilling,Nothing,Specularity[White,100]],
     EdgeForm@None,
     AbsoluteThickness@3,
+    OptionValue[Molecule,BaseStyle],
     MapThread[
       {
         $ElementColors@#2,
-        (s\[Function]If[OptionValue[Tooltip],Tooltip[s,#2],s])@Sphere[#1,If[spaceFilling,5,1]$ElementRadii@#2]
+        (s\[Function]If[OptionValue[Molecule,Tooltip],Tooltip[s,#2],s])@Sphere[#1,If[spaceFilling,5,1]$ElementRadii@#2]
       }&,
       {coords,elements}
     ],
@@ -143,15 +148,22 @@ Graphics3D[
       pBonds,
       Bond[p1_,p2_][t_]:>
        DrawBond[{coords[[#]],$ElementColors/@elements[[#]]}\[Transpose]&[{p1,p2}],t,coords[[#]]&/@bondMap[[{p1,p2}]]]
-    ]},
-    FilterRules[{o},Options[Graphics3D]],
-    Lighting->"Neutral",
-    Boxed->False
-  ]
+    ]
+  }
+]
+
+
+MoleculePlot3D[atoms:{__Rule},bonds_?ArrayQ,o:OptionsPattern[]]:=MoleculePlot3D[Molecule[atoms,bonds],o]
+MoleculePlot3D[atoms:{__Rule},o:OptionsPattern[]]:=MoleculePlot3D[atoms,None,o]
+MoleculePlot3D[g_,o:OptionsPattern[]]:=
+Graphics3D[
+  g/.HoldPattern@Molecule[spec__]:>Normal@Molecule[spec,FilterRules[{o},Options[Molecule]]],
+  FilterRules[{o},Options[Graphics3D]],
+  Lighting->"Neutral",
+  Boxed->False
 ]
 Options[MoleculePlot3D]=Join[Options[Graphics3D],{"SpaceFilling"->Automatic,Tooltip->False}];
 SyntaxInformation[ToBond]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
-MoleculePlot3D[atoms_,o:OptionsPattern[]]:=MoleculePlot3D[atoms,{},o]
 
 
 End[]
