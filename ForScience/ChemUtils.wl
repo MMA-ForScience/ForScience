@@ -17,48 +17,23 @@ MoleculePlot3D[graphics] plots ```graphics```, where '''Molecule[\[Ellipsis]]'''
 Begin["`Private`"]
 
 
-GromosImport[file_]:=Module[{dataEnd,data0,data1,title,block,isBlock},
-  data0=OpenRead[file];
-  block={};
-  dataEnd=<||>;
-  isBlock=False;
-  While[True,
-    data1=Read[data0,String];
-    If[data1==EndOfFile,Break[]];
-    If[isBlock,
-      If[data1=="END",
-        isBlock=False;
-        AppendTo[dataEnd,title->ParseGromosBlock[title,block]];
-        block={};,
-        AppendTo[block,data1];
-      ],
-      If[data1!=""||data1!=" ",
-        isBlock=True;
-        title=data1;
-      ];
-    ]
-  ];
-dataEnd
+ParseGromosBlock[t_,str_,"END"]:=t->iParseGromosBlock[t,str]
+iParseGromosBlock["TITLE",title_]:=title
+iParseGromosBlock["POSITION"|"VELOCITY",str_]:=AssociationThread[
+  {"CG","CGName","Atom","No","x","y","z"}->#]&/@
+   ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}
 ]
+iParseGromosBlock[_,str_]:=ReadList[StringToStream@str,Number,RecordLists->True]
 
-ParseGromosBlock[title_,block_]:=
-Switch[title,
-  "TITLE",ParseGromosTitle[block],
-  "POSITION",ParseGromosPosition[block],
-  "VELOCITY",ParseGromosVelocity[block],
-  _,ParseGromosDefault[block]
+GromosImport[file_]:=Module[
+  {
+    s=OpenRead[file,Method->"SkipComments"],
+    ret
+  },
+  ret=<|ParseGromosBlock@@@ReadList[s,{"String","Record","String"},RecordSeparators->{"END"}]|>;
+  Close@s;
+  ret
 ]
-
-ParseGromosTitle[block_]:=StringJoin@block
-ParseGromosDefault[block_]:=Map[If[StringContainsQ[#,"#"],StringSplit[#,WhitespaceCharacter..]]&,block]
-ParseGromosPosition[block_]:=Module[{block2},
-  If[StringContainsQ[block[[1]],"#"],block2=Drop[block,1]];
-  Map[
-    AssociationThread[{"CG","CGName","Atom","No","x","y","z"},ToExpression/@StringSplit[#,WhitespaceCharacter..]]&,
-    block2
-  ]
-]
-ParseGromosVelocity[block_]:=ParseGromosPosition[block];
 
 
 Attributes[Bond]={Orderless};
