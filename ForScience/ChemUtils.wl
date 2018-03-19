@@ -17,20 +17,30 @@ MoleculePlot3D[graphics] plots ```graphics```, where '''Molecule[\[Ellipsis]]'''
 Begin["`Private`"]
 
 
-ParseGromosBlock[t_,str_,"END"]:=t->iParseGromosBlock[t,str]
-iParseGromosBlock["TITLE",title_]:=title
-iParseGromosBlock["POSITION"|"VELOCITY",str_]:=AssociationThread[
-  {"CG","CGName","Atom","No","x","y","z"}->#]&/@
-   ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}
-]
-iParseGromosBlock[_,str_]:=ReadList[StringToStream@str,Number,RecordLists->True]
+Options[GromosImport]={"PositionParser"->Automatic};
+Options[ParseGromosBlock]={"PositionParser"->Automatic};
+Options[iParseGromosBlock]={"PositionParser"->Automatic};
 
-GromosImport[file_]:=Module[
+ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]
+iParseGromosBlock["TITLE",title_,o:OptionsPattern[]]:=title
+iParseGromosBlock["POSITION"|"VELOCITY",str_,o:OptionsPattern[]]:=Module[{hold},
+Switch[OptionValue["PositionParser"],
+  Automatic,
+    AssociationThread[
+      {"CG","CGName","Atom","No","x","y","z"}->#]&/@ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}],
+  "ByChargeGroup",
+    hold=<||>;
+    Map[If[KeyExistsQ[hold,ToString[#[[1]]]<>#[[2]]],AppendTo[hold[[ToString[#[[1]]]<>#[[2]]]],AssociationThread[{"CG","CGName","Atom","No","x","y","z"}->#]],AppendTo[hold,ToString[#[[1]]]<>#[[2]]->{AssociationThread[{"CG","CGName","Atom","No","x","y","z"}->#]}]]&,ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}]];
+    hold
+]]
+iParseGromosBlock[_,str_,o:OptionsPattern[]]:=ReadList[StringToStream@str,Number,RecordLists->True]
+
+GromosImport[file_,opts:OptionsPattern[]]:=Module[
   {
     s=OpenRead[file,Method->"SkipComments"],
     ret
   },
-  ret=<|ParseGromosBlock@@@ReadList[s,{"String","Record","String"},RecordSeparators->{"END"}]|>;
+  ret=<|ParseGromosBlock[opts]@@@ReadList[s,{"String","Record","String"},RecordSeparators->{"END"}]|>;
   Close@s;
   ret
 ]
