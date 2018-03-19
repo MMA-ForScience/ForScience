@@ -155,7 +155,7 @@ SyntaxInformation[ToBond]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 GromosAtomInterpreter[AtomName_]:=
 If[StringLength[AtomName]>1,
   If[FailureQ[Interpreter["Element"][StringTake[AtomName,{2}]]],
-    StringTake[AtomName,2],
+    StringTake[AtomName,{1}]<>ToLowerCase@StringTake[AtomName,{2}],
     StringTake[AtomName,1]],
   AtomName]
 
