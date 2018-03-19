@@ -12,6 +12,7 @@ AdjacencyToBonds::usage=FormatUsage@"AdjacencyToBonds[mat] converts an adjancenc
 Molecule::usage=FormatUsage@"Molecule[atoms,bonds] describes a molecule to be plotted with '''MoleculePlot3D'''. ```atoms``` is a list of rules of the the form '''{```element```_1->```pos```_1,\[Ellipsis]}'''. ```bonds``` (if not omitted) is an adjacency matrix or a list of bond specifications (see '''ToBond'''). Use '''Normal@Molecule[\[Ellipsis]]''' to convert to graphics primitives.";
 MoleculePlot3D::usage=FormatUsage@"MoleculePlot3D[atoms,bonds] plots the molecule specified by ```atoms``` and ```bonds``` given.
 MoleculePlot3D[graphics] plots ```graphics```, where '''Molecule[\[Ellipsis]]''' objects can be used as primitives. Options given are taken as defaults for all molecules.";
+GromosAtomInterpreter::usage=FormatUsage@"GromosAtomInterpreter[atom] interprets ```atom``` from GROMOS files to a MMA atom type"
 
 
 Begin["`Private`"]
@@ -149,6 +150,14 @@ Graphics3D[
 ]
 Options[MoleculePlot3D]=Join[Options[Graphics3D],{"SpaceFilling"->Automatic,Tooltip->False}];
 SyntaxInformation[ToBond]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
+
+
+GromosAtomInterpreter[AtomName_]:=
+If[StringLength[AtomName]>1,
+  If[FailureQ[Interpreter["Element"][StringTake[AtomName,{2}]]],
+    StringTake[AtomName,2],
+    StringTake[AtomName,1]],
+  AtomName]
 
 
 End[]
