@@ -161,7 +161,7 @@ If[StringLength[AtomName]>1,
   AtomName]
 
 
-GromosPositionToMoleculeList[data_]:=Map[GromosAtomInterpreter[#Atom]->{#x,#y,#z}&,data]
+GromosPositionToMoleculeList[data_]:=Map[GromosAtomInterpreter[#Atom]->{#x*1000,#y*1000,#z*1000}&,data]
 
 
 End[]
