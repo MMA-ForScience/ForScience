@@ -13,6 +13,7 @@ Molecule::usage=FormatUsage@"Molecule[atoms,bonds] describes a molecule to be pl
 MoleculePlot3D::usage=FormatUsage@"MoleculePlot3D[atoms,bonds] plots the molecule specified by ```atoms``` and ```bonds``` given.
 MoleculePlot3D[graphics] plots ```graphics```, where '''Molecule[\[Ellipsis]]''' objects can be used as primitives. Options given are taken as defaults for all molecules.";
 GromosAtomInterpreter::usage=FormatUsage@"GromosAtomInterpreter[atom] interprets ```atom``` from GROMOS files to a MMA atom type"
+GromosPositionToMoleculeList::usage=FormatUsage@"GromosPositionToMoleculeList[data] gives the '''Molecule''' representation of the GROMOS POSITION Block ```data```"
 
 
 Begin["`Private`"]
@@ -158,6 +159,9 @@ If[StringLength[AtomName]>1,
     StringTake[AtomName,{1}]<>ToLowerCase@StringTake[AtomName,{2}],
     StringTake[AtomName,1]],
   AtomName]
+
+
+GromosPositionToMoleculeList[data_]:=Map[GromosAtomInterpreter[#Atom]->{#x,#y,#z}&,data]
 
 
 End[]
