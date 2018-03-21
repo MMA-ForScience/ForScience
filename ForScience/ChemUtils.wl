@@ -103,13 +103,15 @@ iGetBondNormal[{p1_,p2_},neigh_]:=Let[
   If[Length@offsets>0,Normalize[(p2-p1)\[Cross]avg],{0,0,0}]
 ]
 
+ElementInterpreter[el_]:=ElementInterpreter[el]=Interpreter["Element"][el]["Name"]
+
 Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
 Options[Molecule]={BaseStyle->{},"SpaceFilling"->Automatic,Tooltip->False};
 SyntaxInformation[Molecule]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),OptionsPattern[]]]^:=Let[
   {
     spaceFilling=OptionValue[Molecule,"SpaceFilling"]/.Automatic->If[bonds===None,True,False],
-    elements=Interpreter["Element"][#]["Name"]&/@atoms[[All,1]],
+    elements=ElementInterpreter/@atoms[[All,1]],
     coords=If[Dimensions[#][[2]]==2,Append[0]/@#,#]&@Normal[atoms][[All,2]],
     pBonds=With[
       {check=IntegerQ@#&&1<=#<=Length@coords&},
