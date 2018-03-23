@@ -10,6 +10,15 @@ ForScience`$Subpackages=  {
 BeginPackage["ForScience`",ForScience`$Subpackages]
 
 
+(* fix for https://mathematica.stackexchange.com/questions/169308/listpolarplot-broken-by-plotmarkers-joined *)
+ListPlot@{};
+Begin["System`ListPlotsDump`"];
+SubValues@iListPlot=SubValues@iListPlot/.
+ HoldPattern[a:(graphicsoptions=_)]:>
+  (a;AppendTo[method,"OptimizePlotMarkers"->optimizemarkers]);
+End[];
+
+
 EndPackage[]
 
 
