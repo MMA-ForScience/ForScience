@@ -58,6 +58,10 @@ CondDef::usage=FormatUsage@"CondDef[cond][```arg_1```,\[Ellipsis]] is the condit
 InvCondDef::usage=FormatUsage@"InvCondDef[cond][```arg_1```,\[Ellipsis]] is the inverse of '''CondDef'''. Returns ```arg_1``` only if ```cond``` is empty, otherwise returns an empty sequence.";
 UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer version of the ForScience package is available. If one is found, it can be downloaded by pressing a button. Use the option '''\"IncludePreReleases\"``` to control whether pre-releases should be ignored.";
 PublishRelease::usage=FormatUsage@"PublishRelease[opts] creates a new GitHub release for a paclet file in the current folder. Requires access token with public_repo access.";
+PullUp::usage=FormatUsage@"PullUp[data,keys,datakey] groups elements of ```data``` by the specified ```keys``` and puts them under ```datakey``` into an association containing those keys.
+PullUp[data,gKeys\[Rule]keys,datakey] groups elements of ```data``` by the specified ```gKeys``` and puts them under ```datakey``` into an association containing ```keys``` (values taken from first element).
+PullUp[keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.
+PullUp[gKeys\[Rule]keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.";
 
 
 Begin["`Private`"]
@@ -973,6 +977,12 @@ DefineInputStreamMethod["SkipComments",
     ]
   }
 ];
+
+
+PullUp[gKeys_->keys_,datakey_:"data"]:=GroupBy[Query[gKeys]]/*Values/*Map[Append[Query[Flatten@{keys}]@First@#,datakey->#]&]
+PullUp[keys_,datakey_:"data"]:=PullUp[keys->keys,datakey]
+PullUp[data_,gKeys_->keys_,datakey_]:=PullUp[gKeys->keys,datakey]@data
+PullUp[data_,keys_,datakey_]:=PullUp[data,keys->keys,datakey]
 
 
 End[]
