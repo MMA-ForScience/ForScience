@@ -10,12 +10,18 @@ ForScience`$Subpackages=  {
 BeginPackage["ForScience`",ForScience`$Subpackages]
 
 
+If[$VersionNumber==11.2,
+  Begin["System`ProtoPlotDump`"],
+  Begin["System`ListPlotsDump`"]
+];
+If[!TrueQ@ForScience`Private`$PolarPlotsFixed&&($VersionNumber==11.2||$VersionNumber==11.3),
 (* fix for https://mathematica.stackexchange.com/questions/169308/listpolarplot-broken-by-plotmarkers-joined *)
-ListPlot@{};
-Begin["System`ListPlotsDump`"];
-SubValues@iListPlot=SubValues@iListPlot/.
- HoldPattern[a:(graphicsoptions=_)]:>
-  (a;AppendTo[method,"OptimizePlotMarkers"->optimizemarkers]);
+ ListPlot@{};
+ ForScience`Private`$PolarPlotsFixed=True;
+ SubValues@iListPlot=SubValues@iListPlot/.
+  HoldPattern[a:(graphicsoptions=_)]:>
+   (a;AppendTo[method,"OptimizePlotMarkers"->optimizemarkers]);
+]
 End[];
 
 
