@@ -554,7 +554,7 @@ ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,
   },
   ProgressReport[
     t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
-    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{Optional@_Symbol,s__}:>Length@Range@s}),
+    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{_Symbol:None,s__}:>Length@Range@s}),
     o,
     "Parallel"->m===ParallelTable
   ]
