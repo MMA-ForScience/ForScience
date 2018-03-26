@@ -918,6 +918,7 @@ Options[PublishRelease]={"Token"->None,"Branch"->"master","Repository"->"MMA-For
 SyntaxInformation[PublishRelease]={"ArgumentsPattern"->{OptionsPattern[]}};
 
 
+Quiet@RemoveInputStreamMethod["SkipComments"];
 DefineInputStreamMethod["SkipComments",
   {
     "ConstructorFunction"->Function[
