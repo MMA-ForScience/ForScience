@@ -556,7 +556,7 @@ ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,
     t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
     Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{_Symbol:None,s__}:>Length@Range@s}),
     o,
-    "Parallel"->m===ParallelTable
+    "Parallel"->t===ParallelTable
   ]
 ]
 ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
