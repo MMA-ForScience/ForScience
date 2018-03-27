@@ -62,6 +62,7 @@ PullUp::usage=FormatUsage@"PullUp[data,keys,datakey] groups elements of ```data`
 PullUp[data,gKeys\[Rule]keys,datakey] groups elements of ```data``` by the specified ```gKeys``` and puts them under ```datakey``` into an association containing ```keys``` (values taken from first element).
 PullUp[keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.
 PullUp[gKeys\[Rule]keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.";
+DelayedExport::usage=FormatUsage@"DelayedExport[file,expr] creates a preview of what expr would look like if exported to the specified file. Exporting is actually done only once the button is pressed. Note: PDF importing has a bug that ignores clipping regions. If the preview has some overflowing lines, check the actual PDF. Note 2: Some formats can not be reimported. In those cases, the preview will be the original expression. Set '''PerformanceGoal''' to '''\"Speed\"''' to always show original expression.";
 
 
 Begin["`Private`"]
@@ -984,6 +985,38 @@ PullUp[gKeys_->keys_,datakey_:"data"]:=GroupBy[Query[gKeys]]/*Values/*Map[Append
 PullUp[keys_,datakey_:"data"]:=PullUp[keys->keys,datakey]
 PullUp[data_,gKeys_->keys_,datakey_]:=PullUp[gKeys->keys,datakey]@data
 PullUp[data_,keys_,datakey_]:=PullUp[data,keys->keys,datakey]
+
+
+DelayedExport[file_,expr_,OptionsPattern[]]:=DynamicModule[
+ {curExpr=expr},
+ Column@{
+   Row@
+   {
+    Button[
+     StringForm["Save to ``",file],
+     Export[file,expr]
+    ],
+    Button[
+     "Refresh",
+     curExpr=expr
+    ]
+   },
+   Dynamic[
+     If[OptionValue[PerformanceGoal]=="Quality"&&
+      MemberQ[$ImportFormats,ToUpperCase@FileExtension@file],
+       Check[
+         Quiet@Column@{"Preview:",ImportString[ExportString[curExpr,#],#]&@FileExtension@file},
+         #
+       ],
+       #
+     ]&@Unevaluated@Column@{"Expression to export:",curExpr},
+     TrackedSymbols:>{curExpr}
+   ]
+ }
+]
+SyntaxInformation[DelayedExport]={"ArgumentsPattern"->{_,_,OptionsPattern[]}};
+Attributes[DelayedExport]={HoldRest};
+Options[DelayedExport]={PerformanceGoal->"Quality"};
 
 
 End[]
