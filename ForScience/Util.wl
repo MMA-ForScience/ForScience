@@ -65,6 +65,9 @@ PullUp[gKeys\[Rule]keys,datakey] is the operator form, ```datakey``` is defaulte
 DelayedExport::usage=FormatUsage@"DelayedExport[file,expr] creates a preview of what expr would look like if exported to the specified file. Exporting is actually done only once the button is pressed. Note: PDF importing has a bug that ignores clipping regions. If the preview has some overflowing lines, check the actual PDF. Note 2: Some formats can not be reimported. In those cases, the preview will be the original expression. Set '''PerformanceGoal''' to '''\"Speed\"''' to always show original expression.";
 SkipMissing::usage=FormatUsage@"SkipMissing[f] behaves as identity for arguments with head missing, otherwise behaves as ```f```.
 SkipMissing[keys,f] checks its argument for the keys specified. If any one is missing, returns '''Missing[]''', otherwise ```f``` is applied";
+DropMissing::usage=FormatUsage@"DropMissing[l,part] drops all elements where ```part``` has head '''Missing'''.
+'''DropMissing'''[```l```,'''Query'''[```q```]] drops all elements where the result of ```q``` has head '''Missing'''.
+DropMissing[spec] is the operator form.";
 
 
 Begin["`Private`"]
@@ -1024,6 +1027,11 @@ Options[DelayedExport]={PerformanceGoal->"Quality"};
 SkipMissing[f_][arg_]:=If[MissingQ@arg,arg,f@arg]
 SkipMissing[keys_,f_][arg_]:=If[Or@@(MissingQ@Lookup[arg,#]&/@keys),Missing[],f@arg]
 SyntaxInformation[SkipMissing]={"ArgumentsPattern"->{_.,_}};
+
+
+DropMissing[q_]:=Select[Not@*MissingQ@*(Query[q])]
+DropMissing[l_,q_]:=DropMissing[q]@l
+SyntaxInformation[DropMissing]={"ArgumentsPattern"->{_.,_}};
 
 
 End[]
