@@ -63,6 +63,8 @@ PullUp[data,gKeys\[Rule]keys,datakey] groups elements of ```data``` by the speci
 PullUp[keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.
 PullUp[gKeys\[Rule]keys,datakey] is the operator form, ```datakey``` is defaulted to '''\"data\"'''.";
 DelayedExport::usage=FormatUsage@"DelayedExport[file,expr] creates a preview of what expr would look like if exported to the specified file. Exporting is actually done only once the button is pressed. Note: PDF importing has a bug that ignores clipping regions. If the preview has some overflowing lines, check the actual PDF. Note 2: Some formats can not be reimported. In those cases, the preview will be the original expression. Set '''PerformanceGoal''' to '''\"Speed\"''' to always show original expression.";
+SkipMissing::usage=FormatUsage@"SkipMissing[f] behaves as identity for arguments with head missing, otherwise behaves as ```f```.
+SkipMissing[keys,f] checks its argument for the keys specified. If any one is missing, returns '''Missing[]''', otherwise ```f``` is applied";
 
 
 Begin["`Private`"]
@@ -1017,6 +1019,11 @@ DelayedExport[file_,expr_,OptionsPattern[]]:=DynamicModule[
 SyntaxInformation[DelayedExport]={"ArgumentsPattern"->{_,_,OptionsPattern[]}};
 Attributes[DelayedExport]={HoldRest};
 Options[DelayedExport]={PerformanceGoal->"Quality"};
+
+
+SkipMissing[f_][arg_]:=If[MissingQ@arg,arg,f@arg]
+SkipMissing[keys_,f_][arg_]:=If[Or@@(MissingQ@Lookup[arg,#]&/@keys),Missing[],f@arg]
+SyntaxInformation[SkipMissing]={"ArgumentsPattern"->{_.,_}};
 
 
 End[]
