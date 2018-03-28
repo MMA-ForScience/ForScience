@@ -1025,7 +1025,8 @@ Options[DelayedExport]={PerformanceGoal->"Quality"};
 
 
 SkipMissing[f_][arg_]:=If[MissingQ@arg,arg,f@arg]
-SkipMissing[keys_,f_][arg_]:=If[Or@@(MissingQ@Lookup[arg,#]&/@keys),Missing[],f@arg]
+SkipMissing[key_,f_]:=SkipMissing[{key},f]
+SkipMissing[keys_List,f_][arg_]:=If[Or@@(MissingQ@Lookup[arg,#]&/@keys),Missing[],f@arg]
 SyntaxInformation[SkipMissing]={"ArgumentsPattern"->{_.,_}};
 
 
