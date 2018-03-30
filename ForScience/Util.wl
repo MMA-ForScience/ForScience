@@ -545,10 +545,10 @@ Attributes[iProgressReport]={HoldFirst};
 Options[iProgressReport]=Options[ProgressReport];
 
 Attributes[ProgressReportTransform]={HoldFirst};
-ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],o:OptionsPattern[ProgressReport]]:=
-With[{elist=list},ProgressReportTransform[m[func,elist],Evaluated,o]]
-ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[m[Step@*func@*SetCurrentBy[],list],Length@list,o,"Parallel"->m===ParallelMap]
+ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level_:{1}],o:OptionsPattern[ProgressReport]]:=
+With[{elist=list},ProgressReportTransform[m[func,elist,level],Evaluated,o]]
+ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level_],Evaluated,o:OptionsPattern[ProgressReport]]:=
+ProgressReport[m[Step@*func@*SetCurrentBy[],list,level],Length@Level[list,level],o,"Parallel"->m===ParallelMap]
 ProgressReportTransform[(m:Map|ParallelMap|MapIndexed)[func_,ass_Association],Evaluated,o:OptionsPattern[ProgressReport]]:=With[
   {argProc=If[m===MapIndexed,##&,#&]},
   ProgressReport[If[m===ParallelMap,Parallelize,#]&@@Hold@MapIndexed[Step@*func@*argProc@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o,"Parallel"->m===ParallelMap]
