@@ -548,10 +548,15 @@ Attributes[ProgressReportTransform]={HoldFirst};
 ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level_:{1}],o:OptionsPattern[ProgressReport]]:=
 With[{elist=list},ProgressReportTransform[m[func,elist,level],Evaluated,o]]
 ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level_],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[m[Step@*func@*SetCurrentBy[],list,level],Length@Level[list,level,Hold],o,"Parallel"->m===ParallelMap]
-ProgressReportTransform[(m:Map|MapIndexed)[func_,ass_Association,{1}],Evaluated,o:OptionsPattern[ProgressReport]]:=With[
-  {argProc=If[m===MapIndexed,##&,#&]},
-  ProgressReport[MapIndexed[Step@*func@*argProc@*SetCurrentBy[#&@@First@#2&],ass],Length@ass,o]
+ProgressReport[m[(SetCurrent[HoldForm@#];With[{ret=func@Unevaluated@##},Step[];ret])&,list,level],Length@Level[list,level,Hold],o,"Parallel"->m===ParallelMap]
+ProgressReportTransform[(m:Map|MapIndexed)[func_,ass_Association,{1}],Evaluated,o:OptionsPattern[ProgressReport]]:=ProgressReport[
+  MapIndexed[
+    SetCurrent[#&@@First@#2&];
+    With[{ret=If[m===MapIndexed,func@Unevaluated@##,func@Unevaluated@#]},Step[];ret]&,
+    ass
+  ],
+  Length@ass,
+  o
 ]
 ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
   {
@@ -576,7 +581,7 @@ SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 IStep[i_,res_,time_,times_][expr___]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];Unevaluated@expr)
 IStep[i_][expr___]:=(++i;Unevaluated@expr)
 Attributes[IStep]={HoldAll};
-SyntaxInformation[Step]={"ArgumentsPattern"->{_}};
+SyntaxInformation[Step]={"ArgumentsPattern"->{_.}};
 
 ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
 Attributes[ISetCurrent]={HoldFirst};
