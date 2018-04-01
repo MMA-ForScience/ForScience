@@ -68,6 +68,8 @@ SkipMissing[keys,f] checks its argument for the keys specified. If any one is mi
 DropMissing::usage=FormatUsage@"DropMissing[l,part] drops all elements where ```part``` has head '''Missing'''.
 '''DropMissing'''[```l```,'''Query'''[```q```]] drops all elements where the result of ```q``` has head '''Missing'''.
 DropMissing[spec] is the operator form.";
+ApplyToWrapped::usage=FormatUsage@"ApplyToWrapped[func,expr,target] applies ```func``` to the first level in ```expr``` matching ```target```. Any wrappers of ```expr``` are also wrapped around the result.
+ApplyToWrapped[func,expr,target,extract] removes any wrappers matching ```extract```, and passes them to ```func``` in the second argument instead.";
 
 
 Begin["`Private`"]
@@ -1038,6 +1040,37 @@ SyntaxInformation[SkipMissing]={"ArgumentsPattern"->{_.,_}};
 DropMissing[q_]:=Select[Not@*MissingQ@*(Query[q])]
 DropMissing[l_,q_]:=DropMissing[q]@l
 SyntaxInformation[DropMissing]={"ArgumentsPattern"->{_.,_}};
+
+
+ApplyToWrapped::noMatch="Expression `` is not a wrapped expression matching ``.";
+ApplyToWrapped[func_,expr_,target_,extract_:None]:=Catch[
+  IApplyToWrapped[func,expr,target,extract,{}],
+  IApplyToWrapped,
+  (Message[ApplyToWrapped::noMatch,HoldForm@expr,target];expr)&
+]
+IApplyToWrapped[func_,expr_,target_,extract_,coll_]/;MatchQ[expr,target]:=If[
+  extract===None,
+  func@expr,
+  func[expr,coll]
+]
+IApplyToWrapped[func_,expr:w_[wrapped_,args___],target_,extract:Except[None],coll_]/;MatchQ[expr,extract]:=IApplyToWrapped[
+  func,
+  wrapped,
+  target,
+  extract,
+  Append[coll,w[_,args]]
+]
+IApplyToWrapped[func_,w_[wrapped_,args___],target_,extract_,coll_]:=w[
+  IApplyToWrapped[
+    func,
+    wrapped,
+    target,
+    extract,
+    coll
+  ],
+  args
+]
+IApplyToWrapped[___]:=Throw[0,IApplyToWrapped]
 
 
 End[]
