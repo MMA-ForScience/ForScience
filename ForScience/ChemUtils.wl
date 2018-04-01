@@ -158,7 +158,23 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
     spaceFilling=OptionValue[Molecule,"SpaceFilling"]/.Automatic->If[bonds===None,True,False],
     elements=ElementInterpreter/@atoms[[All,1]],
     styles=Directive[$ElementColors@#,OptionValue[Molecule,"AtomStyle"]]&/@elements,
-    coords=If[Dimensions[#][[2]]==2,Append[0]/@#,#]&@Normal[atoms][[All,2]],
+    pAtoms=Reap[
+      MapThread[
+        {
+          #3,
+          ApplyToWrapped[
+            pos\[Function](
+            (s\[Function]If[OptionValue[Molecule,Tooltip],Tooltip[s,#2],s])@
+             Sphere[Sow@PadRight[pos,3],If[spaceFilling,5,1]$ElementRadii@#2]
+            ),
+            #1,
+            _List
+          ]
+        }&,
+        {Normal[atoms][[All,2]],elements,styles}
+      ]
+    ],
+    coords=pAtoms[[2,1]],
     pBonds=With[
       {check=IntegerQ@#&&1<=#<=Length@coords&},
       Cases[Bond[_?check,_?check][_]]
@@ -172,13 +188,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
     EdgeForm@None,
     AbsoluteThickness@3,
     OptionValue[Molecule,BaseStyle],
-    MapThread[
-      {
-        #3,
-        (s\[Function]If[OptionValue[Molecule,Tooltip],Tooltip[s,#2],s])@Sphere[#1,If[spaceFilling,5,1]$ElementRadii@#2]
-      }&,
-      {coords,elements,styles}
-    ],
+    First@pAtoms,
     Cases[
       pBonds,
       Bond[p1_,p2_][t_]:>
