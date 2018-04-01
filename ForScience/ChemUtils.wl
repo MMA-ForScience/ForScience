@@ -131,13 +131,13 @@ DrawBond[{s1:{p1_,_},s2:{p2_,_}},t_,{nb1_,nb2_},OptionsPattern[]]:=Let[
   )@@Switch[t,1,{15,0,{0}},2,{8,14,{1,-1}},3,{6,21,{1,0,-1}}]
 ]
 
-iDrawBond[{p1_,c1_},{p2_,c2_},offset_,r_,sty_]:=Let[
+iDrawBond[{p1_,sty1_},{p2_,sty2_},offset_,r_,sty_]:=Let[
   {
     sp1=p1+offset,
     sp2=p2+offset,
     mid=Mean@{sp1,sp2}
   },
-  {{c1,sty,Cylinder[{sp1,mid},r]},{c2,sty,Cylinder[{mid,sp2},r]}}
+  {{sty1,sty,Cylinder[{sp1,mid},r]},{sty2,sty,Cylinder[{mid,sp2},r]}}
 ]
 
 iGetBondNormal[{p1_,p2_},neigh_]:=Let[
@@ -151,12 +151,13 @@ iGetBondNormal[{p1_,p2_},neigh_]:=Let[
 ElementInterpreter[el_]:=ElementInterpreter[el]=Interpreter["Element"][el]["Name"]
 
 Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
-Options[Molecule]=Join[{BaseStyle->{},"SpaceFilling"->Automatic,Tooltip->False},Options[DrawBond]];
+Options[Molecule]=Join[{BaseStyle->Directive[],"SpaceFilling"->Automatic,Tooltip->False,"AtomStyle"->Directive[]},Options[DrawBond]];
 SyntaxInformation[Molecule]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
   {
     spaceFilling=OptionValue[Molecule,"SpaceFilling"]/.Automatic->If[bonds===None,True,False],
     elements=ElementInterpreter/@atoms[[All,1]],
+    styles=Directive[$ElementColors@#,OptionValue[Molecule,"AtomStyle"]]&/@elements,
     coords=If[Dimensions[#][[2]]==2,Append[0]/@#,#]&@Normal[atoms][[All,2]],
     pBonds=With[
       {check=IntegerQ@#&&1<=#<=Length@coords&},
@@ -173,10 +174,10 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
     OptionValue[Molecule,BaseStyle],
     MapThread[
       {
-        $ElementColors@#2,
+        #3,
         (s\[Function]If[OptionValue[Molecule,Tooltip],Tooltip[s,#2],s])@Sphere[#1,If[spaceFilling,5,1]$ElementRadii@#2]
       }&,
-      {coords,elements}
+      {coords,elements,styles}
     ],
     Cases[
       pBonds,
@@ -184,7 +185,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
        DrawBond[
          {
            coords[[#]],
-           $ElementColors/@elements[[#]]
+           styles[[#]]
          }\[Transpose]&[{p1,p2}],
          t,
          coords[[#]]&/@bondMap[[{p1,p2}]],
