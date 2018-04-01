@@ -138,7 +138,7 @@ iDrawBond[{p1_,sty1_},{p2_,sty2_},offset_,r_,sty_]:=Let[
     sp2=p2+offset,
     mid=Mean@{sp1,sp2}
   },
-  {{sty1,sty,Cylinder[{sp1,mid},r]},{sty2,sty,Cylinder[{mid,sp2},r]}}
+  {{Directive[sty1,sty],Cylinder[{sp1,mid},r]},{Directive[sty2,sty],Cylinder[{mid,sp2},r]}}
 ]
 
 iGetBondNormal[{p1_,p2_},neigh_]:=Let[
@@ -203,7 +203,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
          FilterRules[{o},Options[DrawBond]]
        ]
     ]
-  }
+  }/.d_Directive:>(Flatten@d/._[d1_]:>d1)
 ]
 
 
