@@ -210,7 +210,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
           coords[[#]],
           Directive[
             #,
-            StyleHold[Sequence@@Flatten[s[[All,2;;]],1]]
+            StyleHold@@Unevaluated@s
           ]&/@styles[[#]]
         }\[Transpose]&[{p1,p2}],
         t,
@@ -218,8 +218,8 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
         FilterRules[{o},Options[DrawBond]]
       ]},
       r/;True
-      ]
-  }/.StyleHold[s_]:>s/.d_Directive:>(Flatten@d/._[d1_]:>d1)
+      ]//.ContextualRule[Style[_,s___]:>s,StyleHold]/.StyleHold[s___]:>s
+  }//.ContextualRule[Directive[d___]:>d,Directive]/.ContextualRule[Directive[d_]:>d,_]
 ]
 
 
