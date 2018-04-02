@@ -70,6 +70,7 @@ DropMissing::usage=FormatUsage@"DropMissing[l,part] drops all elements where ```
 DropMissing[spec] is the operator form.";
 ApplyToWrapped::usage=FormatUsage@"ApplyToWrapped[func,expr,target] applies ```func``` to the first level in ```expr``` matching ```target```. Any wrappers of ```expr``` are also wrapped around the result.
 ApplyToWrapped[func,expr,target,extract] removes any wrappers matching ```extract```, and passes them to ```func``` in the second argument instead.";
+ContextualRule::usage=FormatUsage@"ContextualRule[lhs\[RuleDelayed]rhs,hPat] returns a rule where ```lhs``` is replaced by ```rhs``` only within an expression with head matching ```hPat```.";
 
 
 Begin["`Private`"]
@@ -1069,6 +1070,10 @@ IApplyToWrapped[w_[wrapped_,args___],target_,extract_,coll_]:=w[
   args
 ]
 Attributes[IApplyToWrapped]={HoldFirst};
+
+
+ContextualRule[lhs_:>rhs_,hPat_]:=(h:hPat)[pre___,lhs,post___]:>h[pre,rhs,post]
+SyntaxInformation[ContextualRule]={"ArgumentsPattern"->{_,_}};
 
 
 End[]
