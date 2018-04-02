@@ -96,6 +96,7 @@ ToBond[a_<->b_]:=Bond[a,b][1]
 ToBond[a_\[DoubleLongLeftRightArrow]b_]:=Bond[a,b][2]
 ToBond[a_\[Congruent]b_]:=Bond[a,b][3]
 ToBond[Bond[a_,b_,t_:1]]:=Bond[a,b][t]
+ToBond[b:Bond[_,_][_]]:=b
 ToBond[{{a_,b_},t_}]:=Bond[a,b][t]
 ToBond[{a_<->b_,t_}]:=Bond[a,b][t]
 Attributes[ToBond]={Listable};
@@ -138,9 +139,8 @@ iDrawBond[{p1_,sty1_},{p2_,sty2_},offset_,r_,sty_]:=Let[
     sp2=p2+offset,
     mid=Mean@{sp1,sp2}
   },
-  {{Directive[sty1,sty],Cylinder[{sp1,mid},r]},{Directive[sty2,sty],Cylinder[{mid,sp2},r]}}
+  {{Directive[sty1,sty],Tube[{sp1,mid},r]},{Directive[sty2,sty],Tube[{mid,sp2},r]}}
 ]
-
 iGetBondNormal[{p1_,p2_},neigh_]:=Let[
   {
     offsets=Normalize[#-p1]&/@Complement[neigh,{p2}],
@@ -150,6 +150,8 @@ iGetBondNormal[{p1_,p2_},neigh_]:=Let[
 ]
 
 ElementInterpreter[el_]:=ElementInterpreter[el]=Interpreter["Element"][el]["Name"]
+
+Attributes[StyleHold]={HoldAll};
 
 Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
 Options[Molecule]=Join[{BaseStyle->Directive[],"SpaceFilling"->Automatic,Tooltip->False,"AtomStyle"->Directive[]},Options[DrawBond]];
@@ -176,34 +178,48 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
       ]
     ],
     coords=pAtoms[[2,1]],
-    pBonds=With[
+    pBonds=Reap@With[
       {check=IntegerQ@#&&1<=#<=Length@coords&},
-      Cases[Bond[_?check,_?check][_]]
-      ]@Select[
-        Not@*MatchQ[Bond[x_,x_][_]]
-      ]@If[MatrixQ@bonds,AdjacencyToBonds@bonds,ToBond[bonds/.None->{}]],
-    bondMap=Cases[pBonds,Bond[#,p_][_]:>p]&/@Range@Length@atoms
+      ApplyToWrapped[
+        Function[{b,s},
+          If[MatchQ[#,Bond[x_?check,y_?check][_]/;x!=y],{Sow@#,Hold@s},{}]&@ToBond@b,
+          {HoldRest}
+        ],
+        #,
+        s_?(FirstHead@ToBond[#]===Bond&),
+        _Style
+      ]&/@If[
+        MatrixQ@bonds,
+        AdjacencyToBonds@bonds,
+        bonds/.None->{}
+      ]
+    ],
+    bondMap=Cases[pBonds[[2,1]],Bond[#,p_][_]:>p]&/@Range@Length@atoms
   },
   {
     If[spaceFilling,Nothing,Specularity[White,100]],
     EdgeForm@None,
+    CapForm@None,
     AbsoluteThickness@3,
     OptionValue[Molecule,BaseStyle],
     First@pAtoms,
-    Cases[
-      pBonds,
-      Bond[p1_,p2_][t_]:>
-       DrawBond[
-         {
-           coords[[#]],
-           styles[[#]]
-         }\[Transpose]&[{p1,p2}],
-         t,
-         coords[[#]]&/@bondMap[[{p1,p2}]],
-         FilterRules[{o},Options[DrawBond]]
-       ]
-    ]
-  }/.d_Directive:>(Flatten@d/._[d1_]:>d1)
+    First@pBonds/.
+     {Bond[p1_,p2_][t_],Hold@s_}:>With[
+       {r=DrawBond[
+        {
+          coords[[#]],
+          Directive[
+            #,
+            StyleHold[Sequence@@Flatten[s[[All,2;;]],1]]
+          ]&/@styles[[#]]
+        }\[Transpose]&[{p1,p2}],
+        t,
+        coords[[#]]&/@bondMap[[{p1,p2}]],
+        FilterRules[{o},Options[DrawBond]]
+      ]},
+      r/;True
+      ]
+  }/.StyleHold[s_]:>s/.d_Directive:>(Flatten@d/._[d1_]:>d1)
 ]
 
 
