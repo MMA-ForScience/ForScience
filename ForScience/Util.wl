@@ -1043,26 +1043,24 @@ SyntaxInformation[DropMissing]={"ArgumentsPattern"->{_.,_}};
 
 
 ApplyToWrapped::noMatch="Expression `` is not a wrapped expression matching ``.";
-ApplyToWrapped[func_,expr_,target_,extract_:None]:=Catch[
-  IApplyToWrapped[func,expr,target,extract,{}],
-  IApplyToWrapped,
-  (Message[ApplyToWrapped::noMatch,HoldForm@expr,target];expr)&
+ApplyToWrapped[func_,expr_,target_,extract_:None]:=ReleaseHold[
+  Hold@IApplyToWrapped[expr,target,extract,{}]//.
+   DownValues@IApplyToWrapped/.
+    {
+      IApplyToWrapped[e_,c_]:>With[{r=If[extract===None,func@e,func[e,c]]},r/;True],
+      _Hold?(MemberQ[#,HoldPattern@IApplyToWrapped[_,_,_,_],{0,\[Infinity]}]&):>Hold[Message[ApplyToWrapped::noMatch,HoldForm@expr,target];expr]
+    }
 ]
-IApplyToWrapped[func_,expr_,target_,extract_,coll_]/;MatchQ[expr,target]:=If[
-  extract===None,
-  func@expr,
-  func[expr,coll]
-]
-IApplyToWrapped[func_,expr:w_[wrapped_,args___],target_,extract:Except[None],coll_]/;MatchQ[expr,extract]:=IApplyToWrapped[
-  func,
+SyntaxInformation[ApplyToWrapped]={"ArgumentsPattern"->{_,_,_,_.}};
+IApplyToWrapped[expr_,target_,extract_,coll_]/;MatchQ[Unevaluated@expr,target]:=IApplyToWrapped[expr,coll]
+IApplyToWrapped[expr:w_[wrapped_,args___],target_,extract:Except[None],{coll___}]/;MatchQ[Unevaluated@expr,extract]:=IApplyToWrapped[
   wrapped,
   target,
   extract,
-  Append[coll,w[_,args]]
+  {coll,w[_,args]}
 ]
-IApplyToWrapped[func_,w_[wrapped_,args___],target_,extract_,coll_]:=w[
+IApplyToWrapped[w_[wrapped_,args___],target_,extract_,coll_]:=w[
   IApplyToWrapped[
-    func,
     wrapped,
     target,
     extract,
@@ -1070,7 +1068,7 @@ IApplyToWrapped[func_,w_[wrapped_,args___],target_,extract_,coll_]:=w[
   ],
   args
 ]
-IApplyToWrapped[___]:=Throw[0,IApplyToWrapped]
+Attributes[IApplyToWrapped]={HoldFirst};
 
 
 End[]
