@@ -26,7 +26,7 @@ Options[iParseGromosBlock]={"PositionParser"->Automatic};
 
 ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]
 iParseGromosBlock["TITLE",title_,o:OptionsPattern[]]:=title
-iParseGromosBlock["POSITION"|"VELOCITY",str_,o:OptionsPattern[]]:=Module[{hold},
+iParseGromosBlock["POSITION"|"VELOCITY"|"SHAKEFAILPOSITION"|"SHAKEFAILPREVPOSITION",str_,o:OptionsPattern[]]:=Module[{hold},
 Switch[OptionValue["PositionParser"],
   Automatic,
     AssociationThread[
