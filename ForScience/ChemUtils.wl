@@ -154,7 +154,7 @@ ElementInterpreter[el_]:=ElementInterpreter[el]=Interpreter["Element"][el]["Name
 Attributes[StyleHold]={HoldAll};
 
 Molecule[atoms_,o:OptionsPattern[]]:=Molecule[atoms,None,o]
-Options[Molecule]=Join[{BaseStyle->Directive[],"SpaceFilling"->Automatic,Tooltip->False,"AtomStyle"->Directive[]},Options[DrawBond]];
+Options[Molecule]=Join[{BaseStyle->Directive[],"SpaceFilling"->Automatic,Tooltip->False,"AtomStyle"->Directive[],"AtomRadius"->Scaled[1]},Options[DrawBond]];
 SyntaxInformation[Molecule]:={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
   {
@@ -168,7 +168,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
           ApplyToWrapped[
             pos\[Function](
             (s\[Function]If[OptionValue[Molecule,Tooltip],Tooltip[s,#2],s])@
-             Sphere[Sow@PadRight[pos,3],If[spaceFilling,5,1]$ElementRadii@#2]
+             Sphere[Sow@PadRight[pos,3],ApplyScale[If[spaceFilling,5,1]$ElementRadii@#2,OptionValue[Molecule,"AtomRadius"]]]
             ),
             #1,
             _List
