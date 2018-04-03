@@ -177,7 +177,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
         {Normal[atoms][[All,2]],elements,styles}
       ]
     ],
-    coords=pAtoms[[2,1]],
+    coords=First[pAtoms[[2]],{}],
     pBonds=Reap@With[
       {check=IntegerQ@#&&1<=#<=Length@coords&},
       ApplyToWrapped[
@@ -194,7 +194,7 @@ Normal[Molecule[atoms_,bonds:(_?ArrayQ|None),o:OptionsPattern[]]]^:=Let[
         bonds/.None->{}
       ]
     ],
-    bondMap=Cases[pBonds[[2,1]],Bond[#,p_][_]:>p]&/@Range@Length@atoms
+    bondMap=Cases[First[pBonds[[2]],{}],Bond[#,p_][_]:>p]&/@Range@Length@atoms
   },
   {
     If[spaceFilling,Nothing,Specularity[White,100]],
