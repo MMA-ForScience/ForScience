@@ -54,7 +54,7 @@ ImportExport`RegisterImport[
   },
   {
     "Association"->(Association@#&),
-    "Dataset"->(Dataset@#&)
+    "Dataset"->(Dataset@Association@#&)
   },
   "DefaultElement"->"Association",
   "Options"->Keys@Options@GromosImport
