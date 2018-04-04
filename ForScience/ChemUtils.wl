@@ -26,15 +26,18 @@ Options[iParseGromosBlock]=Options[GromosImport];
 ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]
 iParseGromosBlock["TITLE",title_,o:OptionsPattern[]]:=title
 iParseGromosBlock["POSITION"|"VELOCITY"|"SHAKEFAILPOSITION"|"SHAKEFAILPREVPOSITION",str_,o:OptionsPattern[]]:=Module[{hold},
-Switch[OptionValue["PositionParser"],
-  Automatic,
-    AssociationThread[
-      {"CG","CGName","Atom","No","x","y","z"}->#]&/@ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}],
-  "ByChargeGroup",
-    hold=<||>;
-    Map[If[KeyExistsQ[hold,ToString[#[[1]]]<>#[[2]]],AppendTo[hold[[ToString[#[[1]]]<>#[[2]]]],AssociationThread[{"CG","CGName","Atom","No","x","y","z"}->#]],AppendTo[hold,ToString[#[[1]]]<>#[[2]]->{AssociationThread[{"CG","CGName","Atom","No","x","y","z"}->#]}]]&,ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}]];
-    hold
-]]
+  With[
+    {res=AssociationThread[{"CG","CGName","Atom","No","x","y","z"}->#]&/@
+     ReadList[StringToStream@str,{Number,Word,Word,Number,Real,Real,Real}]
+    },
+    Switch[OptionValue["PositionParser"],
+      Automatic,
+      res,
+      "ByChargeGroup",
+      GroupBy[res,StringTemplate["`CG``CGName`"]]
+    ]
+  ]
+]
 iParseGromosBlock[_,str_,o:OptionsPattern[]]:=ReadList[StringToStream@str,Number,RecordLists->True]
 
 GromosImport[file_,opts:OptionsPattern[]]:=Module[
