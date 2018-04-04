@@ -5,8 +5,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 ]
 
 
-GromosImport::usage="Import GROMOS style block format and parse it"
-GromosMoleculeOrientation::usage=FormatUsage@"Returns the dot product with a ```axis```. The option ```ref``` specifies the atoms through which the orientation is defined."
+GromosMoleculeOrientation::usage=FormatUsage@"Returns the dot product with a ```axis```. The option ```ref``` specifies the atoms through which the orientation is defined.";
 Bond::usage=FormatUsage@"Bond[a,b][t] represents a chemical bond between ```a``` and ```b```, where ```t``` is the type of bond (1,2,3 for single, double and triple)";
 ToBond::usage=FormatUsage@"ToBond[\[Ellipsis]] handles conversion of various formats to '''Bond''' specifications. See '''Definition@ToBond''' for supported format.";
 AdjacencyToBonds::usage=FormatUsage@"AdjacencyToBonds[mat] converts an adjancency matrix to a list of '''Bond''' specifications. Entries can be wrapped in arbitrary wrappers";
@@ -21,8 +20,8 @@ Begin["`Private`"]
 
 
 Options[GromosImport]={"PositionParser"->Automatic};
-Options[ParseGromosBlock]={"PositionParser"->Automatic};
-Options[iParseGromosBlock]={"PositionParser"->Automatic};
+Options[ParseGromosBlock]=Options[GromosImport];
+Options[iParseGromosBlock]=Options[GromosImport];
 
 ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]
 iParseGromosBlock["TITLE",title_,o:OptionsPattern[]]:=title
@@ -43,9 +42,22 @@ GromosImport[file_,opts:OptionsPattern[]]:=Module[
     s=OpenRead[file,Method->"SkipComments"],
     ret
   },
-  ret=<|ParseGromosBlock[opts]@@@ReadList[s,{"String","Record","String"},RecordSeparators->{"END"}]|>;
+  ret=ParseGromosBlock[opts]@@@ReadList[s,{"String","Record","String"},RecordSeparators->{"END"}];
   Close@s;
   ret
+]
+
+ImportExport`RegisterImport[
+  "GROMOS",
+  {
+    GromosImport
+  },
+  {
+    "Association"->(Association@#&),
+    "Dataset"->(Dataset@#&)
+  },
+  "DefaultElement"->"Association",
+  "Options"->Keys@Options@GromosImport
 ]
 
 
