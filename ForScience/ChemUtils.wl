@@ -64,7 +64,7 @@ ImportExport`RegisterImport[
 ]
 
 
-iGromosMoleculeOrientation[data_,ref1_,ref2_,axis_]:=Module[{hold1,hold2},
+iGromosMoleculeOrientation[data_,ref1_,ref2_,axis_,coords_]:=Module[{hold1,hold2},
   hold1={0,0,0};
   hold2={0,0,0};
   If[ref1===Automatic,
@@ -87,13 +87,16 @@ iGromosMoleculeOrientation[data_,ref1_,ref2_,axis_]:=Module[{hold1,hold2},
       &,data];
     ];
   ];
+  If[coords,
+  Flatten[{hold1,(hold1-hold2).axis}],
   (hold1-hold2).axis
+  ]
 ]
 
-Options[GromosMoleculeOrientation]={"axis"->{0,0,1},"ref"->{Automatic,Automatic}};
+Options[GromosMoleculeOrientation]={"axis"->{0,0,1},"ref"->{Automatic,Automatic},"coords"->False};
 GromosMoleculeOrientation[data_,OptionsPattern[]]:=Module[{hold1,hold2},
   Map[
-    iGromosMoleculeOrientation[#,OptionValue["ref"][[1]],OptionValue["ref"][[2]],OptionValue["axis"]]
+    iGromosMoleculeOrientation[#,OptionValue["ref"][[1]],OptionValue["ref"][[2]],OptionValue["axis"],OptionValue["coords"]]
   &,data]
 ]
 
