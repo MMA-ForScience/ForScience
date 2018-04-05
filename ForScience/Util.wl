@@ -655,7 +655,13 @@ ImportDataset[
 ]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"data"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 
 idImporter[OptionsPattern[]][file_]:=With[
-{importer=OptionValue["Importer"]//Replace[s_String|s_List:>(Import[#,s]&)],path=Quiet@AbsoluteFileName@file},
+  {
+    importer=OptionValue["Importer"]//Replace@{
+      l:{_,OptionsPattern[]}:>(Import[#,Sequence@@l]&),
+      s_String|s_List:>(Import[#,s]&)
+    },
+    path=Quiet@AbsoluteFileName@file
+  },
   If[
     OptionValue["CacheImports"]&&path=!=$Failed,
     $ImportDatasetCache[importer,path,file],
