@@ -12,6 +12,7 @@ Begin["`Private`"]
 
 
 Jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
+SyntaxInformation[Jet]={"ArgumentsPattern"->{_}};
 
 
 NiceRadialTicks/:Switch[NiceRadialTicks,a___]:=Switch[Automatic,a]/.l:{__Text}:>Most@l
@@ -101,11 +102,14 @@ SetupForSciencePlotTheme[o:OptionsPattern[]]:=Module[
 	  FrameTicksStyle->SmallThemeFontStyle
   ]&/@$Histogram3DType;
 ]
+SyntaxInformation[SetupForSciencePlotTheme]={"ArgumentsPattern"->{OptionsPattern[]}};
+
 ResetForSciencePlotTheme[]:=(
   Options[SetupForSciencePlotTheme]={FontSize->20,FontFamily->"Times","FontRatio"->0.9,"Thickness"->0.005};
   SetupForSciencePlotTheme[]
 )
 ResetForSciencePlotTheme[]
+SyntaxInformation[ResetForSciencePlotTheme]={"ArgumentsPattern"->{}};
 
 
 End[]
