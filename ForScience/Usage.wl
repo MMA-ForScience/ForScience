@@ -49,7 +49,7 @@ SyntaxInformation[FormatCode]={"ArgumentsPattern"->{_}};
 
 
 FormatUsage=FormatCode@*FormatUsageCase;
-SyntaxInformation[FormatUsage]={"ArgumentsPattern"->{_}};
+SyntaxInformation[Unevaluated@FormatUsage]={"ArgumentsPattern"->{_}};
 
 
 FixUsage::usage=FormatUsage@"fixUsuage[str] fixes usage messages with custom formatting so that they are properly displayed in the front end";
