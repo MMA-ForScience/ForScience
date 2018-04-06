@@ -1,22 +1,10 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PlotUtils`",{"ForScience`Usage`"}]
-
-
-Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
 SetupForSciencePlotTheme::usage=FormatUsage@"SetupForSciencePlotTheme[opt_1\[Rule]val_1,\[Ellipsis]] changes options of the ForScience plot theme. See '''Options[SetupForSciencePlotTheme]''' for possible options.";
 ResetForSciencePlotTheme::usage=FormatUsage@"ResetForSciencePlotTheme[] reset the options of the ForScience plot theme.";
 
 
 Begin["`Private`"]
-
-
-Jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
-SyntaxInformation[Jet]={"ArgumentsPattern"->{_}};
-
-
-NiceRadialTicks/:Switch[NiceRadialTicks,a___]:=Switch[Automatic,a]/.l:{__Text}:>Most@l
-NiceRadialTicks/:MemberQ[a___,NiceRadialTicks]:=MemberQ[a,Automatic]
 
 
 $BasicPlots={ListContourPlot};
@@ -113,6 +101,3 @@ SyntaxInformation[ResetForSciencePlotTheme]={"ArgumentsPattern"->{}};
 
 
 End[]
-
-
-EndPackage[]
