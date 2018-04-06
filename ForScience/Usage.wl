@@ -15,9 +15,11 @@ Begin["`Private`"]
 
 
 FixUsage[usage_]:=If[StringMatchQ[usage,"\!\("~~__],"","\!\(\)"]<>StringReplace[usage,{p:("\!\(\*"~~__?(StringFreeQ["\*"])~~"\)"):>StringReplace[p,"\n"->""],"\n"->"\n\!\(\)"}]
+SyntaxInformation[FixUsage]={"ArgumentsPattern"->{_}};
 
 
 StringEscape[str_String]:=StringReplace[str,{"\\"->"\\\\","\""->"\\\""}]
+SyntaxInformation[StringEscape]={"ArgumentsPattern"->{_}};
 
 
 FormatUsageCase[str_String]:=StringReplace[
@@ -28,6 +30,7 @@ FormatUsageCase[str_String]:=StringReplace[
     <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
     <>"'''"
 ]
+SyntaxInformation[FormatUsageCase]={"ArgumentsPattern"->{_}};
 
 
 FormatDelims="'''"|"```";
@@ -42,7 +45,11 @@ FormatCode[str_String]:=FixUsage@FixedPoint[
   ],
   str
 ]
+SyntaxInformation[FormatCode]={"ArgumentsPattern"->{_}};
+
+
 FormatUsage=FormatCode@*FormatUsageCase;
+SyntaxInformation[FormatUsage]={"ArgumentsPattern"->{_}};
 
 
 FixUsage::usage=FormatUsage@"fixUsuage[str] fixes usage messages with custom formatting so that they are properly displayed in the front end";

@@ -41,7 +41,7 @@ AddKey[{key_1,\[Ellipsis]},{f_1,\[Ellipsis]}] works similar, but operates on all
 AddKey[key_1\[Rule]f_1,key_2\[Rule]f_2,\[Ellipsis]] works on the pairs '''{```key_i```,```f_i```}'''"; 
 ImportDataset::usage=FormatUsage@"ImportDataset[f] imports the files specified by ```f``` into a '''Dataset''' and displays a progress bar while doing so. The importing function can be specified using the '''\"Importer\"''' option
 ImportDataset[f,dirs] imports files from any of the directories specified.
-ImportDataset[f,dirps\[RuleDelayed]rep] imports files from any of the directories specified and applies the specified rule to the directory names.
+ImportDataset[f,dirs\[RuleDelayed]rep] imports files from any of the directories specified and applies the specified rule to the directory names.
 ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
 ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
@@ -91,6 +91,7 @@ MergeRules[rules:(Rule|RuleDelayed)[_,_]..]:=With[
     ]
   ]
 ]
+SyntaxInformation[MergeRules]={"ArgumentsPattern"->{__}};
 
 
 (*From https://mathematica.stackexchange.com/a/10451/36508*)
@@ -110,7 +111,7 @@ With[{head},Evaluate[Let[{tail},expr]]]];
 Notation[ParsedBoxWrapper[RowBox[{"expr_", SubscriptBox["//", "="], "wrap_"}]] \[DoubleLongRightArrow] ParsedBoxWrapper[RowBox[{"AssignmentWrapper", "[", RowBox[{"expr_", ",", "wrap_"}], "]"}]]]
 AssignmentWrapper/:h_[lhs_,AssignmentWrapper[rhs_,wrap_]]:=If[h===Set||h===SetDelayed,wrap[h[lhs,rhs]],h[lhs,wrap[rhs]]]
 Attributes[AssignmentWrapper]={HoldAllComplete};
-
+SyntaxInformation[AssignmentWrapper]={"ArgumentsPattern"->{_,_}};
 
 FunctionError::missingArg="`` in `` cannot be filled from ``.";
 FunctionError::noAssoc="`` is expected to have an Association as the first argument.";
@@ -217,6 +218,7 @@ AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
 funcData[IndexedFunction,id_]:={{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}};
 func:IndexedFunction[_,_][___]:=ProcFunction[func]
 Attributes[IndexedFunction]={HoldFirst};
+SyntaxInformation[IndexedFunction]={"ArgumentsPattern"->{_,_}};
 
 
 ToFunction::slotSeq="Cannot convert function ``, as it contains a SlotSequence (``).";
@@ -312,6 +314,7 @@ If[OptionValue["hline"]=="auto",
 TableToTexForm[data_,o:OptionsPattern[]]:=TableToTexFormCore[TableToTexForm,data,o];
 Options[TableToTexForm]={"position"->"c","hline"->"auto","vline"->"auto"};
 Options[TableToTexFormCore]=Options[TableToTexForm];
+SyntaxInformation[TableToTexForm]={"ArgumentsPattern"->{_,OptionsPattern[]}};
 
 
 (*adapted from https://mathematica.stackexchange.com/a/164228/36508*)
@@ -323,6 +326,7 @@ FixedShort/:MakeBoxes[FixedShort[expr_,w_:1,pw_],StandardForm]:=With[
     SetOptions[$Output,oldWidth]
   ]
 ]
+SyntaxInformation[FixedShort]={"ArgumentsPattern"->{_,_.,_}};
 
 
 FancyTraceStyle[i_,o:OptionsPattern[FancyTrace]]:=Style[i,o,FontFamily->"Consolas",Bold]
@@ -339,6 +343,8 @@ FancyTraceColumn[l_,o:OptionsPattern[FancyTrace]]:=Column[
 Options[FancyTrace]=Options[Style]~Join~{"ArrowColor"->Darker@Red,"ArrowScale"->1.5,"ShortWidth"->0.15,"TraceFilter"->Sequence[],"TraceOptions"->{},"DarkeningFactor"->0.1,"PanelBackground"->White,"DownArrows"->False,"ColumnAlignment"->Left};
 FancyTrace[expr_,o:OptionsPattern[]]:=Framed@IFancyTrace[Trace[expr,Evaluate@OptionValue["TraceFilter"],Evaluate[Sequence@@OptionValue["TraceOptions"]]]/.s:(Slot|SlotSequence):>Defer[s],o]
 SetAttributes[FancyTrace,HoldFirst]
+SyntaxInformation[FancyTrace]={"ArgumentsPattern"->{_,OptionsPattern[]}};
+
 IFancyTrace[l_List,o:OptionsPattern[FancyTrace]]:=
 DynamicModule[
  {expanded=False},
@@ -403,6 +409,7 @@ SyntaxInformation[AssociationFoldList]={"ArgumentsPattern"->{_,_}};
 
 
 SPrintF[spec__]:=ToString@StringForm@spec
+SyntaxInformation[SPrintF]={"ArgumentsPattern"->{__}};
 
 
 PrettyUnit[qty_,units_List]:=SelectFirst[#,QuantityMagnitude@#>1&,Last@#]&@Sort[UnitConvert[qty,#]&/@units]
@@ -602,19 +609,24 @@ DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
 AddKey[r__Rule]:=AddKey@@((List@@@{r})\[Transpose])
 AddKey[key_,f_]:=#~Append~(key->f@#)&
 AddKey[keys_List,fs_List]:=RightComposition@@MapThread[AddKey,{keys,fs}]
+SyntaxInformation[AddKey]={"ArgumentsPattern"->{__}};
 
 
 FirstHead[h_[___]]:=FirstHead[Unevaluated@h]
 FirstHead[h_]:=h
+SyntaxInformation[FancyTrace]={"ArgumentsPattern"->{_}};
 
 
 DefTo[v_,___]:=v
 SyntaxInformation[DefTo]={"ArgumentsPattern"->{__}};
+
 CondDef[__][v_,___]:=v
 CondDef[][__]:=Sequence[]
+SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
+
 InvCondDef[][v_,___]:=v
 InvCondDef[__][__]:=Sequence[]
-SyntaxInformation[CondDef]={"ArgumentsPattern"->{__}};
+SyntaxInformation[InvCondDef]={"ArgumentsPattern"->{__}};
 
 
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
@@ -655,6 +667,7 @@ ImportDataset[
   ],
   o:$IDOptionsPattern
 ]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"data"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
+SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
 
 idImporter[OptionsPattern[]][file_]:=With[
   {
@@ -1006,6 +1019,7 @@ PullUp[gKeys_->keys_,datakey_:"data"]:=GroupBy[Query[gKeys]]/*Values/*Map[Append
 PullUp[keys_,datakey_:"data"]:=PullUp[keys->keys,datakey]
 PullUp[data_,gKeys_->keys_,datakey_]:=PullUp[gKeys->keys,datakey]@data
 PullUp[data_,keys_,datakey_]:=PullUp[data,keys->keys,datakey]
+SyntaxInformation[PullUp]={"ArgumentsPattern"->{_,_.,_.}};
 
 
 DelayedExport[file_,expr_,OptionsPattern[]]:=DynamicModule[

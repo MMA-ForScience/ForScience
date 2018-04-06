@@ -99,6 +99,7 @@ GromosMoleculeOrientation[data_,OptionsPattern[]]:=Module[{hold1,hold2},
     iGromosMoleculeOrientation[#,OptionValue["ref"][[1]],OptionValue["ref"][[2]],OptionValue["axis"],OptionValue["coords"]]
   &,data]
 ]
+SyntaxInformation[GromosMoleculeOrientation]={"ArgumentsPattern"->{_,OptionsPattern[]}};
 
 
 Attributes[Bond]={Orderless};
@@ -123,6 +124,7 @@ SyntaxInformation[ToBond]:={"ArgumentsPattern"->{_}};
 
 AdjacencyToBonds[mat_]:=ApplyToWrapped[Bond[##],mat[[##]],_Integer]&@@@
  Select[Apply@Less]@Position[Normal@mat,Except[0],{2},Heads->False]
+SyntaxInformation[AdjacencyToBonds]={"ArgumentsPattern"->{_}};
 
 
 $ElementRadii=<|"hydrogen"->24.`,"helium"->28.`,"lithium"->44.`,"beryllium"->38.`,"boron"->36.`,"carbon"->34.`,"nitrogen"->32.`,"oxygen"->31.`,"fluorine"->30.`,"neon"->30.8`,"sodium"->48.`,"magnesium"->44.`,"aluminum"->42.`,"silicon"->42.`,"phosphorus"->39.`,"sulfur"->36.`,"chlorine"->36.`,"argon"->37.6`,"potassium"->56.`,"calcium"->48.`,"scandium"->46.`,"titanium"->43.`,"vanadium"->41.`,"chromium"->41.`,"manganese"->41.`,"iron"->41.`,"cobalt"->40.`,"nickel"->40.`,"copper"->40.`,"zinc"->42.`,"gallium"->42.`,"germanium"->42.`,"arsenic"->41.`,"selenium"->38.`,"bromine"->38.`,"krypton"->40.400000000000006`,"rubidium"->58.`,"strontium"->51.`,"yttrium"->48.`,"zirconium"->46.`,"niobium"->43.`,"molybdenum"->42.`,"technetium"->41.`,"ruthenium"->41.`,"rhodium"->40.`,"palladium"->41.`,"silver"->42.`,"cadmium"->44.`,"indium"->44.`,"tin"->45.`,"antimony"->44.`,"tellurium"->42.`,"iodine"->42.`,"xenon"->43.2`,"cesium"->60.`,"barium"->54.`,"lanthanum"->50.`,"cerium"->49.6`,"praseodymium"->49.400000000000006`,"neodymium"->49.`,"promethium"->48.6`,"samarium"->48.400000000000006`,"europium"->48.`,"gadolinium"->47.6`,"terbium"->47.400000000000006`,"dysprosium"->47.`,"holmium"->46.6`,"erbium"->46.400000000000006`,"thulium"->46.`,"ytterbium"->45.6`,"lutetium"->45.400000000000006`,"hafnium"->45.`,"tantalum"->44.`,"tungsten"->42.`,"rhenium"->41.`,"osmium"->40.`,"iridium"->40.`,"platinum"->41.`,"gold"->42.`,"mercury"->41.`,"thallium"->44.`,"lead"->46.`,"bismuth"->46.`,"polonium"->40.`,"astatine"->40.`,"radon"->40.`,"francium"->40,"radium"->40.`,"actinium"->40.`,"thorium"->48.`,"protactinium"->40.`,"uranium"->46.`,"neptunium"->40.`,"plutonium"->40.`,"americium"->40.`,"curium"->40.`,"berkelium"->40.`,"californium"->40.`,"einsteinium"->40.`,"fermium"->40.`,"mendelevium"->40.`,"nobelium"->40.`,"lawrencium"->40.`,"rutherfordium"->40.`,"dubnium"->40.`,"seaborgium"->40.`,"bohrium"->40.`,"hassium"->40.`,"meitnerium"->40.`,"darmstadtium"->40.`,"roentgenium"->40.`,"copernicium"->40.`,"nihonium"->40.`,"moscovium"->40.`,"tennessine"->40.`,"oganesson"->40.`|>;
@@ -260,9 +262,11 @@ If[StringLength[AtomName]>1,
     StringTake[AtomName,{1}]<>ToLowerCase@StringTake[AtomName,{2}],
     StringTake[AtomName,1]],
   AtomName]
+SyntaxInformation[GromosAtomInterpreter]={"ArgumentsPattern"->{_}};
 
 
 GromosPositionToMoleculeList[data_]:=Map[GromosAtomInterpreter[#Atom]->{#x*1000,#y*1000,#z*1000}&,data]
+SyntaxInformation[GromosPositionToMoleculeList]={"ArgumentsPattern"->{_}};
 
 
 End[]
