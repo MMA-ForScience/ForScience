@@ -808,7 +808,7 @@ PrepareCompileUsages[package_]:=(
 SyntaxInformation[PrepareCompileUsages]={"ArgumentsPattern"->{_}};
 CompileUsages[file_]:=Block[
   (*set context to ensure proper context prefixes for symbols. Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
-  {$ContextPath={"cuBuild`"},$Context="cuBuild`"},
+  {$ContextPath={"cuBuild`","System`"},$Context="cuBuild`"},
   SetDirectory["build"];
   Quiet[
     With[
