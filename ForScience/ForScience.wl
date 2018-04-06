@@ -32,6 +32,7 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed2&&($VersionNumber==11.2||$VersionN
   DownValues@listPolarPlot=DownValues@listPolarPlot/.
    HoldPattern[l:{rmin,rmax}|{tmin,tmax}=r_]:>
     (l=r/.{\[Infinity],-\[Infinity]}->{0,1});
+]
 End[];
 
 
