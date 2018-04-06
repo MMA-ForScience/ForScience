@@ -46,10 +46,10 @@ iParseGromosBlock["SOLUTEATOM",str_,o:OptionsPattern[]]:=Module[{stream,holdRead
   totNumber=ToExpression@ReadLine[stream];
   For[n=1,n<=totNumber,n++,
     holdRead=StringSplit[ReadLine[stream]];
-    holdAtom=AssociationThread[{"ATNM","MRES","PANM","IAC","MASS","CG","CGC","INE"},holdRead[[1;;8]]];
+    holdAtom=AssociationThread[{"ATNM","MRES","PANM","IAC","MASS","CG","CGC","INE"},ToExpression[holdRead[[1;;8]]]];
     If[holdAtom[["INE"]]>=1,
       For[m=0,m<holdAtom[["INE"]],m++,
-        AppendTo[adjList,{holdAtom[["ATNM"]],holdRead[[9+m]]}];
+        AppendTo[adjList,{holdAtom[["ATNM"]],ToExpression@holdRead[[9+m]]}];
       ]
     ];
     AppendTo[holdAtom,"INE14"->ReadLine[stream]];
@@ -63,7 +63,7 @@ iParseGromosBlock["ATOMTYPENAME"|"RESNAME",str_,o:OptionsPattern[]]:=Module[{tot
   stream=StringToStream[str];
   totNumber=ToExpression@ReadLine[stream];
   For[i=1,i<=totNumber,i++,
-    AppendTo[holdAll,ReadLine[stream]];
+    AppendTo[holdAll,ToExpression@ReadLine[stream]];
   ];
   holdAll
 ]
@@ -72,11 +72,11 @@ iParseGromosBlock["SOLVENTATOM",str_,o:OptionsPattern[]]:=Module[{totNumber,stre
   stream=StringToStream[str];
   totNumber=ToExpression@ReadLine[stream];
   For[i=1,i<=totNumber,i++,
-    AppendTo[holdAll,ReadLine[stream]];
+    AppendTo[holdAll,ToExpression@ReadLine[stream]];
   ];
   holdAll
 ]
-iParseGromosBlock[_,str_,opt:OptionsPattern[]]:=ReadList[StringToStream@str,Number,RecordLists->True]
+iParseGromosBlock[_,str_,opt:OptionsPattern[]]:=ToExpression@ReadList[StringToStream@str,Number,RecordLists->True]
 
 GromosImport[file_,opts:OptionsPattern[]]:=Module[
   {
