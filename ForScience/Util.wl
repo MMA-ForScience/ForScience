@@ -252,7 +252,7 @@ Attributes[ToFunction]={HoldFirst};
 Attributes[funcData]={HoldAll};
 
 
-TableToTexFormCore[TableToTexForm,data_,OptionsPattern[{"position"->"c","hline"->"auto","vline"->"auto"}]]:=Module[
+TableToTexFormCore[TableToTexForm,data_,OptionsPattern[]]:=Module[
 {out,normData,newData,asso1,asso2},
 out="";
 normData=Normal[data];
@@ -309,7 +309,9 @@ If[OptionValue["hline"]=="auto",
 ]
 
 
-TableToTexForm[args___]:=TableToTexFormCore[TableToTexForm,args];
+TableToTexForm[data_,o:OptionsPattern[]]:=TableToTexFormCore[TableToTexForm,data,o];
+Options[TableToTexForm]={"position"->"c","hline"->"auto","vline"->"auto"};
+Options[TableToTexFormCore]=Options[TableToTexForm];
 
 
 (*adapted from https://mathematica.stackexchange.com/a/164228/36508*)
