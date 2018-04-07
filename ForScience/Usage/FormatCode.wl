@@ -73,11 +73,8 @@ FormatCode[str_]:=Module[
       Catch[
         ParseToToken[#, i][EndOfLine]//.
          l_List?(MemberQ[sb]):>SequenceReplace[l,{a_,sb,b_}:>SubscriptBox[a,b]]/.
-          (b:StyleBox|SubscriptBox)[s_String,arg2_]:>
-           StringReplace[
-             s,
-             StartOfString~~q1:"\""~~qs___~~q2:"\""~~EndOfString:>b[q1<>"\\\""<>qs<>"\\\""<>q2,arg2]
-           ]/.
+          s_String?(StringContainsQ["\""]):>
+           "\""<>StringReplace[s,"\""->"\\\""]<>"\""/.
            RowBox[{el_}]:>el/.
             RowBox[l_]:>StringJoin@Replace[l,{b:Except[_String]:>"\!\(\*"<>ToString[b,InputForm]<>"\)",","->", "},{1}],
         EndOfFile,
