@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-GromosPositionToMoleculeList::usage=FormatUsage@"GromosPositionToMoleculeList[data] gives the '''Molecule''' representation of the GROMOS POSITION Block ```data```"
+GromosPositionToMoleculeList::usage=FormatUsage@"GromosPositionToMoleculeList[data] gives the '''Molecule''' representation of the GROMOS POSITION Block ```data```.";
 
 
 Begin["`Private`"]

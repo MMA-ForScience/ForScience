@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-TableToTexForm::usage=FormatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset ";
+TableToTexForm::usage=FormatUsage@"TableToTexForm[data] returns the LaTeX representation of a list or a dataset.";
 
 
 Begin["`Private`"]

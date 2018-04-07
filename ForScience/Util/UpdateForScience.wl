@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer version of the ForScience package is available. If one is found, it can be downloaded by pressing a button. Use the option '''\"IncludePreReleases\"``` to control whether pre-releases should be ignored.";
+UpdateForScience::usage=FormatUsage@"UpdateForScience[] checks whether a newer version of the ForScience package is available. If one is found, it can be downloaded by pressing a button. Use the option '''\"IncludePreReleases\"''' to control whether pre-releases should be ignored.";
 
 
 Begin["`Private`"]

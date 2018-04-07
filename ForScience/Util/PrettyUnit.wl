@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-PrettyUnit::usage=FormatUsage@"PrettyUnit[qty,{unit_1,unit_2,\[Ellipsis]}] tries to convert ```qty``` to that unit that produces the \"nicest\" result";
+PrettyUnit::usage=FormatUsage@"PrettyUnit[qty,{unit_1,unit_2,\[Ellipsis]}] tries to convert ```qty``` to that unit that produces the \"nicest\" result.";
 
 
 Begin["`Private`"]

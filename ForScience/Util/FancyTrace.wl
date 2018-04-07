@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-FancyTrace::usage=FormatUsage@"FancyTrace[expr] produces an interactive version of the Trace output";
+FancyTrace::usage=FormatUsage@"FancyTrace[expr] produces an interactive version of the Trace output.";
 
 
 Begin["`Private`"]

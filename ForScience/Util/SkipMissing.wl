@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 SkipMissing::usage=FormatUsage@"SkipMissing[f] behaves as identity for arguments with head missing, otherwise behaves as ```f```.
-SkipMissing[keys,f] checks its argument for the keys specified. If any one is missing, returns '''Missing[]''', otherwise ```f``` is applied";
+SkipMissing[keys,f] checks its argument for the keys specified. If any one is missing, returns '''Missing[]''', otherwise ```f``` is applied.";
 
 
 Begin["`Private`"]

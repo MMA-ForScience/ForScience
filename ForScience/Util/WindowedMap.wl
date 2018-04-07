@@ -1,8 +1,8 @@
 (* ::Package:: *)
 
-WindowedMap::usage=FormatUsage@"WindowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list
-WindowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```,```\[Ellipsis]``` wide windows of arbitrary dimension
-WindowedMap[func,wspec] is the operator form";
+WindowedMap::usage=FormatUsage@"WindowedMap[func,data,width] calls ```func``` with ```width``` wide windows of ```data```, padding with the elements specified by the '''Padding''' option (0 by default, use '''None''' to disable padding and return a smaller array) and returns the resulting list.
+WindowedMap[func,data,{width_1,\[Ellipsis]}] calls ```func``` with ```width_1```,```\[Ellipsis]``` wide windows of arbitrary dimension.
+WindowedMap[func,wspec] is the operator form.";
 
 
 Begin["`Private`"]

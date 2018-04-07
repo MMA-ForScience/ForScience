@@ -1,8 +1,8 @@
 (* ::Package:: *)
 
 `Private`ProcessingAutoSlot=True;(*disable AutoSlot related parsing while setting usage messages. Needed when loading this multiple times*)
-\[Bullet]::usage=FormatUsage@"\[Bullet] works analogously to '''#''', but doesn't require an eclosing '''&'''. Slots are only filled on the topmost level. E.g. '''f[\[Bullet], g[\[Bullet]]][3]'''\[RightArrow]'''f[3,g[\[Bullet]]]'''. Can also use '''\[Bullet]'''```n``` and '''\[Bullet]'''```name```, analogous to '''#'''. See also '''\[Bullet]\[Bullet]''' Enter \[Bullet] s '''\\[Bullet]''' or '''ALT+7'''.";
-\[Bullet]\[Bullet]::usage=FormatUsage@"\[Bullet]\[Bullet] works the same as \[Bullet], but is analogue to ##. Can also use '''\[Bullet]'''```n```, analogous to ```##```. Enter \[Bullet] as '''\\[Bullet]''' or '''ALT+7'''.";
+\[Bullet]::usage=FormatUsage@"\[Bullet] works analogously to '''#''', but doesn't require an eclosing '''&'''. Slots are only filled on the topmost level. E.g. '''f[\[Bullet], g[\[Bullet]]][3]'''\[RightArrow]'''f[3,g[\[Bullet]]]'''. Can also use ```\[Bullet]n``` and ```\[Bullet]name```, analogous to '''#'''. See also '''\[Bullet]\[Bullet]'''. Enter \[Bullet] as '''\\\[InvisibleSpace][Bullet]''' or '''ALT+7'''.";
+\[Bullet]\[Bullet]::usage=FormatUsage@"\[Bullet]\[Bullet] works the same as \[Bullet], but is analogue to ##. Can also use ```\[Bullet]\[Bullet]n```, analogous to ```##```. Enter \[Bullet] as '''\\\[InvisibleSpace][Bullet]''' or '''ALT+7'''.";
 AutoSlot::usage=\[Bullet]::usage;
 AutoSlotSequence::usage=\[Bullet]\[Bullet]::usage;
 `Private`ProcessingAutoSlot=False;

@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-AssignmentWrapper::usage=FormatUsage@"'''{//}_{=}''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar{//}_{=}FullForm''' is equivalent to '''FullForm[foo=bar]'''";
+AssignmentWrapper::usage=FormatUsage@"'''//_=''' works like '''//''', but the ```rhs``` is wrapped around any '''Set'''/'''SetDelayed''' on the ```lhs```. E.g. '''foo=bar//_=FullForm''' is equivalent to '''FullForm[foo=bar]'''.";
 
 
 Begin["`Private`"]

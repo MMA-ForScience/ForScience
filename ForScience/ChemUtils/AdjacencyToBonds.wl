@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-AdjacencyToBonds::usage=FormatUsage@"AdjacencyToBonds[mat] converts an adjancency matrix to a list of '''Bond''' specifications. Entries can be wrapped in arbitrary wrappers";
+AdjacencyToBonds::usage=FormatUsage@"AdjacencyToBonds[mat] converts an adjancency matrix to a list of '''Bond''' specifications. Entries can be wrapped in arbitrary wrappers.";
 
 
 Begin["`Private`"]

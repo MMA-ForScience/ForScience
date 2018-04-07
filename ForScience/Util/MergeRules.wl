@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-MergeRules::usage=FormatUsage@"MergeRules[rule_1,\[Ellipsis]] combines all rules into a single rule, that matches anything any of the rules match and returns the corresponding replacement. Useful e.g. for '''Cases'''";
+MergeRules::usage=FormatUsage@"MergeRules[rule_1,\[Ellipsis]] combines all rules into a single rule that matches anything any of the rules match and returns the corresponding replacement. Useful e.g. for '''Cases'''.";
 
 
 Begin["`Private`"]

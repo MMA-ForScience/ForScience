@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-Bond::usage=FormatUsage@"Bond[a,b][t] represents a chemical bond between ```a``` and ```b```, where ```t``` is the type of bond (1,2,3 for single, double and triple)";
-ToBond::usage=FormatUsage@"ToBond[\[Ellipsis]] handles conversion of various formats to '''Bond''' specifications. See '''Definition@ToBond''' for supported format.";
+Bond::usage=FormatUsage@"Bond[a,b][t] represents a chemical bond between ```a``` and ```b```, where ```t``` is the type of bond (1,2,3 for single, double and triple).";
+ToBond::usage=FormatUsage@"ToBond[\[Ellipsis]] handles conversion of various formats to '''Bond''' specifications. See '''Definition@ToBond''' for supported formats.";
 
 
 Begin["`Private`"]

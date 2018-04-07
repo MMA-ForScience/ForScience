@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but operates on keys
-KeyGroupBy[f] is the operator form";
+KeyGroupBy::usage=FormatUsage@"KeyGroupBy[expr,f] works like '''GroupBy''', but operates on keys.
+KeyGroupBy[f] is the operator form.";
 
 
 Begin["`Private`"]

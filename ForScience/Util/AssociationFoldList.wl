@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like '''FoldList''', but preserves the association keys";
+AssociationFoldList::usage=FormatUsage@"AssociationFoldList[f,assoc] works like '''FoldList''', but preserves the association keys.";
 
 
 Begin["`Private`"]

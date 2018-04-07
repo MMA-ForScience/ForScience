@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-GromosAtomInterpreter::usage=FormatUsage@"GromosAtomInterpreter[atom] interprets ```atom``` from GROMOS files to a MMA atom type"
+GromosAtomInterpreter::usage=FormatUsage@"GromosAtomInterpreter[atom] interprets ```atom``` from GROMOS files to a MMA atom type.";
 
 
 Begin["`Private`"]

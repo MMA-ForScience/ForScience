@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-PrettyTime::usage=FormatUsage@"PrettyTime[time] is a special for of '''PrettyUnit''' for the most common time units";
+PrettyTime::usage=FormatUsage@"PrettyTime[time] is a special for of '''PrettyUnit''' for the most common time units.";
 
 
 Begin["`Private`"]

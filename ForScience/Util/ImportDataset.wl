@@ -1,12 +1,12 @@
 (* ::Package:: *)
 
-ImportDataset::usage=FormatUsage@"ImportDataset[f] imports the files specified by ```f``` into a '''Dataset''' and displays a progress bar while doing so. The importing function can be specified using the '''\"Importer\"''' option
+ImportDataset::usage=FormatUsage@"ImportDataset[f] imports the files specified by ```f``` into a '''Dataset''' and displays a progress bar while doing so. The importing function can be specified using the '''\"Importer\"''' option.
 ImportDataset[f,dirs] imports files from any of the directories specified.
-ImportDataset[f,dirps\[RuleDelayed]rep] imports files from any of the directories specified and applies the specified rule to the directory names.
+ImportDataset[f,dirs\[RuleDelayed]rep] imports files from any of the directories specified and applies the specified rule to the directory names.
 ImportDataset[{file_1,\[Ellipsis]}] imports the specified files.
 ImportDataset[f\[RuleDelayed]n,\[Ellipsis]] applies the specified rule to the filenames to get the key.
 ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms their names and uses the rule to generate the keys.
-ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''')
+ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''').
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
 ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
 $ImportDatasetCache::usage=FormatUsage@"$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";

@@ -7,14 +7,14 @@ FormatUsageCase;
 Begin["`Private`"]
 
 
-FormatUsageCase[str_String]:=StringReplace[
-  str,
-  RegularExpression@
-  "(^|\n)(\\w*)(?P<P>\\[(?:[\\w{}\[Ellipsis],=\[Rule]\[RuleDelayed]\[LeftAssociation]\[RightAssociation]]|(?P>P))*\\])"
-  :>"$1'''$2"
-    <>StringReplace["$3",RegularExpression@"\\w+"->"```$0```"]
-    <>"'''"
+FormatUsageCase:=StringReplace[
+  (
+    func:WordCharacter..~~
+     args:("["~~Except["["|"]"]...~~"]")...:>
+      "{{"<>func<>StringReplace[args,arg:WordCharacter..:>"```"<>arg<>"```"]<>"}}"
+  )/.(rhs_:>lhs_):>{StartOfLine~~rhs:>lhs,"[["~~rhs~~"]]":>lhs}
 ]
-SyntaxInformation[FormatUsageCase]={"ArgumentsPattern"->{_}};
+SyntaxInformation[Unevaluated@FormatUsageCase]={"ArgumentsPattern"->{_}};
+
 
 End[]

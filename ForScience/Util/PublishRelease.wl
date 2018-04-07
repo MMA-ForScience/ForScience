@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-PublishRelease::usage=FormatUsage@"PublishRelease[opts] creates a new GitHub release for a paclet file in the current folder. Requires access token with public_repo access.";
+PublishRelease::usage=FormatUsage@"PublishRelease[opts] creates a new GitHub release for a paclet file in the current folder. Requires access token with "<>"public_repo access.";
 
 
 Begin["`Private`"]

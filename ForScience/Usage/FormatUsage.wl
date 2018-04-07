@@ -1,4 +1,4 @@
 (* ::Package:: *)
 
-FormatUsage=FormatCode@*FormatUsageCase;
+FormatUsage:=FormatCode@*FormatUsageCase;
 SyntaxInformation[Unevaluated@FormatUsage]={"ArgumentsPattern"->{_}};
