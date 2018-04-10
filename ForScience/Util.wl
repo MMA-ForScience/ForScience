@@ -39,6 +39,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`DropMissing`;
 <<`ApplyToWrapped`;
 <<`ContextualRule`;
+<<`SkipCommentsStream`;
 
 
 EndPackage[]

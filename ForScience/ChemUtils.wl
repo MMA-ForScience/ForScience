@@ -12,6 +12,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`MoleculePlot3D`;
 <<`GromosAtomInterpreter`;
 <<`GromosPositionToMoleculeList`;
+<<`GromosImport`;
 
 
 EndPackage[]
