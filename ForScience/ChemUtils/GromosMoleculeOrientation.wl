@@ -30,8 +30,8 @@ iGromosMoleculeOrientation[data_,ref1_,ref2_,axis_,coords_]:=Module[{hold1,hold2
     ];
   ];
   If[coords,
-  Flatten[{hold1,(hold1-hold2).axis}],
-  (hold1-hold2).axis
+  Flatten[{hold1,((hold1-hold2).axis)/(Norm[hold1-hold2]*Norm[axis])}],
+  ((hold1-hold2).axis)/(Norm[hold1-hold2]*Norm[axis])
   ]
 ]
 
