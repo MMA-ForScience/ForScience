@@ -168,6 +168,8 @@ MakeBoxes[mol_Molecule,fmt_]/;Length@mol>=2^:=BoxForm`ArrangeSummaryBox[
 ]
 
 iSumFormulaNonOrdered[atoms_]:=StringJoin[ToString[Subscript[#[[1]],ToString@#[[2]]],FormatType->StandardForm]&/@Tally@Keys[atoms]]
+(*iSumFormula returns molecular formula in common ordering, first C and H, then alphabetic ordering.*)
+iSumFormula[atoms_]:=StringJoin[ToString[Subscript[#[[1]],ToString@#[[2]]],FormatType->StandardForm]&/@ReplaceAll[Sort[ReplaceAll[Tally@Keys[atoms],{"C"->"AAA","H"->"AAB"}]],{"AAA"->"C","AAB"->"H"}]]
 
 
 End[]
