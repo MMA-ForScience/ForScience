@@ -28,6 +28,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`FirstHead`;
 <<`ProgressReport`;
 <<`AddKey`;
+<<`CachedImport`;
 <<`ImportDataset`;
 <<`ToAssociationRule`;
 <<`CompileUsages`;
