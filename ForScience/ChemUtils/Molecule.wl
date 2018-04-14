@@ -1,6 +1,7 @@
 (* ::Package:: *)
 
 Molecule::usage=FormatUsage@"Molecule[atoms,bonds] describes a molecule to be plotted with '''MoleculePlot3D'''. ```atoms``` is a list of rules of the the form '''{```element```_1->```pos```_1,\[Ellipsis]}'''. ```bonds``` (if not omitted) is an adjacency matrix or a list of bond specifications (see '''ToBond'''). Use '''Normal@Molecule[\[Ellipsis]]''' to convert to graphics primitives.";
+MoleculePlot3D; (*declare symbol before using it in typesetting code*)
 
 
 Begin["`Private`Molecule`"]
