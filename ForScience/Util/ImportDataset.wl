@@ -18,16 +18,6 @@ Begin["`Private`"]
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
 
-Module[
-  {clearing=False},
-  setupIDCache:=(
-    Clear[$ImportDatasetCache]/;!clearing^:=Block[{clearing=True},Clear@$ImportDatasetCache;setupIDCache];
-    $ImportDatasetCache[importer_,path_,file_]:=Check[$ImportDatasetCache[importer,path,file]=importer@file,With[{res=$ImportDatasetCache[importer,path,file]},$ImportDatasetCache[importer,path,file]=.;res]];
-  );
-  Block[{clearing=True},Clear@$ImportDatasetCache]
-]
-setupIDCache
-
 ImportDataset[
   files_List,
   (dm:(r:({_,pat_,_}:>_)))|
@@ -55,19 +45,10 @@ ImportDataset[
 ]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"data"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
 
-idImporter[OptionsPattern[]][file_]:=With[
-  {
-    importer=OptionValue["Importer"]//Replace@{
-      l:{_,OptionsPattern[]}:>(Import[#,Sequence@@l]&),
-      s_String|s_List:>(Import[#,s]&)
-    },
-    path=Quiet@AbsoluteFileName@file
-  },
-  If[
-    OptionValue["CacheImports"]&&path=!=$Failed,
-    $ImportDatasetCache[importer,path,file],
-    importer@file
-  ]
+idImporter[OptionsPattern[]][file_]:=CachedImport[
+  file,
+  OptionValue["Importer"],
+  "CacheImports"->OptionValue["CacheImports"]
 ]
 
 iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[TrueQ@OptionValue["GroupFolders"],
