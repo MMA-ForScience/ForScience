@@ -160,7 +160,7 @@ MakeBoxes[mol_Molecule,fmt_]/;Length@mol>=2^:=BoxForm`ArrangeSummaryBox[
   ],
   {
     BoxForm`SummaryItem[{"Atoms: ",Length@First[mol,{}]}],
-    BoxForm`SummaryItem[{"Bonds: ",Length@mol[[2]]=!=None}]
+    BoxForm`SummaryItem[{"Bonds: ",mol[[2]]=!=None}]
   },
   {},
   fmt
