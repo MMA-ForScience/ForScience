@@ -167,5 +167,7 @@ MakeBoxes[mol_Molecule,fmt_]/;Length@mol>=2^:=BoxForm`ArrangeSummaryBox[
   fmt
 ]
 
+iSumFormulaNonOrdered[atoms_]:=StringJoin[ToString[Subscript[#[[1]],ToString@#[[2]]],FormatType->StandardForm]&/@Tally@Keys[atoms]]
+
 
 End[]
