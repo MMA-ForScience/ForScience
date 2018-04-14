@@ -19,8 +19,8 @@ UpdateCache[file_,path_,importer_]:=With[
   ];
   If[!FailureQ@result,
     With[
-      {newTS=FileDate@path,newSz=FileSize@path},
-      $ImportCache[file,path,importer]/;FileDate[path]===newTS&&FileSize[path]===newSz=
+      {newTS=FileDate@path,newSz=FileByteCount@path},
+      $ImportCache[file,path,importer]/;FileDate[path]===newTS&&FileByteCount[path]===newSz=
        result
     ]
   ];
