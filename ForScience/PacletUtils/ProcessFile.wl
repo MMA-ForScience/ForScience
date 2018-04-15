@@ -8,7 +8,7 @@ ProcessFile[{proc_1,\[Ellipsis]}] is the operator form.";
 Begin["`Private`"]
 
 
-SyntaxInformation[ProcessFile]={"ArgumentsPattern"->{_,{__}}};
+SyntaxInformation[ProcessFile]={"ArgumentsPattern"->{_.,{__}}};
 
 
 ProcessFile[_,{}]:=Null
