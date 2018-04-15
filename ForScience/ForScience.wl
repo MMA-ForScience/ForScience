@@ -33,6 +33,7 @@ EndPackage[]
 
 
 <<ForScience`Usage`;
+<<ForScience`PacletUtils`;
 <<ForScience`Util`;
 <<ForScience`PlotUtils`;
 <<ForScience`ChemUtils`;
