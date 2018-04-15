@@ -1,4 +1,4 @@
 (* ::Package:: *)
 
-FormatUsage:=MakeUsageString@*ParseFormatting@*FormatUsageCase;
+FormatUsage[str_]:=MakeUsageString@Map[ParseFormatting@*FormatUsageCase]@StringSplit[str,"\n"]
 SyntaxInformation[Unevaluated@FormatUsage]={"ArgumentsPattern"->{_}};
