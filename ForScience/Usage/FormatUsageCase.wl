@@ -9,7 +9,7 @@ Begin["`Private`"]
 
 FormatUsageCase:=StringReplace[
   (
-    func:WordCharacter..~~
+    func:(WordCharacter|"$"|"`")..~~
      args:("["~~Except["["|"]"]...~~"]")...:>
       "{{"<>func<>StringReplace[args,arg:WordCharacter..:>"```"<>arg<>"```"]<>"}}"
   )/.(rhs_:>lhs_):>{StartOfLine~~rhs:>lhs,"[["~~rhs~~"]]":>lhs}
