@@ -41,6 +41,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`ApplyToWrapped`;
 <<`ContextualRule`;
 <<`SkipCommentsStream`;
+<<`PartLookup`;
 
 
 EndPackage[]
