@@ -10,9 +10,12 @@ MakeUsageString[boxes_]:=StringRiffle[
   If[StringStartsQ[#,"\!"],#,"\!\(\)"<>#]&/@(
     boxes/.
      s_String?(StringContainsQ["\""]):>
-      "\""<>StringReplace[s,"\""->"\\\""]<>"\""/.
-      RowBox[l_]:>StringJoin@Replace[l,{b:Except[_String]:>
-       "\!\(\*"<>ToString[b,InputForm]<>"\)",","->", "},{1}]
+      "\""<>StringReplace[s,"\""->"\\\""]<>"\""//Replace[
+        #,
+        RowBox[l_]|box_:>StringJoin@Replace[#&[l,{box}],{b:Except[_String]:>
+         "\!\(\*"<>ToString[b,InputForm]<>"\)",","->", "},{1}],
+        1
+      ]&
   ),
   "\n"
 ]
