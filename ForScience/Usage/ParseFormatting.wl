@@ -11,6 +11,8 @@ ti;
 mr;
 go;
 gc;
+co;
+cc;
 tb;
 
 
@@ -34,6 +36,7 @@ Attributes[ParseToToken]={HoldRest};
 ParseToken[str_,i_][ti]:=StyleBox[ParseToToken[str,i][ti],"TI"]
 ParseToken[str_,i_][mr]:=StyleBox[ParseToToken[str,i][mr],"MR"]
 ParseToken[str_,i_][go]:=ParseToToken[str,i,False][gc]
+ParseToken[str_,i_][co]:=TagBox[ParseToToken[str,i,False][cc],"[[]]"]
 ParseToken[str_,i_][t_]:=t
 Attributes[ParseToken]={HoldRest};
 
@@ -48,6 +51,8 @@ ParseFormatting[str_]:=Module[
       "'''"->mr,
       "`````"->go,
       "``````"->gc,
+      "```````"->co,
+      "````````"->cc,
       "````"->" ",
       "_"->sb
     }
@@ -60,6 +65,8 @@ ParseFormatting[str_]:=Module[
      "'''"->" ''' ",
      "{{"->" ````` ",
      "}}"->" `````` ",
+     "[*"->" ``````` ",
+     "*]"->" ```````` ",
      " "->" ```` ",
      "_"->" _ "
      }
