@@ -10,6 +10,7 @@ Begin["`Private`"]
 SyntaxInformation[ProcessFile]={"ArgumentsPattern"->{_,{__}}};
 
 
+ProcessFile[_,{}]:=Null
 ProcessFile[file_,processors_List]:=ProcessFile[{file,file},processors]
 ProcessFile[{in_,out_},processors_List]:=Block[
   (*set context to ensure proper context prefixes for symbols.
