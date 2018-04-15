@@ -11,6 +11,8 @@ Begin["`Private`"]
 SyntaxInformation[ProcessFile]={"ArgumentsPattern"->{_.,{__}}};
 
 
+ProcessFile::msgs="Messages were generated during processing of '``'.";
+
 ProcessFile[_,{}]:=Null
 ProcessFile[processors_][file_]:=ProcessFile[file,processors]
 ProcessFile[file_,processors_List]:=ProcessFile[{file,file},processors]
@@ -19,14 +21,17 @@ ProcessFile[{in_,out_},processors_List]:=Block[
     Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
   {$Context="ProcessFile`",$ContextPath={"ProcessFile`","System`"}},
   Quiet[
-    Export[
-      out,
-      (RightComposition@@processors)[
-        Import[in,{"Package","HeldExpressions"}]
+    Check[
+      Export[
+        out,
+        (RightComposition@@processors)[
+          Import[in,{"Package","HeldExpressions"}]
+        ],
+        {"Package","HeldExpressions"},
+        PageWidth->Infinity
       ],
-      {"Package","HeldExpressions"},
-      PageWidth->Infinity
-    ],
+      Message[ProcessFile::msgs,in]
+    ];
     {General::shdw}
   ];
   Quiet@Remove["ProcessFile`*"];
