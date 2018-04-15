@@ -65,9 +65,19 @@ ParseFormatting[str_]:=Module[
      }
    ]@str;
   Catch[
-    ParseToToken[pStr, i][EndOfLine]//.
-     l_List?(MemberQ[sb]):>SequenceReplace[l,{a_,sb,b_}:>SubscriptBox[a,b]]/.
-       RowBox[l_List]:>RowBox@SequenceReplace[l,{s__String}:>StringJoin@s],
+    Replace[
+      Replace[
+        ParseToToken[pStr, i][EndOfLine],
+        l_List?(MemberQ[sb]):>(
+          l//.{pre___,a_,sb,b_,post___}:>{pre,SubscriptBox[a,b],post}
+        ),
+        All
+      ],
+      RowBox[l_List]:>RowBox[
+        l//.{pre___,s:Repeated[_String,{2,\[Infinity]}],post___}:>{pre,StringJoin@s,post}
+      ],
+      All
+    ],
     EndOfFile,
     (Message[ParseFormatting::badFormat,str];str)&
   ]
