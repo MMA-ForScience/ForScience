@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in [[h[a]]] or [[h[a,b][c][d,e]]].";
+FirstHead::usage=FormatUsage@"FirstHead[expr] extracts the first head of ```expr```, that is e.g. '''h''' in [*h[a]*] or [*h[a,b][c][d,e]*].";
 
 
 Begin["`Private`"]

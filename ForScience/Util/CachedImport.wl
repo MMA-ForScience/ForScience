@@ -1,11 +1,11 @@
 (* ::Package:: *)
 
-CachedImport::usage=FormatUsage@"CachedImport[file] imports the specified file using [[Import]], but caches the result to speed up future imports. See {{$ImportCache}} for clearing the cache.
+CachedImport::usage=FormatUsage@"CachedImport[file] imports the specified file using [*Import*], but caches the result to speed up future imports. See {*$ImportCache*} for clearing the cache.
 CachedImport[file,type,opt_1,\[Ellipsis]] imports as the specified file type.
 CachedImport[file,{type,elem},\[Ellipsis]] imports the specified element.
-CachedImport[file,{type,opt_1,\[Ellipsis]}] is equivalent to [[CachedImport[file,type,opt_1,\[Ellipsis]]]].
+CachedImport[file,{type,opt_1,\[Ellipsis]}] is equivalent to [*CachedImport[file,type,opt_1,\[Ellipsis]]*].
 CachedImport[file,importer] uses the specified importer to import the file.";
-$ImportCache::usage=FormatUsage@"This symbol that handles the cache for [[CachedImport]]. Use '''Clear[$ImportCache]''' to clear all cached values. Cache entries are invalidated if the corresponding file is modified.";
+$ImportCache::usage=FormatUsage@"This symbol that handles the cache for [*CachedImport*]. Use '''Clear[$ImportCache]''' to clear all cached values. Cache entries are invalidated if the corresponding file is modified.";
 
 
 Begin["`Private`CachedImport`"]

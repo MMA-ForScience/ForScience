@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-FixedShort::usage=FormatUsage@"FixedShort[expr,w,pw] displays ```expr``` like [[Short[expr,w]]], but relative to the pagewidth ```pw```. ```w``` defaults to 1.";
+FixedShort::usage=FormatUsage@"FixedShort[expr,w,pw] displays ```expr``` like [*Short[expr,w]*], but relative to the pagewidth ```pw```. ```w``` defaults to 1.";
 
 
 Begin["`Private`"]

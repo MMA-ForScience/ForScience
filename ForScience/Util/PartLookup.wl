@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-PartLookup::usage=FormatUsage@"PartLookup[expr,pos,def] works like [[Lookup]], but on arbitrary expressions. ```pos``` can be a number or a [[Extract]] specification.";
+PartLookup::usage=FormatUsage@"PartLookup[expr,pos,def] works like [*Lookup*], but on arbitrary expressions. ```pos``` can be a number or a [*Extract*] specification.";
 
 
 Begin["`Private`"]

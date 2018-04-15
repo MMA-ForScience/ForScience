@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-IndexedFunction::usage=FormatUsage@"IndexedFunction[expr,id] works like [[Function[expr]]], but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''#_1''' or '''##3_f'''. Can also be entered using a subscripted '''&''' (e.g. '''&_1''', this can be entered using \[AliasIndicator]cf\[AliasIndicator]).";
+IndexedFunction::usage=FormatUsage@"IndexedFunction[expr,id] works like [*Function[expr]*], but only considers Slots/SlotSequences subscripted with ```id``` (e.g. '''#_1''' or '''##3_f'''. Can also be entered using a subscripted '''&''' (e.g. '''&_1''', this can be entered using \[AliasIndicator]cf\[AliasIndicator]).";
 
 
 Begin["`Private`"]
