@@ -15,6 +15,8 @@ Notebook[{
 
 	Cell[BoxData[RowBox[{RowBox[{"DeleteFile", "/@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}], ";"}]], "Input"],
 
+	Cell[BoxData[RowBox[{"<<", "ForScience`"}]], "Input"],
+
 	Cell[BoxData[
 		RowBox[{"paclet", "=",
 			RowBox[{
