@@ -19,9 +19,9 @@ ProcessFile[file_,processors_List]:=ProcessFile[{file,file},processors]
 ProcessFile[{in_,out_},processors_List]:=Block[
   (*set context to ensure proper context prefixes for symbols.
     Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
-  {$Context="ProcessFile`",$ContextPath={"ProcessFile`","System`"}},
-  Quiet[
-    Check[
+  {$Context="ProcessFile`",$ContextPath={"ProcessFile`","System`"}}, 
+  Check[
+    Quiet[
       Export[
         out,
         (RightComposition@@processors)[
@@ -30,9 +30,9 @@ ProcessFile[{in_,out_},processors_List]:=Block[
         {"Package","HeldExpressions"},
         PageWidth->Infinity
       ],
-      Message[ProcessFile::msgs,in]
-    ];
-    {General::shdw}
+      {General::shdw}
+    ],
+    Message[ProcessFile::msgs,in]
   ];
   Quiet@Remove["ProcessFile`*"];
 ]
