@@ -44,25 +44,19 @@ Block[
     CompoundExpression@@gPreProcs;
     Module[
       {trackGet=True,getTag,loadedFiles},
-      Unprotect[Get];
-      Get[file_]:=With[
-        {s=Stack[_]},
-        (
-          Block[{trackGet=False},
-            ProcessFile[Sow[FindFile@file,getTag],preProcs];
-          ];
-          Get[file]
-        )/;trackGet&&(
-          Length@s<3||
-           !MatchQ[s[[-3]],HoldForm[_;Get[file]]]
-        )
-      ];
       (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
       PacletDirectoryAdd["."];
-      loadedFiles=First@Last@Reap[Get[dir<>"`"],getTag];
+      loadedFiles=First@Last@Reap[
+        Internal`HandlerBlock[
+          {
+            "GetFileEvent",
+            Replace[_[f_,_,First]:>Sow[FindFile@f,getTag]]
+          },
+          Get[dir<>"`"]
+        ],
+        getTag
+      ];
       PacletDirectoryRemove["."];
-      Get[file_]=.;
-      Protect[Get];
       loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
       ProcessFile[postProcs]/@loadedFiles;
       CompoundExpression@@gPostProcs;
