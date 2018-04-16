@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PacletUtils`",{"ForScience`Usage`"}]
+BeginPackage["ForScience`PacletUtils`",{"PacletManager`","ForScience`Usage`"}]
 
 
 <<`ProcessFile`;
