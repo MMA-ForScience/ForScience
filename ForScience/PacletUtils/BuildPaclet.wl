@@ -6,12 +6,16 @@ BuildPaclet[dir,{*preProc_1,\[Ellipsis]},{postProc_1,\[Ellipsis]*}] applies any 
 BuildPaclet[dir,{\[Ellipsis]},{globalPostProc_1,\[Ellipsis]}] evaluates all ```globalPostProc_i``` after the paclet has been loaded from the build directory.
 BuildPaclet[dir,{\[Ellipsis]},{*globalPreProc_1,\[Ellipsis]},{globalPostProc_1,\[Ellipsis]*}] evaluates all ```globalPreProc_i``` before the paclet is loaded from the build directory.";
 $BuildActive::usage=FormatUsage@"'''$BuildActive''' is '''True''' whenever a paclet is currently being built (see [*BuildPaclet*]).";
+$BuiltPaclet::usage=FormatUsage@"$BuiltPaclet is set to the name of the actively built paclet. If no paclet is being built, this is '''\"\"'''";
 
 
 Begin["`Private`"]
 
 
-$BuildActive=False;
+If[!TrueQ[$BuildActive],
+  $BuildActive=False;
+  $BuiltPaclet="";
+]
 
 
 Options[BuildPaclet]={"BuildDirectory"->"build/"};
@@ -41,27 +45,30 @@ Block[
     Quiet@DeleteDirectory[buildDir,DeleteContents->True];
     CopyDirectory[dir,buildDir];
     SetDirectory[buildDir];
-    #[]&/@gPreProcs;
-    Module[
-      {trackGet=True,getTag,loadedFiles},
-      (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
-      PacletDirectoryAdd["."];
-      loadedFiles=First@Last@Reap[
-        Internal`HandlerBlock[
-          {
-            "GetFileEvent",
-            Replace[_[f_,_,First]:>Sow[FindFile@f,getTag]]
-          },
-          Get[dir<>"`"]
-        ],
-        getTag
-      ];
-      PacletDirectoryRemove["."];
-      loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
-      ProcessFile[postProcs]/@loadedFiles;
-      #[]&/@gPostProcs;
-      ResetDirectory[];
-      PackPaclet[buildDir]
+    Block[
+      {$BuiltPaclet=KeyMap[ToString,Association@@Get["PacletInfo.m"]]["Name"]},
+      #[]&/@gPreProcs;
+      Module[
+        {trackGet=True,getTag,loadedFiles},
+        (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
+        PacletDirectoryAdd["."];
+        loadedFiles=First@Last@Reap[
+          Internal`HandlerBlock[
+            {
+              "GetFileEvent",
+              Replace[_[f_,_,First]/;trackGet:>Sow[FindFile@f,getTag]]
+            },
+            Get[dir<>"`"]
+          ],
+          getTag
+        ];
+        PacletDirectoryRemove["."];
+        loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
+        ProcessFile[postProcs]/@loadedFiles;
+        #[]&/@gPostProcs;
+        ResetDirectory[];
+        PackPaclet[buildDir]
+      ]
     ]
   ]
 ]
