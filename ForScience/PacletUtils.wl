@@ -8,6 +8,10 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","ForScience`Usage`"}]
 <<`BuildAction`;
 <<`CompatibilityChecker`;
 <<`UsageCompiler`;
+<<`DocUtils`;
+<<`DocumentationHeader`;
+<<`DocumentationFooter`;
+<<`DocumentationBuilder`;
 
 
 EndPackage[]
