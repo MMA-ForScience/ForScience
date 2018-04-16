@@ -8,7 +8,11 @@ Begin["`Private`"]
 
 MakeUsageString[boxes_]:=StringRiffle[
   If[StringStartsQ[#,"\!"],#,"\!\(\)"<>#]&/@(
-    boxes/.
+    Replace[
+      boxes,
+      TagBox[b_,_]:>b,
+      All      
+    ]/.
      s_String?(StringContainsQ["\""]):>
       "\""<>StringReplace[s,"\""->"\\\""]<>"\""//Replace[
         #,
