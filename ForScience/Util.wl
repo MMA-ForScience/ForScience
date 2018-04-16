@@ -31,7 +31,6 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`CachedImport`;
 <<`ImportDataset`;
 <<`ToAssociationRule`;
-<<`CompileUsages`;
 <<`UpdateForScience`;
 <<`PublishRelease`;
 <<`PullUp`;

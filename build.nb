@@ -15,12 +15,16 @@ Notebook[{
 
 	Cell[BoxData[RowBox[{RowBox[{"DeleteFile", "/@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}], ";"}]], "Input"],
 
-	Cell[BoxData[RowBox[{"paclet", "=", RowBox[{"Check", "[", " ", "\[IndentingNewLine]", 
-		RowBox[{RowBox[{RowBox[{"<<", "\"ForScience`\""}], ";", "\[IndentingNewLine]", 
-		RowBox[{"ForScience`Util`PrepareCompileUsages", "[", "\"ForScience\"", "]"}], ";", "\[IndentingNewLine]", 
-		RowBox[{"ForScience`Util`CompileUsages", "[", RowBox[{RowBox[{RowBox[{"\".\"", "<>", RowBox[{"FileNameTake", "[", RowBox[{"#", ",", RowBox[{"{", RowBox[{"2", ",", RowBox[{"-", "1"}]}], "}"}]}], "]"}]}], "&"}], "/@", RowBox[{"FileNames", "[", RowBox[{"\"*.wl\"", ",", "\"build/\"", ",", "\[Infinity]"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
-		RowBox[{"PackPaclet", "[", "\"build\"", "]"}]}], ",", "\[IndentingNewLine]", 
-		RowBox[{"PackPaclet", "[", "\"ForScience\"", "]"}]}], "\[IndentingNewLine]", "]"}], ";"}]
+	Cell[BoxData[
+		RowBox[{"paclet", "=",
+			RowBox[{
+				"BuildPaclet", "[", "\[IndentingNewLine]",
+				RowBox[{
+					"\"ForScience\"", ",", "\[IndentingNewLine]",
+					RowBox[{"{", "UsageCompiler", "}"}]
+				}], "\[IndentingNewLine]",
+			"]"}]
+		}]
     ], "Input"]
 	 
 	}, Open  ]],
