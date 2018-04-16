@@ -41,7 +41,7 @@ Block[
     Quiet@DeleteDirectory[buildDir,DeleteContents->True];
     CopyDirectory[dir,buildDir];
     SetDirectory[buildDir];
-    CompoundExpression@@gPreProcs;
+    #[]&/@gPreProcs;
     Module[
       {trackGet=True,getTag,loadedFiles},
       (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
@@ -59,7 +59,7 @@ Block[
       PacletDirectoryRemove["."];
       loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
       ProcessFile[postProcs]/@loadedFiles;
-      CompoundExpression@@gPostProcs;
+      #[]&/@gPostProcs;
       ResetDirectory[];
       PackPaclet[buildDir]
     ]
