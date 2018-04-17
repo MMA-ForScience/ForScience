@@ -1,8 +1,5 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PlotUtils`",{"ForScience`Usage`"}]
-
-
 Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
 <<`SetupForSciencePlotTheme`
 
@@ -14,6 +11,3 @@ Jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Y
 SyntaxInformation[Jet]={"ArgumentsPattern"->{_}};
 
 End[]
-
-
-EndPackage[]

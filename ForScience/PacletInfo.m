@@ -10,7 +10,6 @@ Paclet[
    { "Documentation", Language -> "English"},
    { "Kernel", Context -> {
      "ForScience`",
-     "ForScience`Usage`",
      "ForScience`PacletUtils`",
      "ForScience`Util`",
      "ForScience`PlotUtils`",

@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PlotUtils`",{"ForScience`Usage`"}]
+BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`"}]
 
 
 <<`Jet`
