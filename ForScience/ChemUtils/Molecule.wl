@@ -146,18 +146,21 @@ mol_Molecule[el:Except["Except"]]/;MemberQ[mol["Elements"],el]:=(el/.$MoleculeEl
 MakeBoxes[mol_Molecule,fmt_]/;Length@mol>=2^:=BoxForm`ArrangeSummaryBox[
   Molecule,
   mol,
-  MoleculePlot3D[
-    Insert[
-      mol,
-      Tooltip->False,
-      3
+  MouseAppearance[
+    MoleculePlot3D[
+      Insert[
+        mol,
+        Tooltip->False,
+        3
+      ],
+      ImageSize->Dynamic@{
+        Automatic,
+      (10 CurrentValue["FontCapHeight"]) / AbsoluteCurrentValue[Magnification]
+      },
+      ViewPoint->mol["NormalVector"],
+      PerformanceGoal->"Speed"
     ],
-    ImageSize->Dynamic@{
-      Automatic,
-     (10 CurrentValue["FontCapHeight"]) / AbsoluteCurrentValue[Magnification]
-    },
-    ViewPoint->mol["NormalVector"],
-    PerformanceGoal->"Speed"
+    "Arrow"
   ],
   {
     BoxForm`SummaryItem[{"Atoms: ",Length@First[mol,{}]}],
