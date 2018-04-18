@@ -21,6 +21,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`"}]
 <<`DocumentationBuilder`;
 <<`UsageSection`;
 <<`Details`;
+<<`Examples`;
 
 
 FormatUsageCase::usage=FormatUsage@"FormatUsageCase[str] prepares all function calls at the beginning of a line as well as those wrapped in '''[\[InvisibleSpace][''' and ''']\[InvisibleSpace]]''' in ```str``` to be formatted nicely by '''ParseFormatting'''. See also '''FormatUsage'''.";
