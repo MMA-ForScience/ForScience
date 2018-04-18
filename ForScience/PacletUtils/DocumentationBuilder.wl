@@ -28,9 +28,9 @@ DocumentationBuilder[sym_]:=Module[
   },
   NotebookWrite[nb,MakeHeader[sym]];
   NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
-  NotebookWrite[nb,#]&/@Through[$DocumentationSections[nb,sym]];
+  Through[$DocumentationSections[nb,sym]];
   NotebookWrite[nb,MakeFooter[sym]];
-  NotebookSave[nb,FileNameJoin@{$DocumentationDirectory,SymbolName@sym<>".nb"}];
+  NotebookSave[nb,FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"}];
   NotebookClose[nb];
 ]
 
