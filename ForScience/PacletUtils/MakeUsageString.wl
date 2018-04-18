@@ -10,7 +10,10 @@ MakeUsageString[boxes_]:=StringRiffle[
   If[StringStartsQ[#,"\!"],#,"\!\(\)"<>#]&/@(
     Replace[
       boxes,
-      TagBox[b_,_]:>b,
+      {
+        TagBox[b_,"[**]"]:>StyleBox[b,"MR"],
+        TagBox[b_,_]:>b
+      },
       All      
     ]/.
      s_String?(StringContainsQ["\""]):>
