@@ -75,8 +75,7 @@ With[
       Cell[
         TextData@{
           Riffle[
-            {
-            },
+            entries,
             "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]"
           ]
         },
