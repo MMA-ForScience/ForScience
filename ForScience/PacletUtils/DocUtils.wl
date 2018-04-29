@@ -64,26 +64,29 @@ $SectionArrow=Style[
 ];
 
 
-DocumentationOpener[{heading__},type_,index_]:=Cell[
-  TextData@{
-    Cell@BoxData@DynamicBox@ToBoxes@If[
-      MatchQ[
-        First@Dynamic[
-          CurrentValue[EvaluationNotebook[],
-            {TaggingRules,"Openers",type,index},
-            Closed
-          ]
+DocumentationOpener[{heading__},type_,index_]:=With[
+  {arrow=$SectionArrow},
+  Cell[
+    TextData@{
+      Cell@BoxData@DynamicBox@ToBoxes@If[
+        MatchQ[
+          First@Dynamic[
+            CurrentValue[EvaluationNotebook[],
+              {TaggingRules,"Openers",type,index},
+              Closed
+            ]
+          ],
+          Open|True
         ],
-        Open|True
+        arrow,
+        Rotate[arrow,Pi/2,{-1.65,-1}]
       ],
-      $SectionArrow,
-      Rotate[$SectionArrow,Pi/2,{-1.65,-1}]
-    ],
-  Cell@BoxData@TemplateBox[{1},"Spacer1"],
-  heading
-  },
-  type,
-  System`WholeCellGroupOpener->True
+    Cell@BoxData@TemplateBox[{1},"Spacer1"],
+    heading
+    },
+    type,
+    System`WholeCellGroupOpener->True
+  ]
 ]
 
 
