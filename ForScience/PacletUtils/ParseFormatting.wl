@@ -44,8 +44,23 @@ Attributes[ParseToken]={HoldRest};
 ParseFormatting::badFormat="End reached while trying to parse formatting of \"``\".";
 ParseFormatting[str_]:=Module[
   {i=1,pStr},
+  pStr=StringReplace[
+    {"```"->" ``` ",
+    "'''"->" ''' ",
+    "{*"->" ````` ",
+    "*}"->" `````` ",
+    "[*"->" ``````` ",
+    "*]"->" ```````` ",
+    " "->" ```` ",
+    "_"->" _ "
+    }
+  ]@str;
+  pStr=First@MathLink`CallFrontEnd[
+    FrontEnd`UndocumentedTestFEParserPacket[pStr,True]
+  ];
+  If[MatchQ[pStr,BoxData[_String]],Return@First@pStr];
   pStr=Append[EndOfLine]@Replace[
-    Flatten@First@Replace[First@#,RowBox@x_:>x,\[Infinity]],
+    Flatten@First@Replace[pStr,RowBox@x_:>x,\[Infinity]],
     {
       "```"->ti,
       "'''"->mr,
@@ -55,22 +70,9 @@ ParseFormatting[str_]:=Module[
       "````````"->cc,
       "````"->" ",
       "_"->sb
-    }
-    ,1
-  ]&@MathLink`CallFrontEnd[
-    FrontEnd`UndocumentedTestFEParserPacket[#,True]
-  ]&@
-   StringReplace[
-     {"```"->" ``` ",
-     "'''"->" ''' ",
-     "{*"->" ````` ",
-     "*}"->" `````` ",
-     "[*"->" ``````` ",
-     "*]"->" ```````` ",
-     " "->" ```` ",
-     "_"->" _ "
-     }
-   ]@str;
+    },
+    1
+  ];
   Catch[
     FixedPoint[
       Replace[l_list:>{pre___,s:Repeated[_String,{2,\[Infinity]}],post___}:>{pre,StringJoin@s,post}],
