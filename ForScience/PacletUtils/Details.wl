@@ -126,7 +126,7 @@ SummaryThumbnail[nb_,sum_]:=With[
       Take[
         Flatten@ImagePartition[
           ImagePad[
-            ImageResize[Rasterize[sum,RasterSize->340,ImageFormattingWidth->708],170],
+            ImageResize[Rasterize[Notebook[sum,WindowSize->785],ImageFormattingWidth->740],170],
             {{0,0},{69,0}},
             White
           ],
