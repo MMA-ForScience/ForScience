@@ -25,6 +25,7 @@ SyntaxInformation[BuildPaclet]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 BuildPaclet::noDir="The specified path `` is not a directory";
 BuildPaclet::cleanFailed="Could not delete build directory ``.";
+BuildPaclet::initFailed="Build initialization failed.";
 
 procList={Except[_List]...};
 procLists={procList,procList};
@@ -43,13 +44,21 @@ Block[
       buildDir=OptionValue["BuildDirectory"]
     },
     If[!DirectoryQ[dir],Message[BuildPaclet::noDir,dir];Return@$Failed];
-    If[!DirectoryQ[buildDir],Message[BuildPaclet::noDir,buildDir];Return@$Failed];
-    If[Quiet@DeleteDirectory[buildDir,DeleteContents->True]===$Failed,
+    If[
+      FileExistsQ@FileNameDrop[buildDir,0]&&!DirectoryQ@buildDir,
+      Message[BuildPaclet::noDir,buildDir];
+      Return@$Failed
+    ];
+    If[DirectoryQ@buildDir&&Quiet@DeleteDirectory[buildDir,DeleteContents->True]===$Failed,
       Message[BuildPaclet::cleanFailed,buildDir];
       Return@$Failed
     ];
-    CopyDirectory[dir,buildDir];
-    SetDirectory[buildDir];
+    Check[
+      CopyDirectory[dir,buildDir];
+      SetDirectory[buildDir];,
+      Message[BuildPaclet::initFailed];
+      Return@$Failed
+    ];
     Block[
       {$BuiltPaclet=KeyMap[ToString,Association@@Get["PacletInfo.m"]]["Name"]},
       #[]&/@gPreProcs;
