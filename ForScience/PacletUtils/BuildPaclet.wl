@@ -24,6 +24,7 @@ Options[BuildPaclet]={"BuildDirectory"->"build/"};
 SyntaxInformation[BuildPaclet]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 BuildPaclet::noDir="The specified path `` is not a directory";
+BuildPaclet::cleanFailed="Could not delete build directory ``.";
 
 procList={Except[_List]...};
 procLists={procList,procList};
@@ -41,8 +42,12 @@ Block[
     {
       buildDir=OptionValue["BuildDirectory"]
     },
-    If[!DirectoryQ[dir],Message[BuildPaclet::noDir,dir];Return[]];
-    Quiet@DeleteDirectory[buildDir,DeleteContents->True];
+    If[!DirectoryQ[dir],Message[BuildPaclet::noDir,dir];Return@$Failed];
+    If[!DirectoryQ[buildDir],Message[BuildPaclet::noDir,buildDir];Return@$Failed];
+    If[Quiet@DeleteDirectory[buildDir,DeleteContents->True]===$Failed,
+      Message[BuildPaclet::cleanFailed,buildDir];
+      Return@$Failed
+    ];
     CopyDirectory[dir,buildDir];
     SetDirectory[buildDir];
     Block[
