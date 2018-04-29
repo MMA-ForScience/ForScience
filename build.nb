@@ -23,7 +23,27 @@ Notebook[{
 				"BuildPaclet", "[", "\[IndentingNewLine]",
 				RowBox[{
 					"\"ForScience\"", ",", "\[IndentingNewLine]",
-					RowBox[{"{", "UsageCompiler", "}"}]
+					RowBox[{"{", "UsageCompiler", "}"}], ",", "\[IndentingNewLine]",
+					RowBox[{"{", 
+						InterpretationBox[
+							TemplateBox[
+								{
+									"  ",
+									"\"  \"",
+									CheckboxBox[Dynamic@CurrentValue[EvaluationNotebook[], {TaggingRules, "Settings", "BuildDoc"}], BaselinePosition->Baseline],
+									TogglerBox[
+										Dynamic@CurrentValue[EvaluationNotebook[], {TaggingRules, "Settings", "BuildDoc"}],
+										{
+											False->StyleBox[DocumentationBuilder,Opacity@0.5],
+											True->DocumentationBuilder
+										}
+									]
+								},
+								"RowWithSeparators"
+							],
+							If[CurrentValue[EvaluationNotebook[], {TaggingRules, "Settings", "BuildDoc"}], DocumentationBuilder, Nothing]
+						],
+					"}"}]
 				}], "\[IndentingNewLine]",
 			"]"}]
 		}]
@@ -53,5 +73,6 @@ Notebook[{
 },
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (April 18, 2017)",
 StyleDefinitions->"Default.nb",
-Saveable->False
+Saveable->False,
+TaggingRules->{"Settings"->{"BuildDoc"->False}}
 ]
