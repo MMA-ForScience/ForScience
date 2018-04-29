@@ -19,7 +19,18 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
   Cell[
     BoxData@GridBox[
       Prepend[Cell["      ","TableRowIcon"]]/@Map[
-        Replace[BoxesToDocEntry@ParseFormatting@#,c:Except[_Cell]:>Cell[c,"TableText"]]&,
+        Switch[#,
+          _String,
+          Cell[BoxesToDocEntry@ParseFormatting@#,"TableText"],
+          _Symbol,
+          Cell[BoxData@DocumentationLink@SymbolName@#,"TableText"],
+          _Cell,
+          #,
+          _BoxData,
+          Cell[#,"TableText"],
+          _,
+          Cell@BoxData@ToBoxes@#
+        ]&,
         tab,
         {2}
       ]
