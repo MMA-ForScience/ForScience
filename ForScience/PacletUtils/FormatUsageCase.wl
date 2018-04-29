@@ -7,14 +7,23 @@ FormatUsageCase;
 Begin["`Private`"]
 
 
-FormatUsageCase:=StringReplace[
+SyntaxInformation[FormatUsageCase]={"ArgumentsPattern"->{_,OptionsPattern[]}};
+
+
+Options[FormatUsageCase]={StartOfLine->False};
+
+
+FormatUsageCase[str_,OptionsPattern[]]:=StringReplace[
+  str,
   (
     func:(WordCharacter|"$"|"`")..~~
      args:("["~~Except["["|"]"]...~~"]")...:>
       "[*"<>func<>StringReplace[args,arg:WordCharacter..:>"```"<>arg<>"```"]<>"*]"
-  )/.(rhs_:>lhs_):>{StartOfLine~~rhs:>lhs,"[*"~~rhs~~"*]":>lhs}
+  )/.(rhs_:>lhs_):>{
+    If[OptionValue[StartOfLine],StartOfLine~~rhs:>lhs,Nothing],
+    "[*"~~rhs~~"*]":>lhs
+  }
 ]
-SyntaxInformation[Unevaluated@FormatUsageCase]={"ArgumentsPattern"->{_}};
 
 
 End[]

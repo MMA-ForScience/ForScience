@@ -12,7 +12,7 @@ Usage/:HoldPattern[Usage[sym_]=usage_String]:=
 sym::usage=MakeUsageString[
   UsageBoxes[sym]=(
     ParseFormatting/@StringSplit[
-      FormatUsageCase[Usage[sym]^=usage],
+      FormatUsageCase[Usage[sym]^=usage,StartOfLine->True],
       "\n"
     ]
   )
