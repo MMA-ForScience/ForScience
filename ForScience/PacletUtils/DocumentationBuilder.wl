@@ -10,14 +10,17 @@ Begin["`Private`"]
 $DocumentationSections={};
 
 
-$DocumentationDirectory="Documentation/English/ReferencePages/Symbols";
+$DocumentationBaseDirectory="Documentation/English/";
+$DocumentationSymbolDirectory="ReferencePages/Symbols/";
+$DocumentationDirectory=FileNameJoin@{$DocumentationBaseDirectory,$DocumentationSymbolDirectory};
 
 
 DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as not DocumentationHeader is set.";
 
 DocumentationBuilder[]:=(
   CreateDirectory[$DocumentationDirectory];
-  DocumentationBuilder[#,True]&/@$DocumentedSymbols
+  DocumentationBuilder[#,True]&/@$DocumentedSymbols;
+  IndexDocumentation@$DocumentationBaseDirectory;
 )
 DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
   {
@@ -25,7 +28,24 @@ DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
       StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"],
       Saveable->False,
       Visible->False,
-      TaggingRules->{"NewStyles"->True,"Openers"->{}},
+      TaggingRules->{
+        "NewStyles"->True,
+        "Openers"->{},
+        "Metadata"->{
+          "title"->SymbolName@sym,
+          "description"->"",
+          "label"->$BuiltPaclet<>" Symbol",
+          "context"->Context@sym,
+          "index"->True,
+          "language"->"en",
+          "paclet"->$BuiltPaclet,
+          "type"->"Symbol",
+          "windowtitle"->SymbolName@sym,
+          "uri"->$BuiltPaclet<>"/"<>$DocumentationSymbolDirectory<>SymbolName@sym,
+          "summary"->DocumentationSummary@sym,
+          "keywords"->{}
+        }
+      },
       WindowTitle->SymbolName@sym
     ]
   },
