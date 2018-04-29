@@ -54,7 +54,10 @@ DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
   Through[$DocumentationSections[nb,sym]];
   NotebookWrite[nb,MakeFooter[sym]];
   If[automated||$BuildActive,
-    NotebookSave[nb,FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"}];
+    Export[
+      FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"},
+      Replace[NotebookGet[nb],(Visible->False):>Sequence[],1]
+    ];
     NotebookClose[nb],
     SetOptions[nb,Visible->True]
   ];
