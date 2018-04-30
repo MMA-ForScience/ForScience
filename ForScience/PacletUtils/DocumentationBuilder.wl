@@ -50,6 +50,7 @@ DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
     ]
   },
   NotebookWrite[nb,MakeHeader[sym]];
+  NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
   NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
   Through[$DocumentationSections[nb,sym]];
   NotebookWrite[nb,MakeFooter[sym]];
