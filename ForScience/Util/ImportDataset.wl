@@ -9,7 +9,6 @@ ImportDataset[files,f\[RuleDelayed]n] imports the specified files and transforms
 ImportDataset[\[Ellipsis],f\[RuleDelayed]\[LeftAssociation]key_1\[Rule]val_1,\[Ellipsis]\[RightAssociation],datakey,\[Ellipsis]] applies the specified rule to the filenames and adds the imported data under ```datakey``` (defaulted to '''\"data\"''').
 ImportDataset[\[Ellipsis],{f,d}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```f```,```d```}''' to generate the items, where ```f``` is a filename and ```d``` is the corresponding imported data.
 ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies the specified rule to '''{```dir```,```f```,```data```}''' to generate the items, where ```f``` is a filename, ```dir``` the directory and ```data``` is the corresponding imported data.";
-$ImportDatasetCache::usage=FormatUsage@"$ImportDatasetCache contains the cached imports for ImportDataset calls. Use '''Clear[$ImportDatasetCache]''' to clear the cache";
 
 
 Begin["`Private`"]
@@ -37,7 +36,7 @@ ImportDataset[
    dm:PatternSequence[
      (r:({pat_,_}:>_))|
       PatternSequence[am:(r:(pat:Except[_List]:>_Association)),RepeatedNull[dk_,1]]|
-     ( r:(pat_:>Except[_Association]))|
+      (r:(pat_:>Except[_Association]))|
       pat:Except[_RuleDelayed|_List],
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
@@ -56,7 +55,7 @@ iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[TrueQ@
    ProgressReport[
    pProc@
      ProgressReport[mf[func,#]]&/@
-      GroupBy[files,DirectoryName],
+      GroupBy[files,FileNameDrop[#,0]&@*DirectoryName],
      Timing->OptionValue["FullFolderProgress"]
   ],
   ProgressReport[mf[func,files]]
@@ -73,7 +72,7 @@ With[
         pTrans@#,
         fp:>First[
           StringCases[
-            DirectoryName@#,
+            FileNameDrop[DirectoryName@#,0],
             dirp:>First[
               Cases[
                 idImporter[o]@#,
@@ -93,7 +92,7 @@ With[
     ]&,
     files,
     x__:>x,
-    "GroupFolders"->All,
+    "GroupFolders"->True,
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
