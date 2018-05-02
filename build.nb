@@ -23,7 +23,7 @@ Notebook[{
 				"BuildPaclet", "[", "\[IndentingNewLine]",
 				RowBox[{
 					"\"ForScience\"", ",", "\[IndentingNewLine]",
-					RowBox[{"{", "UsageCompiler", "}"}], ",", "\[IndentingNewLine]",
+					RowBox[{"{", "UsageCompiler", ",", "CleanBuildActions", "}"}], ",", "\[IndentingNewLine]",
 					RowBox[{"{", 
 						InterpretationBox[
 							TemplateBox[

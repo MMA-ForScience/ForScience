@@ -17,7 +17,9 @@ BuildAction[acts__]/;$BuildActive:=CompoundExpression[acts]
 BuildAction[acts__]:=Null
 
 
-CleanBuildActions[expr_]:=DeleteCases[HoldComplete@_BuildAction]
-
+CleanBuildActions[expr_]:=With[
+  {ba=Symbol["BuildAction"]},
+  DeleteCases[expr,HoldComplete@_ba]
+]
 
 End[]
