@@ -25,7 +25,11 @@ DocumentationBuilder[]:=(
 DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
   {
     nb=CreateNotebook[
-      StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"],
+      StyleDefinitions->Notebook[{
+        Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
+        Cell[StyleData["Input"],CellContext->Notebook],
+        Cell[StyleData["Output"],CellContext->Notebook]
+      }],
       Saveable->False,
       Visible->False,
       TaggingRules->{

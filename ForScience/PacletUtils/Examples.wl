@@ -62,11 +62,17 @@ $ExampleLevels={"PrimaryExamplesSection","ExampleSection","ExampleSubsection"};
 
 ExamplesSection[nb_,sec_Association,lev_]:=
   KeyValueMap[
-    CreateDocumentationOpener[
-      nb,
-      ExampleHeader[#,ExampleCount[#2]],
-      $ExampleLevels[[Min[lev,Length@$ExampleLevels]]],
-      ExamplesSection[nb,#2,lev+1]
+    With[
+      {type=$ExampleLevels[[Min[lev,Length@$ExampleLevels]]]},
+     Insert[type,{1,1,1,-2}]@
+      MapAt[
+        BoxData@InterpretationBox[Cell[#],$Line=0;]&,{1,1,1,1}
+      ]@CreateDocumentationOpener[
+        nb,
+        ExampleHeader[#,ExampleCount[#2]],
+        type,
+        ExamplesSection[nb,#2,lev+1]
+      ]
     ]&
   ]@sec
 ExamplesSection[_,sec_List,_]:=
@@ -115,19 +121,20 @@ ExamplesSection[nb_,sym_Symbol]:=ExamplesSection[nb,<|"Examples"->Examples[sym]|
 
 MakeExampleSection[nb_,sym_]:=If[Length@Examples@sym>0,
   With[
-    {prevStyle=StyleDefinitions/.Options[nb,StyleDefinitions]},
-    SetOptions[
-      nb,
+    {exNb=CreateNotebook[
+      Visible->False,
       InitializationCellEvaluation->False,
       (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
-      StyleDefinitions->Notebook@Append[
-        First@prevStyle,
-        Cell[StyleData["ExampleDelimiter"],Evaluatable->True,CellContext->Notebook]
+      StyleDefinitions->Notebook@Join[
+        First[StyleDefinitions/.Options[nb,StyleDefinitions]],
+        {Cell[StyleData["ExampleDelimiter"],Evaluatable->True,CellContext->Notebook]},
+        Cell[StyleData[#],Evaluatable->True,CellContext->Notebook]&/@$ExampleLevels
       ]
-    ];
-    NotebookWrite[nb,ExamplesSection[nb,sym],All];
-    SelectionEvaluateCreateCell[nb];
-    (*SetOptions[nb,InitializationCellEvaluation->Automatic,StyleDefinitions->prevStyle];*)
+    ]},
+    NotebookWrite[exNb,ExamplesSection[nb,sym],All];
+    NotebookEvaluate[exNb,InsertResults->True];
+    NotebookWrite[nb,First@NotebookGet@exNb];
+    NotebookClose[exNb];
   ]
 ]
 
