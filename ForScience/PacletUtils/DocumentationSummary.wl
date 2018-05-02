@@ -7,7 +7,7 @@ DocumentationSummary[sym_]:=StringRiffle[
   ]@
    First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@#,"PlainText"]&/@
     ForScience`PacletUtils`Private`UsageBoxes[sym],
-  ""
+  " "
 ]
 
 
