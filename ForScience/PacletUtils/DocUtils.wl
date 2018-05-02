@@ -45,6 +45,7 @@ BoxesToDocEntry[boxes_RowBox]:=Replace[
   ],
   TextData@{el_}:>el
 ]
+BoxesToDocEntry[boxes_String]:=TextData@boxes
 BoxesToDocEntry[boxes_]:=BoxData@boxes
 
 
