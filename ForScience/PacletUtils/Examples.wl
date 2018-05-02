@@ -119,7 +119,10 @@ ExamplesSection[_,sec_List,_]:=
 ExamplesSection[nb_,sym_Symbol]:=ExamplesSection[nb,<|"Examples"->Examples[sym]|>,1]
 
 
-MakeExampleSection[nb_,sym_]:=If[Length@Examples@sym>0,
+Options[MakeExampleSection]={Examples->True};
+
+
+MakeExampleSection[nb_,sym_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@Examples@sym>0,
   With[
     {exNb=CreateNotebook[
       Visible->False,

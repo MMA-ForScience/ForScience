@@ -13,7 +13,7 @@ HoldPattern[SeeAlso[sym_]=rel_]^:=(Message[SeeAlso::invalidInput,HoldForm@sym,re
 SeeAlso[_]:={}
 
 
-MakeSeeAlsoSection[nb_,sym_]:=If[Length@SeeAlso@sym>0,
+MakeSeeAlsoSection[nb_,sym_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
   NotebookWrite[nb,
     Cell@CellGroupData@{
       Cell["See Also","SeeAlsoSection"],

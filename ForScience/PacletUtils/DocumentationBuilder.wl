@@ -22,7 +22,7 @@ DocumentationBuilder[]:=(
   DocumentationBuilder[#,True]&/@$DocumentedSymbols;
   IndexDocumentation@$DocumentationBaseDirectory;
 )
-DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
+DocumentationBuilder[sym_?DocumentedQ,automated:(True|False):False,opts___?OptionQ]:=Module[
   {
     nb=CreateNotebook[
       StyleDefinitions->Notebook[{
@@ -56,7 +56,7 @@ DocumentationBuilder[sym_?DocumentedQ,automated_:False]:=Module[
   NotebookWrite[nb,MakeHeader[sym]];
   NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
   NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
-  Through[$DocumentationSections[nb,sym]];
+  #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections;
   NotebookWrite[nb,MakeFooter[sym]];
   If[automated||$BuildActive,
     Export[

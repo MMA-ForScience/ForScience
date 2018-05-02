@@ -172,8 +172,11 @@ SummaryThumbnail[nb_,sum_]:=With[
 ]
 
 
-MakeDetailsSection[nb_,sym_]:=
-  If[Length@Details@sym>0,
+Options[MakeDetailsSection]={Details->True};
+
+
+MakeDetailsSection[nb_,sym_,OptionsPattern[]]:=
+  If[OptionValue@Details&&Length@Details@sym>0,
     With[
       {
         notes=Switch[#,
