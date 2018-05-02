@@ -15,14 +15,14 @@ $DocumentationSymbolDirectory="ReferencePages/Symbols/";
 $DocumentationDirectory=FileNameJoin@{$DocumentationBaseDirectory,$DocumentationSymbolDirectory};
 
 
-DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as not DocumentationHeader is set.";
+DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as DocumentationHeader[`1`] is not set.";
 
 DocumentationBuilder[]:=(
   CreateDirectory[$DocumentationDirectory];
   DocumentationBuilder[#,True]&/@$DocumentedSymbols;
   IndexDocumentation@$DocumentationBaseDirectory;
 )
-DocumentationBuilder[sym_?DocumentedQ,automated:(True|False):False,opts___?OptionQ]:=Module[
+DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts___?OptionQ]:=Module[
   {
     nb=CreateNotebook[
       StyleDefinitions->Notebook[{
