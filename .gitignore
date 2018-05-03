@@ -1,3 +1,4 @@
 *.paclet
 build/
+cache/
 token

@@ -87,4 +87,7 @@ With[
 ]
 
 
+AppendTo[$DependencyCollectors,DocumentationHeader];
+
+
 End[]

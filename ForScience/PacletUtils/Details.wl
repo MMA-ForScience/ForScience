@@ -205,6 +205,7 @@ MakeDetailsSection[nb_,sym_,OptionsPattern[]]:=
 
 
 AppendTo[$DocumentationSections,MakeDetailsSection];
+AppendTo[$DependencyCollectors,Details];
 
 
 End[]

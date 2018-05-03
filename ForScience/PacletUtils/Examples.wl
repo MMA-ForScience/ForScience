@@ -143,6 +143,7 @@ MakeExampleSection[nb_,sym_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
 
 
 AppendTo[$DocumentationSections,MakeExampleSection];
+AppendTo[$DependencyCollectors,Examples];
 
 
 End[]

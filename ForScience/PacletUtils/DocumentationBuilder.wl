@@ -8,6 +8,10 @@ Begin["`Private`"]
 
 
 $DocumentationSections={};
+AppendTo[$DocumentationSections,sym_]^:=(
+  $DocumentationSections=Append[$DocumentationSections,sym];
+  AppendTo[Options[DocumentationBuilder],Options[sym]];
+)
 
 
 $DocumentationBaseDirectory="Documentation/English/";
@@ -17,57 +21,85 @@ $DocumentationDirectory=FileNameJoin@{$DocumentationBaseDirectory,$Documentation
 
 DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as DocumentationHeader[`1`] is not set.";
 
-DocumentationBuilder[]:=(
+
+Options[DocumentationBuilder]=Options[DocumentationCachePut];
+
+
+DocumentationBuilder[opts:OptionsPattern[]]:=(
   CreateDirectory[$DocumentationDirectory];
-  DocumentationBuilder[#,True]&/@$DocumentedSymbols;
+  DocumentationBuilder[
+    #,
+    True,
+    If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+    opts
+  ]&/@$DocumentedSymbols;
   IndexDocumentation@$DocumentationBaseDirectory;
 )
-DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts___?OptionQ]:=Module[
+DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=With[
   {
-    nb=CreateNotebook[
-      StyleDefinitions->Notebook[{
-        Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
-        Cell[StyleData["Input"],CellContext->Notebook],
-        Cell[StyleData["Output"],CellContext->Notebook]
-      }],
-      Saveable->False,
-      Visible->False,
-      TaggingRules->{
-        "NewStyles"->True,
-        "Openers"->{},
-        "Metadata"->{
-          "title"->SymbolName@sym,
-          "description"->"",
-          "label"->$BuiltPaclet<>" Symbol",
-          "context"->Context@sym,
-          "index"->True,
-          "language"->"en",
-          "paclet"->$BuiltPaclet,
-          "type"->"Symbol",
-          "windowtitle"->SymbolName@sym,
-          "uri"->$BuiltPaclet<>"/"<>$DocumentationSymbolDirectory<>SymbolName@sym,
-          "summary"->DocumentationSummary@sym,
-          "keywords"->{}
-        }
-      },
-      WindowTitle->SymbolName@sym
-    ]
+    cachedFile=DocumentationCacheGet[sym,FilterRules[{opts},Options@DocumentationCacheGet]],
+    docFile=FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"}
   },
-  NotebookWrite[nb,MakeHeader[sym]];
-  NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
-  NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
-  #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections;
-  NotebookWrite[nb,MakeFooter[sym]];
-  If[automated||$BuildActive,
-    Export[
-      FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"},
-      Replace[NotebookGet[nb],(Visible->False):>Sequence[],1]
-    ];
-    NotebookClose[nb],
-    SetOptions[nb,Visible->True]
-  ];
+  If[cachedFile=!=Null,
+    If[automated,
+      CopyFile[cachedFile,docFile],
+      NotebookOpen[cachedFile]
+    ],
+    With[
+      {
+        nb=CreateNotebook[
+          StyleDefinitions->Notebook[{
+            Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
+            Cell[StyleData["Input"],CellContext->Notebook],
+            Cell[StyleData["Output"],CellContext->Notebook]
+          }],
+          Saveable->False,
+          Visible->False,
+          TaggingRules->{
+            "NewStyles"->True,
+            "Openers"->{},
+            "Metadata"->{
+              "title"->SymbolName@sym,
+              "description"->"",
+              "label"->$BuiltPaclet<>" Symbol",
+              "context"->Context@sym,
+              "index"->True,
+              "language"->"en",
+              "paclet"->$BuiltPaclet,
+              "type"->"Symbol",
+              "windowtitle"->SymbolName@sym,
+              "uri"->$BuiltPaclet<>"/"<>$DocumentationSymbolDirectory<>SymbolName@sym,
+              "summary"->DocumentationSummary@sym,
+              "keywords"->{}
+            }
+          },
+          WindowTitle->SymbolName@sym
+        ]
+      },
+      NotebookWrite[nb,MakeHeader[sym]];
+      NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
+      NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
+      With[
+        {linkedSymbols=DeleteDuplicates@First@Last@Reap[
+          #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections,
+          Hyperlink
+        ]},
+        NotebookWrite[nb,MakeFooter[sym]];
+        If[automated,
+          Export[
+            docFile,
+            Replace[NotebookGet[nb],(Visible->False):>Sequence[],1],
+            PageWidth->Infinity
+          ];
+          NotebookClose[nb];
+          DocumentationCachePut[sym,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]],
+          SetOptions[nb,Visible->True]
+        ];
+      ];
+    ]
+  ]
 ]
-DocumentationBuilder[sym_,_:False]:=Message[DocumentationBuilder::noDoc,HoldForm[sym]]
+DocumentationBuilder[sym_,_:False,OptionsPattern[]]:=Message[DocumentationBuilder::noDoc,HoldForm[sym]]
 
 
 End[]

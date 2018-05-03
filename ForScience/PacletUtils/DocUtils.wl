@@ -6,18 +6,22 @@ Begin["`Private`"]
 SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 
 
-DocumentedQ[sym_Symbol]:=DocumentedQ[SymbolName@sym]
-DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(
-  !MissingQ@WolframLanguageData[sym,"WolframDocumentationLink"]||
-   DocumentationHeader[Symbol@sym]=!={})
+DefinedQ[sym_String]:=Internal`SymbolNameQ@sym&&Names[sym]=!={}
 
 
-DocumentationLink[sym_String]:=TemplateBox[
+DocSearch[sym_String]:=DocSearch[sym]=Last[DirectHitSearch[sym],Null]
+
+
+DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(DocSearch[sym]=!=Null||DocumentationHeader[Symbol@sym]=!={})
+
+
+DocumentationLink[sym_String]:=TagBox[Sow[sym,Hyperlink],Hyperlink]
+DocumentationLink[sym_String?DocumentedQ]:=TemplateBox[
   {
     sym,
-    If[DocumentationHeader[Symbol@sym]==={},
-      "paclet:ref/"<>sym,
-      $BuiltPaclet<>"/ReferencePages/Symbols/"<>sym
+    If[DocumentationHeader[Symbol@sym]=!={},
+      First@StringSplit[Context@Evaluate@Symbol@sym,"`"]<>"/ReferencePages/Symbols/"<>sym,
+      "paclet:"<>DocSearch[sym]
     ]
   },
   "RefLink",
@@ -37,7 +41,7 @@ BoxesToDocEntry[boxes_RowBox]:=Replace[
         {2}
       ],
       TagBox[RowBox@l_List,"[**]"]:>
-       RowBox@Replace[l,s_String?DocumentedQ:>DocumentationLink@s,1],
+       RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink@s,1],
       All
     ],
     t_TemplateBox:>Cell@BoxData@t,

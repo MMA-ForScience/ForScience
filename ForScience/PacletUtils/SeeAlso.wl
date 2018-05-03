@@ -56,6 +56,7 @@ MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
 
 AppendTo[$DocumentationSections,MakeSeeAlsoSection];
 AppendTo[$HeaderEntries,MakeSeeAlsoHeader];
+AppendTo[$DependencyCollectors,SeeAlso];
 
 
 End[]

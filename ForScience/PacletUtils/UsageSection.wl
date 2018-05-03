@@ -31,6 +31,7 @@ MakeUsageSection[nb_,sym_,OptionsPattern[]]:=If[OptionValue@Usage&&UsageBoxes@sy
 ]
 
 AppendTo[$DocumentationSections,MakeUsageSection];
+AppendTo[$DependencyCollectors,Usage];
 
 
 End[]
