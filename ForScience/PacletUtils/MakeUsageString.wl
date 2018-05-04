@@ -6,7 +6,10 @@ MakeUsageString;
 Begin["`Private`"]
 
 
-MakeUsageString[boxes_]:=StringRiffle[
+MakeUsageString[boxes_]:=MakeUsageString[{boxes}]
+
+
+MakeUsageString[boxes_List]:=StringRiffle[
   If[StringStartsQ[#,"\!"],#,"\!\(\)"<>#]&/@(
     Replace[
       boxes,
