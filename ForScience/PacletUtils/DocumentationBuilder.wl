@@ -94,9 +94,12 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
       NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
       NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
       With[
-        {linkedSymbols=DeleteDuplicates@First@Last@Reap[
-          #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections,
-          Hyperlink
+        {linkedSymbols=DeleteDuplicates@First[
+          Last@Reap[
+            #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections,
+            Hyperlink
+          ],
+          {}
         ]},
         NotebookWrite[nb,MakeFooter[sym]];
         If[automated,
