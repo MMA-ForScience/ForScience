@@ -27,13 +27,26 @@ Options[DocumentationBuilder]=Options[DocumentationCachePut];
 
 DocumentationBuilder[opts:OptionsPattern[]]:=(
   CreateDirectory[$DocumentationDirectory];
-  DocumentationBuilder[
-    #,
-    True,
-    If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
-    opts
-  ]&/@$DocumentedSymbols;
-  IndexDocumentation@$DocumentationBaseDirectory;
+  With[
+    {canged=Length@First[
+      Last@Reap[
+        DocumentationBuilder[
+          #,
+          True,
+          If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+          opts
+        ]&/@$DocumentedSymbols,
+        {DocumenationCacheGet,"Uncached"}
+      ],
+      {}
+    ]>0},
+    IndexDocumentation[
+      $DocumentationBaseDirectory,
+      !changed,
+      If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+      FilterRules[{opts},Options@IndexDocumentation]
+    ];
+  ]
 )
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=With[
   {
@@ -45,6 +58,7 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
       CopyFile[cachedFile,docFile],
       NotebookOpen[cachedFile]
     ],
+    Sow[sym,{DocumenationCacheGet,"Uncached"}];
     With[
       {
         nb=CreateNotebook[
