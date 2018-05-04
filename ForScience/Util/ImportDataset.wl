@@ -178,7 +178,7 @@ Details[ImportDataset]={
     {"\"CacheImports\"",True,"Whether to use the importer cache of [*CachedImport*]"}
   },
   "The \"Importer\" option supports the same specification formats as [*CachedImport*].",
-  "With the default setting [*\"GroupFolders\" -> Automatic*], data are grouped by folders whenever an explicity directory/list of directories is specified.",
+  "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicity directory/list of directories is specified.",
   "In the replacement rules specified, patterns for file and directory names should string expressions."
 };
 
