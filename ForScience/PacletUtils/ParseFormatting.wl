@@ -76,7 +76,8 @@ ParseFormatting[str_]:=Module[
   ];
   Catch[
     FixedPoint[
-      Replace[l_list:>{pre___,s:Repeated[_String,{2,\[Infinity]}],post___}:>{pre,StringJoin@s,post}],
+      Replace[#,{pre___,s:Longest@Repeated[_String,{2,\[Infinity]}],post___}:>
+       {pre,StringReplace[","~~c:Except[" "]:>", "<>c]@StringJoin@s,post},1]&,
       ParseToToken[pStr, i][EndOfLine]//.
        {pre___,a_,sb,b_,post___}:>{pre,SubscriptBox[a,b],post}
     ],

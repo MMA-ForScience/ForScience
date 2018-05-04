@@ -41,7 +41,10 @@ BoxesToDocEntry[boxes_RowBox]:=Replace[
     First@Replace[
       Replace[
         boxes,
-        b:Except[_String]:>CodeCell[b],
+        {
+          s_String:>StringReplace[s,","~~EndOfString:>", "],
+          b_:>CodeCell[b]
+        },
         {2}
       ],
       TagBox[RowBox@l_List,"[**]"]:>
