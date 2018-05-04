@@ -15,14 +15,18 @@ DocSearch[sym_String]:=DocSearch[sym]=Last[DirectHitSearch[sym],Null]
 DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(DocSearch[sym]=!=Null||DocumentationHeader[Symbol@sym]=!={})
 
 
+RawDocumentationLink[sym_String]:=If[
+  DocumentationHeader[Symbol@sym]=!={},
+ First@StringSplit[Context@Evaluate@Symbol@sym,"`"]<>"/ReferencePages/Symbols/"<>sym,
+ "paclet:"<>DocSearch[sym]
+]
+
+
 DocumentationLink[sym_String]:=TagBox[Sow[sym,Hyperlink],Hyperlink]
 DocumentationLink[sym_String?DocumentedQ]:=TemplateBox[
   {
     sym,
-    If[DocumentationHeader[Symbol@sym]=!={},
-      First@StringSplit[Context@Evaluate@Symbol@sym,"`"]<>"/ReferencePages/Symbols/"<>sym,
-      "paclet:"<>DocSearch[sym]
-    ]
+    RawDocumentationLink[sym]
   },
   "RefLink",
   BaseStyle->{"InlineFormula"}

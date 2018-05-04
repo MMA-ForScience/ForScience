@@ -39,7 +39,7 @@ MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
       ActionMenuBox[
         FrameBox[Cell[TextData[{"See Also"," ",$HeaderMenuArrow}]],StripOnInput->False],
         With[
-          {link="paclet:ref/"<>#},
+          {link=If[DocumentedQ@#,RawDocumentationLink@#,#]},
           #:>Documentation`HelpLookup[link]
         ]&/@SymbolName/@SeeAlso[sym],
         Appearance->None,
