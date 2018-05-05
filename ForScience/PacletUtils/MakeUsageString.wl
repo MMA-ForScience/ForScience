@@ -18,14 +18,21 @@ MakeUsageString[boxes_List]:=StringRiffle[
         TagBox[b_,_]:>b
       },
       All      
-    ]/.
-     s_String?(StringContainsQ["\""]):>
-      "\""<>StringReplace[s,"\""->"\\\""]<>"\""//Replace[
-        #,
-        RowBox[l_]|box_:>StringJoin@Replace[#&[l,{box}],{b:Except[_String]:>
-         "\!\(\*"<>ToString[b,InputForm]<>"\)",","->", "},{1}],
-        1
-      ]&
+    ]//Replace[
+      #,
+      s_String:>StringReplace[s,","~~EndOfString->", "],
+      {3}
+    ]&//Replace[
+      #,
+      s_String?(StringContainsQ["\""]):>
+       "\""<>StringReplace[s,"\""->"\\\""]<>"\"",
+      {4,Infinity}
+    ]&//Replace[
+      #,
+      RowBox[l_]|box_:>StringJoin@Replace[#&[l,{box}],b:Except[_String]:>
+      "\!\(\*"<>ToString[b,InputForm]<>"\)",1],
+      1
+    ]&
   ),
   "\n"
 ]
