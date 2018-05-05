@@ -1,5 +1,8 @@
 (* ::Package:: *)
 
+FormatUsage;
+
+
 Begin["`Private`"]
 
 
