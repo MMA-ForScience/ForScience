@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 DocumentationBuilder::usage=FormatUsage@"DocumentationBuilder is a global postprocessor for [*BuildPaclet*], that builds documentation pages for any symbols with [*DocumentationHeader*] set.
-DocumentationBuilder[sym] builds and displays the documentation page for the specified symbol.";
+DocumentationBuilder[sym] builds and displays the documentation page for the specified symbol. The return value is a reference to that notebook.";
 
 
 Begin["`Private`"]
@@ -109,10 +109,11 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
             PageWidth->Infinity
           ];
           NotebookClose[nb];
-          DocumentationCachePut[sym,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]],
-          SetOptions[nb,Visible->True]
-        ];
-      ];
+          DocumentationCachePut[sym,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
+          SetOptions[nb,Visible->True];
+          nb
+        ]
+      ]
     ]
   ]
 ]
