@@ -70,7 +70,14 @@ Block[
           Internal`HandlerBlock[
             {
               "GetFileEvent",
-              Replace[_[f_,_,First]/;trackGet:>Sow[FindFile@f,getTag]]
+              Replace[_[f_,_,First]/;trackGet:>(
+                 If[
+                   StringStartsQ[#,Directory[]],
+                   ProcessFile[preProcs]@#,
+                   #
+                 ]&@Sow[FindFile@f,getTag]
+               )
+              ]
             },
             Get[dir<>"`"]
           ],
