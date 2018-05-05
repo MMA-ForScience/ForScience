@@ -16,6 +16,8 @@ $ProcessedFile="";
 ProcessFile::msgs="Messages were generated during processing of '``'.";
 
 ProcessFile[_,{}]:=Null
+ProcessFile[{in_,in_},{}]:=Null
+ProcessFile[{in_,out_},{}]:=CopyFile[in,out,OverwriteTarget->True]
 ProcessFile[processors_][file_]:=ProcessFile[file,processors]
 ProcessFile[file_,processors_List]:=ProcessFile[{file,file},processors]
 ProcessFile[{in_,out_},processors_List]:=Block[
