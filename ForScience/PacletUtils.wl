@@ -35,5 +35,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`FormatUsageDoc`;
 <<`UsageDoc`;
 
+<<`ProcessFileDoc`;
+
 
 EndPackage[]

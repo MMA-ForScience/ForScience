@@ -1,9 +1,7 @@
 (* ::Package:: *)
 
-ProcessFile::usage=FormatUsage@"ProcessFile[file,{proc_1,\[Ellipsis]}] loads ```file```, applies all functions ```proc_i``` in order to the list of held expressions, and exports the result to the same file again.
-ProcessFile[{in,out},{proc_1,\[Ellipsis]}] loads file ```in``` and writes the result to ```out```.
-ProcessFile[{proc_1,\[Ellipsis]}] is the operator form.";
-$ProcessedFile::usage=FormatUsage@"$ProcessedFile is set to the absolute path of the file currently being processed by [*ProcessFile*]. Otherwise, it is '''\"\"'''.";
+ProcessFile;
+$ProcessedFile;
 
 
 Begin["`Private`"]
