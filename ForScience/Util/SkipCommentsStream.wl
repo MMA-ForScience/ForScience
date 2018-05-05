@@ -1,5 +1,8 @@
 (* ::Package:: *)
 
+Begin["`Private`"]
+
+
 Quiet@RemoveInputStreamMethod["SkipComments"];
 DefineInputStreamMethod["SkipComments",
   {
@@ -60,3 +63,6 @@ DefineInputStreamMethod["SkipComments",
     ]
   }
 ];
+
+
+End[]
