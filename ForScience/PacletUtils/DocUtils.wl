@@ -12,12 +12,21 @@ DefinedQ[sym_String]:=Internal`SymbolNameQ@sym&&Names[sym]=!={}
 DocSearch[sym_String]:=DocSearch[sym]=Last[DirectHitSearch[sym],Null]
 
 
-DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(DocSearch[sym]=!=Null||DocumentationHeader[Symbol@sym]=!={})
+HeldSymbol[sym_String]:=ToExpression[sym,InputForm,Hold]
+
+
+Attributes[SafeSymbolName]={HoldFirst};
+
+
+SafeSymbolName[sym_]:=SymbolName@Unevaluated@sym
+
+
+DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(DocSearch[sym]=!=Null||DocumentationHeader@@HeldSymbol[sym]=!={})
 
 
 RawDocumentationLink[sym_String]:=If[
-  DocumentationHeader[Symbol@sym]=!={},
- First@StringSplit[Context@Evaluate@Symbol@sym,"`"]<>"/ReferencePages/Symbols/"<>sym,
+  DocumentationHeader@@HeldSymbol[sym]=!={},
+ First@StringSplit[Context@@HeldSymbol[sym],"`"]<>"/ReferencePages/Symbols/"<>sym,
  "paclet:"<>DocSearch[sym]
 ]
 

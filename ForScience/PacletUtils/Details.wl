@@ -7,7 +7,11 @@ FormatTable::usage=FormatUsage@"FormatTable handles the formatting of [*TableFor
 Begin["`Private`"]
 
 
+Attributes[Details]={HoldFirst};
+
+
 Details::noList="Cannot set details of `` to ``, only lists are allowed.";
+
 
 Details/:HoldPattern[Details[sym_]=det_List]:=(Details[sym]^=det)
 HoldPattern[Details[sym_]=det_]^:=(Message[Details::noList,HoldForm@sym,det];det)
@@ -23,7 +27,7 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
           _String,
           Cell[BoxesToDocEntry@ParseFormatting@FormatUsageCase@#,"TableText"],
           _Symbol,
-          Cell[BoxData@DocumentationLink@SymbolName@#,"TableText"],
+          Cell[BoxData@DocumentationLink@SafeSymbolName@#,"TableText"],
           _Cell,
           #,
           _BoxData,
@@ -175,7 +179,10 @@ SummaryThumbnail[nb_,sum_]:=With[
 Options[MakeDetailsSection]={Details->True};
 
 
-MakeDetailsSection[nb_,sym_,OptionsPattern[]]:=
+Attributes[MakeDetailsSection]={HoldFirst};
+
+
+MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
   If[OptionValue@Details&&Length@Details@sym>0,
     With[
       {

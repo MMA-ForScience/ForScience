@@ -3,6 +3,9 @@
 Begin["`Private`"]
 
 
+Attributes[MakeFooter]={HoldFirst};
+
+
 MakeFooter[sym_]:=With[
   {
     splitter=StringSplit[#,RegularExpression["((?<![\\d.])(?=\\d+.[\\d.]+))"]]&,

@@ -6,24 +6,31 @@ SeeAlso::usage=FormatUsage@"SeeAlso[sym]'''={```sym_1```,\[Ellipsis]}''' sets th
 Begin["`Private`"]
 
 
-SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list of symbols is expexted.";
+Attributes[SeeAlso]={HoldFirst};
 
-SeeAlso/:HoldPattern[SeeAlso[sym_]=rel:{_Symbol...}]:=(SeeAlso[sym]^=rel)
+
+SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list/held expression of symbols is expexted.";
+
+
+SeeAlso/:HoldPattern[SeeAlso[sym_]=rel:(List|Hold)[_Symbol...]]:=(SeeAlso[sym]^=rel)
 HoldPattern[SeeAlso[sym_]=rel_]^:=(Message[SeeAlso::invalidInput,HoldForm@sym,rel];rel)
 SeeAlso[_]:={}
 
 
-MakeSeeAlsoSection[nb_,sym_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
+Attributes[MakeSeeAlsoSection]={HoldFirst};
+
+
+MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
   NotebookWrite[nb,
     Cell@CellGroupData@{
       Cell["See Also","SeeAlsoSection"],
       Cell[
         TextData@Riffle[
           Cell[
-            BoxData@DocumentationLink@SymbolName@#,
+            BoxData@DocumentationLink@#,
             "InlineFormula",
             FontFamily->"Source Sans Pro"
-          ]&/@SeeAlso@sym,
+          ]&/@List@@SafeSymbolName/@SeeAlso[sym],
           Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "]
         ],
         "SeeAlso"
@@ -31,6 +38,9 @@ MakeSeeAlsoSection[nb_,sym_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
     }
   ];
 ]
+
+
+Attributes[MakeSeeAlsoHeader]={HoldFirst};
 
 
 MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
@@ -41,7 +51,7 @@ MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
         With[
           {link=If[DocumentedQ@#,RawDocumentationLink@#,#]},
           #:>Documentation`HelpLookup[link]
-        ]&/@SymbolName/@SeeAlso[sym],
+        ]&/@List@@SafeSymbolName/@SeeAlso[sym],
         Appearance->None,
         MenuAppearance->Automatic,
         MenuStyle->"SeeAlso"

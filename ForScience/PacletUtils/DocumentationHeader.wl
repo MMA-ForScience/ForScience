@@ -13,15 +13,19 @@ $ForScienceColor=Darker@Green;
 SyntaxInformation[DocumentationHeader]={"ArgumentsPattern"->{_}};
 
 
-$DocumentedSymbols={};
+$DocumentedSymbols=Hold[];
+
+
+Attributes[DocumentationHeader]={HoldFirst};
 
 
 DocumentationHeader::invalid="Can't set documentation header data of `` to ``. Data should be of the form {str,col,indroduction}.";
 
+
 DocumentationHeader/:
  HoldPattern[DocumentationHeader[sym_]=header:{_String,_?ColorQ,_String}]:=
  (
-   AppendTo[$DocumentedSymbols,sym];
+   $DocumentedSymbols=Union[$DocumentedSymbols,Hold[sym]];
    DocumentationHeader[sym]^=header
  )
 HoldPattern[DocumentationHeader[sym_]=.]^:=
@@ -49,12 +53,15 @@ $HeaderMenuArrow=Cell@BoxData@GraphicsBox[
 $HeaderEntries={};
 
 
+Attributes[MakeHeader]={HoldFirst};
+
+
 MakeHeader[sym_]:=
 With[
   {
     title=DocumentationHeader[sym][[1]],
     col=DocumentationHeader[sym][[2]],
-    entries=Through[$HeaderEntries[sym]]
+    entries=#@sym&/@$HeaderEntries
   },
   Cell[
     BoxData@GridBox@{{

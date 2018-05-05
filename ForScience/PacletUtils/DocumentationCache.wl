@@ -6,7 +6,13 @@ Begin["`Private`"]
 $DependencyCollectors={};
 
 
-CacheFile[sym_]:=StringReplace[Context@sym<>SymbolName@sym,"`"->"_"]
+Attributes[CacheFile]={HoldFirst};
+
+
+CacheFile[sym_]:=StringReplace[Context@sym<>SafeSymbolName@sym,"`"->"_"]
+
+
+Attributes[CreateCacheID]={HoldFirst};
 
 
 CreateCacheID[sym_]:=AssociationMap[#@sym&,Sort@$DependencyCollectors]
@@ -16,6 +22,9 @@ DocumentationCachePut::noDir="The specified cache directory `` is not a director
 
 
 Options[DocumentationCachePut]={"CacheDirectory"->"cache"};
+
+
+Attributes[DocumentationCachePut]={HoldFirst};
 
 
 DocumentationCachePut[sym_,doc_,links_,OptionsPattern[]]:=With[
@@ -33,6 +42,9 @@ DocumentationCachePut[sym_,doc_,links_,OptionsPattern[]]:=With[
 
 
 Options[DocumentationCacheGet]={"CacheDirectory"->"cache"};
+
+
+Attributes[DocumentationCacheGet]={HoldFirst};
 
 
 DocumentationCacheGet[sym_,OptionsPattern[]]:=With[

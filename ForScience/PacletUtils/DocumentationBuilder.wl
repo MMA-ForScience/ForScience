@@ -25,17 +25,24 @@ DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as Docum
 Options[DocumentationBuilder]=Options[DocumentationCachePut];
 
 
+Attributes[DocumentationBuilder]={HoldFirst};
+
+
 DocumentationBuilder[opts:OptionsPattern[]]:=(
   CreateDirectory[$DocumentationDirectory];
   With[
     {changed=Length@First[
       Last@Reap[
-        DocumentationBuilder[
-          #,
-          True,
-          If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
-          opts
-        ]&/@$DocumentedSymbols,
+        List@@(Function[
+          sym,
+          DocumentationBuilder[
+            sym,
+            True,
+            If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+            opts
+          ],
+          {HoldFirst}
+        ]/@$DocumentedSymbols),
         {DocumenationCacheGet,"Uncached"}
       ],
       {}
@@ -51,14 +58,14 @@ DocumentationBuilder[opts:OptionsPattern[]]:=(
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=With[
   {
     cachedFile=DocumentationCacheGet[sym,FilterRules[{opts},Options@DocumentationCacheGet]],
-    docFile=FileNameJoin@{Directory[],$DocumentationDirectory,SymbolName@sym<>".nb"}
+    docFile=FileNameJoin@{Directory[],$DocumentationDirectory,SafeSymbolName@sym<>".nb"}
   },
   If[cachedFile=!=Null,
     If[automated,
       CopyFile[cachedFile,docFile],
       NotebookOpen[cachedFile]
     ],
-    Sow[sym,{DocumenationCacheGet,"Uncached"}];
+    Sow[Hold[sym],{DocumenationCacheGet,"Uncached"}];
     With[
       {
         nb=CreateNotebook[
@@ -73,7 +80,7 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
             "NewStyles"->True,
             "Openers"->{},
             "Metadata"->{
-              "title"->SymbolName@sym,
+              "title"->SafeSymbolName@sym,
               "description"->"",
               "label"->$BuiltPaclet<>" Symbol",
               "context"->Context@sym,
@@ -81,22 +88,22 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
               "language"->"en",
               "paclet"->$BuiltPaclet,
               "type"->"Symbol",
-              "windowtitle"->SymbolName@sym,
-              "uri"->$BuiltPaclet<>"/"<>$DocumentationSymbolDirectory<>SymbolName@sym,
+              "windowtitle"->SafeSymbolName@sym,
+              "uri"->$BuiltPaclet<>"/"<>$DocumentationSymbolDirectory<>SafeSymbolName@sym,
               "summary"->DocumentationSummary@sym,
               "keywords"->{}
             }
           },
-          WindowTitle->SymbolName@sym
+          WindowTitle->SafeSymbolName@sym
         ]
       },
       NotebookWrite[nb,MakeHeader[sym]];
       NotebookWrite[nb,Cell[Context@sym,"ContextNameCell"]];
-      NotebookWrite[nb,Cell[SymbolName@sym,"ObjectName"]];
+      NotebookWrite[nb,Cell[SafeSymbolName@sym,"ObjectName"]];
       With[
         {linkedSymbols=DeleteDuplicates@First[
           Last@Reap[
-            #[nb,sym,FilterRules[{opts},Options@#]]&/@$DocumentationSections,
+            #[sym,nb,FilterRules[{opts},Options@#]]&/@$DocumentationSections,
             Hyperlink
           ],
           {}

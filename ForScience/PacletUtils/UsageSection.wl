@@ -6,7 +6,10 @@ Begin["`Private`"]
 Options[MakeUsageSection]={Usage->True};
 
 
-MakeUsageSection[nb_,sym_,OptionsPattern[]]:=If[OptionValue@Usage&&UsageBoxes@sym=!={},
+Attributes[MakeUsageSection]={HoldFirst};
+
+
+MakeUsageSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Usage&&UsageBoxes@sym=!={},
   NotebookWrite[nb,
     Cell[
       BoxData@GridBox[

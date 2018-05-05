@@ -17,7 +17,7 @@ Attributes[SymbolVersion]={HoldFirst};
 
 SymbolVersion[s_Symbol]:=SymbolVersion[s]=
  WolframLanguageData[
-   SymbolName@Unevaluated@s,
+   SafeSymbolName@s,
    "VersionIntroduced"
  ]/._Missing->0
 Attributes[SymbolVersion]={HoldFirst};
@@ -28,7 +28,7 @@ Attributes[SymbolModVersion]={HoldFirst};
 
 SymbolModVersion[s_Symbol]:=SymbolModVersion[s]=
  WolframLanguageData[
-   SymbolName@Unevaluated@s,
+   SafeSymbolName@s,
    "VersionLastModified"
  ]/._Missing->SymbolVersion[s]
 Attributes[SymbolModVersion]={HoldFirst};

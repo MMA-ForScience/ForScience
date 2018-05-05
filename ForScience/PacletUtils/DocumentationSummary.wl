@@ -1,6 +1,9 @@
 Begin["`Private`"]
 
 
+Attributes[DocumentationSummary]={HoldFirst};
+
+
 DocumentationSummary[sym_]:=StringRiffle[
   StringReplace[
     c:("\\["~~WordCharacter..~~"]"):>ToExpression["\""<>c<>"\""]
