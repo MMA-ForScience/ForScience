@@ -28,7 +28,7 @@ Options[DocumentationBuilder]=Options[DocumentationCachePut];
 DocumentationBuilder[opts:OptionsPattern[]]:=(
   CreateDirectory[$DocumentationDirectory];
   With[
-    {canged=Length@First[
+    {changed=Length@First[
       Last@Reap[
         DocumentationBuilder[
           #,
