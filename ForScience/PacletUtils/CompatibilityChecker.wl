@@ -12,6 +12,9 @@ SyntaxInformation[CompatibilityChecker]={"ArgumentsPattern"->{_,OptionsPattern[]
 Options[CompatibilityChecker]={"WarnForModification"->False};
 
 
+Attributes[SymbolVersion]={HoldFirst};
+
+
 SymbolVersion[s_Symbol]:=SymbolVersion[s]=
  WolframLanguageData[
    SymbolName@Unevaluated@s,
@@ -20,11 +23,14 @@ SymbolVersion[s_Symbol]:=SymbolVersion[s]=
 Attributes[SymbolVersion]={HoldFirst};
 
 
+Attributes[SymbolModVersion]={HoldFirst};
+
+
 SymbolModVersion[s_Symbol]:=SymbolModVersion[s]=
  WolframLanguageData[
    SymbolName@Unevaluated@s,
    "VersionLastModified"
- ]/._Missing->0
+ ]/._Missing->SymbolVersion[s]
 Attributes[SymbolModVersion]={HoldFirst};
 
 
@@ -41,12 +47,13 @@ CompatibilityChecker[ver_,OptionsPattern[]][exprs_]:=(
        ]},
        If[sVer>ver,
          If[OptionValue["WarnForModification"],
-           Message[versionCheck::tooNewMod,SymbolName@Unevaluated@s,sVer],
-           Message[versionCheck::tooNew,SymbolName@Unevaluated@s,sVer]
+           Message[versionCheck::tooNewMod,HoldForm@s,sVer],
+           Message[versionCheck::tooNew,HoldForm@s,sVer]
          ]
        ]
      ],
-    {2,\[Infinity]}
+    {2,Infinity},
+    Heads->True
   ];
   exprs
 )
