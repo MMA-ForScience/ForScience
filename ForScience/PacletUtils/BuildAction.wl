@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-BuildAction::usage=FormatUsage@"BuildAction[act_1,\[Ellipsis]] behaves like [*CompoundExpression*] if '''$BuildActive''' is '''True''', otherwise returns '''Null'''.";
-CleanBuildActions::usage=FormatUsage@"CleanBuildActions[{expr_1,\[Ellipsis]}] removes any top-level [*BuildAction[\[Ellipsis]]*] expressions when used in [*ProcessFile*].";
+BuildAction;
+CleanBuildActions;
 
 
 Begin["`Private`"]

@@ -1,12 +1,8 @@
 (* ::Package:: *)
 
-BuildPaclet::usage=FormatUsage@"BuildPaclet[dir] copies the content of ```dir``` to the build directory specified by the '''\"BuildDirectory\"''', loads it option and packs the paclet.
-BuildPaclet[dir,{postProc_1,\[Ellipsis]}] applies all ```postProc_i``` to any files loaded during paclet load using [*ProcessFile*]
-BuildPaclet[dir,{*preProc_1,\[Ellipsis]},{postProc_1,\[Ellipsis]*}] applies any ```preProc_i``` before the file is actually loaded.
-BuildPaclet[dir,{\[Ellipsis]},{globalPostProc_1,\[Ellipsis]}] evaluates all ```globalPostProc_i``` after the paclet has been loaded from the build directory.
-BuildPaclet[dir,{\[Ellipsis]},{*globalPreProc_1,\[Ellipsis]},{globalPostProc_1,\[Ellipsis]*}] evaluates all ```globalPreProc_i``` before the paclet is loaded from the build directory.";
-$BuildActive::usage=FormatUsage@"'''$BuildActive''' is '''True''' whenever a paclet is currently being built (see [*BuildPaclet*]).";
-$BuiltPaclet::usage=FormatUsage@"$BuiltPaclet is set to the name of the actively built paclet. If no paclet is being built, this is '''\"\"'''";
+BuildPaclet;
+$BuildActive;
+$BuiltPaclet;
 
 
 Begin["`Private`"]
