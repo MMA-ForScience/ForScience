@@ -27,16 +27,18 @@ Examples[ProcessFile,"Basic examples"]={
   {
     "Load the ForScience package:",
     ExampleInput[Needs["ForScience`PacletUtils`"]],
-    "Create a temporary directory:",
-    ExampleInput[SetDirectory@CreateDirectory[];],
     "Create a file containing some expressions:",
-    ExampleInput["Export[\"test.wl\",
-      \"
-        Print[1]
-        a+b
-      \",
-      \"String\"
-     ];"],
+    ExampleInput[
+      SetDirectory@CreateDirectory[];,
+      "Export[\"test.wl\",
+        \"
+          Print[1]
+          a+b
+        \",
+        \"String\"
+      ];",
+      InitializationCell->True
+     ],
     "Process the file:",
     ExampleInput[ProcessFile["test.wl",{Echo}]]
   },
@@ -118,16 +120,18 @@ Examples[$ProcessedFile,"Basic examples"]={
   {
     "Load the ForScience package:",
     ExampleInput[Needs["ForScience`PacletUtils`"]],
-    "Create a temporary directory:",
-    ExampleInput[SetDirectory@CreateDirectory[];],
     "Create a file containing some expressions:",
-    ExampleInput["Export[\"test.wl\",
-      \"
-        Print[1]
-        a+b
-      \",
-      \"String\"
-     ];"],
+    ExampleInput[
+      SetDirectory@CreateDirectory[];,
+      "Export[\"test.wl\",
+        \"
+          Print[1]
+          a+b
+        \",
+        \"String\"
+      ];",
+      InitializationCell->True
+     ],
     "See how [*$ProcessedFile*] is set during the evaluation of [*ProcessFile[\[Ellipsis]]*]:",
     ExampleInput[ProcessFile["test.wl",{Echo[#,FileNameTake@$ProcessedFile]&}]],
     ExampleInput[

@@ -84,17 +84,19 @@ Examples[CompatibilityChecker,"Basic examples"]={
   {
     "Load the ForScience package:",
     ExampleInput[Needs["ForScience`PacletUtils`"]],
-    "Create a temporary directory:",
-    ExampleInput[SetDirectory@CreateDirectory[];],
     "Create a test file:",
-    ExampleInput["Export[\"test.wl\",
-      \"
-        Print[1];
-        Plot[x,{x,0,1}];
-        Echo[2];
-      \",
-      \"String\"
-    ];"],
+    ExampleInput[
+      SetDirectory@CreateDirectory[];,
+      "Export[\"test.wl\",
+        \"
+          Print[1];
+          Plot[x,{x,0,1}];
+          Echo[2];
+        \",
+        \"String\"
+      ];",
+      InitializationCell->True
+    ],
     "Check for version 9 compatibility:",
     ExampleInput[ProcessFile["test.wl",{CompatibilityChecker[9]}]]
   },
