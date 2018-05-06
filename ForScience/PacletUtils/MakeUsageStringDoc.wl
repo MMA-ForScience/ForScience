@@ -7,11 +7,7 @@ MakeUsageString[{boxes_1,\[Ellipsis]}] creates a multiline string, with line ```
 BuildAction[
 
 
-DocumentationHeader[MakeUsageString]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Introduced in 0.50.0, updated in 0.60.9"
-};
+DocumentationHeader[MakeUsageString]=FSHeader["0.50.0","0.60.9"];
 
 
 Details[MakeUsageString]={

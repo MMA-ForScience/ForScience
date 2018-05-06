@@ -6,11 +6,7 @@ Usage[FormatUsageCase]="FormatUsageCase[str] prepares all function calls wrapped
 BuildAction[
 
 
-DocumentationHeader[FormatUsageCase]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Introduced in 0.0.1, updated in 0.60.4"
-};
+DocumentationHeader[FormatUsageCase]=FSHeader["0.0.1","0.60.4"];
 
 
 Details[FormatUsageCase]={

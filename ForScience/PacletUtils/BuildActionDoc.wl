@@ -7,11 +7,7 @@ Usage[CleanBuildActions]="CleanBuildActions[{expr_1,\[Ellipsis]}] removes any to
 BuildAction[
 
 
-DocumentationHeader[BuildAction]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.49.0"
-};
+DocumentationHeader[BuildAction]=FSHeader["0.49.0"];
 
 
 Details[BuildAction]={
@@ -26,11 +22,7 @@ Details[BuildAction]={
 SeeAlso[BuildAction]=Hold[$BuildActive,CleanBuildActions,BuildPaclet,Details,Examples,SeeAlso];
 
 
-DocumentationHeader[CleanBuildActions]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.49.0, updated in 0.59.20"
-};
+DocumentationHeader[CleanBuildActions]=FSHeader["0.49.0","0.59.20"];
 
 
 Details[CleanBuildActions]={

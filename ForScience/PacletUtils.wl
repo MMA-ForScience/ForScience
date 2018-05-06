@@ -24,6 +24,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`Details`;
 <<`Examples`;
 <<`SeeAlso`;
+<<`FSHeader`;
 <<`CompatibilityChecker`;
 <<`VariableLeakTracer`;
 <<`UsageCompiler`;

@@ -158,11 +158,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.19.0, updated in 0.45.2"
-};
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.45.2"];
 
 
 Details[ImportDataset]={

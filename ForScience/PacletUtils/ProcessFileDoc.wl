@@ -9,11 +9,7 @@ Usage[$ProcessedFile]="$ProcessedFile is set to the absolute path of the file cu
 BuildAction[
 
 
-DocumentationHeader[ProcessFile]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.46.0, updated in 0.54.0"
-};
+DocumentationHeader[ProcessFile]=FSHeader["0.46.0","0.54.0"];
 
 
 Details[ProcessFile]={
@@ -108,11 +104,7 @@ Examples[ProcessFile,"Possible issues"]={
 SeeAlso[ProcessFile]=Hold[$ProcessedFile,BuildPaclet,CompatibilityChecker,UsageCompiler,VariableLeakTracer];
 
 
-DocumentationHeader[$ProcessedFile]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.54.0"
-};
+DocumentationHeader[$ProcessedFile]=FSHeader["0.54.0"];
 
 
 Details[$ProcessedFile]={

@@ -6,11 +6,7 @@ Usage[FormatUsage]="FormatUsage[str] combines the functionalities of [*FormatUsa
 BuildAction[
 
 
-DocumentationHeader[FormatUsage]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.0.1, updated in 0.50.1"
-};
+DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.50.1"];
 
 
 Details[FormatUsage]={

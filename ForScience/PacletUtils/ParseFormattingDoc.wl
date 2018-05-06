@@ -6,11 +6,7 @@ Usage[ParseFormatting]="ParseFormatting[str] returns a box expression formatted 
 BuildAction[
 
 
-DocumentationHeader[ParseFormatting]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Introduced in 0.50.0, updated in 0.60.9"
-};
+DocumentationHeader[ParseFormatting]=FSHeader["0.50.0","0.60.9"];
 
 
 Details[ParseFormatting]={

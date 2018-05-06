@@ -65,11 +65,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[CompatibilityChecker]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.51.0, updated in 0.61.11"
-};
+DocumentationHeader[CompatibilityChecker]=FSHeader["0.51.0","0.61.11"];
 
 
 Details[CompatibilityChecker]={

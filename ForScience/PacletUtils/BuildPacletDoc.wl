@@ -12,11 +12,7 @@ Usage[$BuiltPaclet]="$BuiltPaclet is set to the name of the actively built pacle
 BuildAction[
 
 
-DocumentationHeader[BuildPaclet]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.48.0, updated in 0.60.10"
-};
+DocumentationHeader[BuildPaclet]=FSHeader["0.48.0","0.60.10"];
 
 
 Details[BuildPaclet]={
@@ -45,11 +41,7 @@ Details[BuildPaclet]={
 SeeAlso[BuildPaclet]=Hold[$BuiltPaclet,$BuildActive,DocumentationBuilder,ProcessFile,CompatibilityChecker,UsageCompiler];
 
 
-DocumentationHeader[$BuildActive]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.48.0"
-};
+DocumentationHeader[$BuildActive]=FSHeader["0.48.0"];
 
 
 Details[$BuildActive]={
@@ -61,11 +53,7 @@ Details[$BuildActive]={
 SeeAlso[$BuildActive]=Hold[BuildAction,BuildPaclet,$BuiltPaclet];
 
 
-DocumentationHeader[$BuiltPaclet]={
-  "FOR-SCIENCE SYMBOL",
-  $ForScienceColor,
-  "Added in 0.55.1"
-};
+DocumentationHeader[$BuiltPaclet]=FSHeader["0.55.1"];
 
 
 Details[$BuiltPaclet]={
