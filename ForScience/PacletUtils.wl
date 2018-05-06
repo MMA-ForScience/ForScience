@@ -13,9 +13,6 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`ProcessFile`;
 <<`BuildPaclet`;
 <<`BuildAction`;
-<<`CompatibilityChecker`;
-<<`VariableLeakTracer`;
-<<`UsageCompiler`;
 <<`DocUtils`;
 <<`DocumentationCache`;
 <<`DocumentationHeader`;
@@ -27,6 +24,9 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`Details`;
 <<`Examples`;
 <<`SeeAlso`;
+<<`CompatibilityChecker`;
+<<`VariableLeakTracer`;
+<<`UsageCompiler`;
 
 
 <<`FormatUsageCaseDoc`;
