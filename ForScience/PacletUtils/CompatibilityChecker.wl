@@ -141,14 +141,7 @@ Examples[CompatibilityChecker,"Possible issues"]={
       ];",
       ProcessFile["typos.wl",{CompatibilityChecker[1]}]
     ],
-    ExampleInput[
-      With[
-        {dir=Directory[]},
-        ResetDirectory[];
-        DeleteDirectory[dir,DeleteContents->True];
-      ];
-      NotebookDelete[EvaluationCell[]];
-    ]
+    CleanExampleDirectory
   }
 };
 

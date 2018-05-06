@@ -291,14 +291,7 @@ Examples[ImportDataset,"Properties & Relations"]={
   {
     "Also extract parts from data and directory name this way:",
     ExampleInput[ImportDataset[ToAssociationRule[{dir__,"test"~~i_~~"_"~~j_~~".tsv",{first_,second_}}],"test*"]],
-    ExampleInput[
-      With[
-        {dir=Directory[]},
-        ResetDirectory[];
-        DeleteDirectory[dir,DeleteContents->True];
-      ];
-      NotebookDelete[EvaluationCell[]];
-    ]
+    CleanExampleDirectory
   }
 };
 

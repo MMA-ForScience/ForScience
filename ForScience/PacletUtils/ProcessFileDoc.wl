@@ -91,14 +91,7 @@ Examples[ProcessFile,"Possible issues"]={
       }]",
       Import["test.wl","String"]
     ],
-    ExampleInput[
-      With[
-        {dir=Directory[]},
-        ResetDirectory[];
-        DeleteDirectory[dir,DeleteContents->True];
-      ];
-      NotebookDelete[EvaluationCell[]];
-    ]
+    CleanExampleDirectory
   }
 };
 
@@ -134,14 +127,7 @@ Examples[$ProcessedFile,"Basic examples"]={
      ],
     "See how [*$ProcessedFile*] is set during the evaluation of [*ProcessFile[\[Ellipsis]]*]:",
     ExampleInput[ProcessFile["test.wl",{Echo[#,FileNameTake@$ProcessedFile]&}]],
-    ExampleInput[
-      With[
-        {dir=Directory[]},
-        ResetDirectory[];
-        DeleteDirectory[dir,DeleteContents->True];
-      ];
-      NotebookDelete[EvaluationCell[]];
-    ]
+    CleanExampleDirectory
   },
   {
     "Outside of [*ProcessFile*] evaluations, [*$ProcessedFile*] is empty:",
