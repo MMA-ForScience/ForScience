@@ -52,7 +52,7 @@ HoldPattern[Examples[sym_]=_]^:=Message[Examples::needSubCat,HoldForm@sym];
 Examples[_]:=<||>
 Examples[_,__]:={}
 Attributes[ExampleInput]={HoldAll};
-Options[ExampleInput]={InitializationCell->Automatic};
+Options[ExampleInput]={InitializationCell->Automatic,Visible->True};
 
 
 ExampleHeader[title_,num_]:={title,"\[NonBreakingSpace]\[NonBreakingSpace]",Cell[StringTemplate["(``)"]@num,"ExampleCount"]}
@@ -94,7 +94,11 @@ ExamplesSection[sec_List,_,_]:=
         _ExampleInput,
         Cell[
           Replace[
-            #/.ExampleInput[in__,OptionsPattern[]]:>ExampleInput[in],
+            #/.ExampleInput[in__,OptionsPattern[]]:>If[
+              Visible/.Join[Options[#],Options[ExampleInput]],
+              ExampleInput[in],
+              ExampleInput[line=$Line;,in,NotebookDelete@EvaluationCell[];$Line=line-1;]
+            ],
             {
               s_String:>(MathLink`CallFrontEnd[
                 FrontEnd`UndocumentedTestFEParserPacket[
