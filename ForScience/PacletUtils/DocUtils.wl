@@ -86,7 +86,7 @@ $SectionArrow=Style[
 
 
 DocumentationOpener[{heading__},type_,index_]:=With[
-  {arrow=$SectionArrow},
+  {arrow=$SectionArrow,groupOpener=Symbol["System`WholeCellGroupOpener"]},
   Cell[
     TextData@{
       Cell@BoxData@DynamicBox@ToBoxes@If[
@@ -106,7 +106,7 @@ DocumentationOpener[{heading__},type_,index_]:=With[
     heading
     },
     type,
-    System`WholeCellGroupOpener->True
+    groupOpener->True
   ]
 ]
 
