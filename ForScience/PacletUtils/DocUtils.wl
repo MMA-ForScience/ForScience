@@ -31,7 +31,7 @@ RawDocumentationLink[sym_String]:=If[
 ]
 
 
-DocumentationLink[sym_String]:=TagBox[Sow[sym,Hyperlink],Hyperlink]
+DocumentationLink[sym_String]:=TagBox[Sow[sym,Hyperlink],Hyperlink,BaseStyle->{"InlineFormula"}]
 DocumentationLink[sym_String?DocumentedQ]:=TemplateBox[
   {
     sym,
@@ -45,22 +45,27 @@ DocumentationLink[sym_String?DocumentedQ]:=TemplateBox[
 CodeCell[box_]:=Cell[BoxData@box,"InlineFormula",FontFamily->"Source Sans Pro"]
 
 
-BoxesToDocEntry[boxes_RowBox]:=Replace[
+BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=Replace[
   TextData@Replace[
     First@Replace[
-      Replace[
-        boxes,
-        {
-          s_String:>StringReplace[s,","~~EndOfString:>", "],
-          b_:>CodeCell[b]
-        },
-        {2}
+      Switch[boxes,
+        _RowBox,
+        Replace[
+          boxes,
+          {
+            s_String:>StringReplace[s,","~~EndOfString:>", "],
+            b_:>CodeCell[b]
+          },
+          {2}
+        ],
+        _,
+        boxes
       ],
       TagBox[RowBox@l_List,"[**]"]:>
        RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink@s,1],
       All
     ],
-    t_TemplateBox:>Cell@BoxData@t,
+    t:(_TemplateBox|_TagBox):>Cell@BoxData@t,
     1
   ],
   TextData@{el_}:>el
