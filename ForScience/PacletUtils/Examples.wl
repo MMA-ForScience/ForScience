@@ -125,7 +125,8 @@ ExamplesSection[sec_List,_,_]:=
       sec,
       {2}
     ],
-    {{Cell[BoxData[InterpretationBox[Cell["\t","ExampleDelimiter"],$Line=0;]],"ExampleDelimiter"]}}
+    {{Cell[BoxData[InterpretationBox[Cell["\t","ExampleDelimiter"],$Line=0;]],"ExampleDelimiter"]}},
+    {2,-2,2}
   ]
 ExamplesSection[sym_Symbol,nb_]:=ExamplesSection[<|"Examples"->Examples[sym]|>,nb,1]
 
