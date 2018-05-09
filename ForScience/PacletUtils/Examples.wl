@@ -67,6 +67,14 @@ Attributes[ExamplesSection]={HoldFirst};
 
 $ExampleLevels={"PrimaryExamplesSection","ExampleSection","ExampleSubsection"};
 
+resetInOut[in_,out_]:=(
+  Unprotect@{In,Out};
+  DownValues@In=oldIn;
+  DownValues@Out=oldOut;
+  Protect@{In,Out};
+  Out[$Line]
+)
+
 ExamplesSection[sec_Association,nb_,lev_]:=
   KeyValueMap[
     With[
@@ -97,7 +105,20 @@ ExamplesSection[sec_List,_,_]:=
             #/.ExampleInput[in__,OptionsPattern[]]:>If[
               Visible/.Join[Options[#],Options[ExampleInput]],
               ExampleInput[in],
-              ExampleInput[line=$Line;,in,NotebookDelete@EvaluationCell[];$Line=line-1;]
+              ExampleInput[
+                oldIn=Most@DownValues@In;
+                oldOut=DownValues@Out;
+                oldLine=--$Line;
+                resetInOut[oldIn,oldOut];,
+                in,
+                NotebookDelete@EvaluationCell[];
+                Unprotect@{In,Out};
+                DownValues@In=oldIn;
+                DownValues@Out=oldOut;
+                Protect@{In,Out};
+                $Line=oldLine;
+                resetInOut[oldIn,oldOut];
+              ]
             ],
             {
               s_String:>(MathLink`CallFrontEnd[
