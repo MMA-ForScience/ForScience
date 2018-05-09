@@ -11,13 +11,26 @@ Begin["`Private`"]
 Attributes[Examples]={HoldFirst};
 
 
-Examples::invalidFormat="`` is not a valid example format. Examples must be set to lists of lists.";
+Examples::invalidFormat="`` is not a valid example format. Examples sections must be set to lists of lists or an associaton.";
 Examples::noMixingEx="Cannot add an example to `` under ``, as subcategories are already registered";
 Examples::noMixingSub="Cannot add example subcategory `` to `` under ``, as examples are already registered at this level";
 Examples::needSubCat="Cannot add an example to ``, need to specify at least one subcategory";
+Examples::noStringKey="Example section key `` must be string";
 
 
-Examples/:HoldPattern[Examples[sym_,cats__]=newEx:{_List...}]:=
+CheckExampleAssoc[ass_Association]:=With[
+  {errKeys=Select[Keys@ass,Not@*StringQ]},
+  Message[Examples::noStringKey,#]&/@errKeys;
+  If[Length@errKeys>0,
+    False,
+    AllTrue[ass,CheckExampleAssoc]
+  ]
+]
+CheckExampleAssoc[{_List...}]:=True
+CheckExampleAssoc[ex_]:=(Message[Examples::invalidFormat,ex];False)
+
+
+Examples/:HoldPattern[Examples[sym_,cats__String]=newEx:{_List...}|_Association?CheckExampleAssoc]:=
   Catch[
     Module[
       {
@@ -38,17 +51,24 @@ Examples/:HoldPattern[Examples[sym_,cats__]=newEx:{_List...}]:=
         ],
         {i,Length@path-1}
       ];
-      If[AssociationQ@subEx@Last@path,
-        Message[Examples::noMixingEx,HoldForm@sym,path];Throw[Null]
+      If[ListQ@newEx&&AssociationQ@subEx@Last@path,
+        Message[Examples::noMixingEx,HoldForm@sym,path];
+        Throw[Null]
       ];
-      Examples[sym]^=Insert[ex,Last@path->newEx,If[ListQ@subEx@Last@path,path,Append[Most@path,-1]]];
-      Examples[sym,path]:=newEx;
+      If[AssociationQ@newEx&&ListQ@subEx@Last@path,
+        Message[Examples::noMixingSub,Last@path,HoldForm@sym,path];
+        Throw[Null]
+      ];
+      Examples[sym]^=Insert[ex,Last@path->newEx,If[!MissingQ@subEx@Last@path,path,Append[Most@path,-1]]];
       newEx
     ]
   ]
+Examples[sym_,cats__String]:=Quiet@Check[Extract[Examples[sym],{cats}],{}]
 HoldPattern[Examples[_,__]=newEx_]^:=(Message[Examples::invalidFormat,newEx];newEx)
-Examples/:HoldPattern[Examples[sym_]=ex_Association]:=(Examples[sym]^=ex);
-HoldPattern[Examples[sym_]=_]^:=Message[Examples::needSubCat,HoldForm@sym];
+Examples/:HoldPattern[Examples[sym_]=ex_Association?CheckExampleAssoc]:=(Examples[sym]^=ex);
+Examples/:HoldPattern[Examples[sym_]={_List...}]:=Message[Examples::needSubCat,HoldForm@sym];
+Examples/:HoldPattern[Examples[sym_,cats__String]=.]:=(Examples[sym,##]=Quiet@KeyDrop[Examples[sym,##],Last@{cats}])&@@Most@{cats}
+Examples/:HoldPattern[Examples[sym_]=.]:=Examples[sym]=<||>
 Examples[_]:=<||>
 Examples[_,__]:={}
 Attributes[ExampleInput]={HoldAll};
