@@ -40,6 +40,11 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`ProcessFileDoc`;
 <<`BuildPacletDoc`;
 <<`BuildActionDoc`;
+<<`DocumentationBuilderDoc`;
+<<`DocumentationHeaderDoc`;
+<<`DetailsDoc`;
+<<`ExamplesDoc`;
+<<`SeeAlsoDoc`;
 
 
 EndPackage[]

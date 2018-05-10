@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-DocumentationHeader::usage=FormatUsage@"DocumentationHeader[sym]'''={```header```,```color```,```footer```}''' sets the header text, header color and footer message for the documentation pages built by [*DocumentationBuilder*].";
-$ForScienceColor::usage=FormatUsage@"$ForScienceColor is the documentation header color used by the ForScience package.";
+DocumentationHeader;
+$ForScienceColor;
 
 
 Begin["`Private`"]

@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-SeeAlso::usage=FormatUsage@"SeeAlso[sym]'''={```sym_1```,\[Ellipsis]}''' sets the symbols to appear in the see also section of the documentation page built by [*DocumentationBuilder*]";
+SeeAlso;
 
 
 Begin["`Private`"]

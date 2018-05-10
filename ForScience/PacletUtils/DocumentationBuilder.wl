@@ -1,7 +1,6 @@
 (* ::Package:: *)
 
-DocumentationBuilder::usage=FormatUsage@"DocumentationBuilder is a global postprocessor for [*BuildPaclet*], that builds documentation pages for any symbols with [*DocumentationHeader*] set.
-DocumentationBuilder[sym] builds and displays the documentation page for the specified symbol. The return value is a reference to that notebook.";
+DocumentationBuilder;
 
 
 Begin["`Private`"]

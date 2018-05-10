@@ -1,8 +1,8 @@
 (* ::Package:: *)
 
-Examples::usage=FormatUsage@"Examples[sym] contains all examples to be added to the examples section of the notebook.
-Examples[sym,sec,subsec,\[Ellipsis]]'''={```ex_1```,\[Ellipsis]}''' assigns examples ```ex_i``` to the example section ```sec\[Rule]subsec```. Each ```ex_i``` must be a list.";
-ExampleInput::usage=FormatUsage@"ExampleInput[expr_1,\[Ellipsis]] represents an input cell for an example in the documentation. The output will be automatically added.";
+
+Examples;
+ExampleInput;
 
 
 Begin["`Private`"]
@@ -158,6 +158,8 @@ ExamplesSection[sec_List,_,_]:=
           "Input",
           InitializationCell->(InitializationCell/.Join[Options[#],Options[ExampleInput]]/.Automatic:>MemberQ[#,_Needs])
         ],
+        _Cell,
+        #,
         _BoxData,
         Cell@#,
         _,

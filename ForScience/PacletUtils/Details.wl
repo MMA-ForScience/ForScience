@@ -1,7 +1,6 @@
 (* ::Package:: *)
 
-Details::usage=FormatUsage@"";
-FormatTable::usage=FormatUsage@"FormatTable handles the formatting of [*TableForm*] expressions in documentation pages.";
+Details;
 
 
 Begin["`Private`"]
@@ -191,6 +190,8 @@ MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
           Cell[BoxesToDocEntry@ParseFormatting@FormatUsageCase@#,"Notes"],
           _TableForm,
           FormatTable@#,
+          _Cell,
+          #,
           _BoxData,
           Cell@#,
           _,
