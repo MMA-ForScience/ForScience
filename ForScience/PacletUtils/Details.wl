@@ -26,7 +26,7 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
           _String,
           Cell[BoxesToDocEntry@ParseFormatting@FormatUsageCase@#,"TableText"],
           _Symbol,
-          Cell[BoxData@DocumentationLink@SafeSymbolName@#,"TableText"],
+          Cell[BoxData@DocumentationLink[SafeSymbolName@#,"Symbol"],"TableText"],
           _Cell,
           #,
           _BoxData,

@@ -9,7 +9,15 @@ SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 DefinedQ[sym_String]:=Internal`SymbolNameQ@sym&&Names[sym]=!={}
 
 
-DocSearch[sym_String]:=DocSearch[sym]=Last[DirectHitSearch[sym],Null]
+DocSearch[ref_String,type_String:""]:=DocSearch[ref,type]=First@First[
+  "Matches"/.
+   SearchDocumentation[
+     StringTemplate["+(ExactTitle:\"``\") +(NotebookType:``)"][ref,type],
+     "Limit"->1,
+     "MetaData"->"URI"
+    ],
+  {Missing[]}
+]
 
 
 HeldSymbol[sym_String?Internal`SymbolNameQ]:=ToExpression[sym,InputForm,Hold]
@@ -21,25 +29,26 @@ Attributes[SafeSymbolName]={HoldFirst};
 SafeSymbolName[sym_]:=SymbolName@Unevaluated@sym
 
 
-DocumentedQ[sym_String]:=Internal`SymbolNameQ@sym&&(DocSearch[sym]=!=Null||DocumentationHeader@@HeldSymbol[sym]=!={})
+DocumentedQ[ref_String,type_String:""]:=!MissingQ@RawDocumentationLink[ref,type]
 
 
-RawDocumentationLink[sym_String]:=If[
-  DocumentationHeader@@HeldSymbol[sym]=!={},
- First@StringSplit[Context@@HeldSymbol[sym],"`"]<>"/ReferencePages/Symbols/"<>sym,
- "paclet:"<>DocSearch[sym]
+RawDocumentationLink[ref_String,type_String:""]:=Which[
+  !MissingQ@DocSearch[ref,type],
+  "paclet:"<>DocSearch[ref,type],
+  Internal`SymbolNameQ@ref&&MatchQ[type,""|"Symbol"]&&DocumentationHeader@@HeldSymbol[ref]=!={},
+  First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/ReferencePages/Symbols/"<>ref,
+  True,
+  Missing[]
 ]
 
 
-DocumentationLink[sym_String]:=TagBox[Sow[sym,Hyperlink],Hyperlink,BaseStyle->{"InlineFormula"}]
-DocumentationLink[sym_String?DocumentedQ]:=TemplateBox[
-  {
-    sym,
-    RawDocumentationLink[sym]
-  },
-  "RefLink",
-  BaseStyle->{"InlineFormula"}
-]
+Options[DocumentationLink]={BaseStyle->{"InlineFormula"}};
+
+
+DocumentationLink[ref_String,type_String:"",OptionsPattern[]]:=RawDocumentationLink[ref,type]/.{
+  _Missing->TagBox[ref,Hyperlink->Sow[{ref,type},Hyperlink],BaseStyle->OptionValue[BaseStyle]],
+  uri_->TemplateBox[{ref,uri},"RefLink",BaseStyle->OptionValue[BaseStyle]]
+}
 
 
 CodeCell[box_]:=Cell[BoxData@box,"InlineFormula",FontFamily->"Source Sans Pro"]
@@ -61,8 +70,12 @@ BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=Replace[
         _,
         boxes
       ],
-      TagBox[RowBox@l_List,"[**]"]:>
-       RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink@s,1],
+      {    
+        TagBox[RowBox@l_List,"[**]"]:>
+         RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol"],1],
+        TagBox[RowBox@l:{__String},"<**>"]:>
+         DocumentationLink@@Reverse@StringSplit[StringJoin@l,"/",2]
+      },
       All
     ],
     t:(_TemplateBox|_TagBox):>Cell@BoxData@t,

@@ -26,11 +26,7 @@ MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
       Cell["See Also","SeeAlsoSection"],
       Cell[
         TextData@Riffle[
-          Cell[
-            BoxData@DocumentationLink@#,
-            "InlineFormula",
-            FontFamily->"Source Sans Pro"
-          ]&/@List@@SafeSymbolName/@SeeAlso[sym],
+          CodeCell@DocumentationLink[#,"Symbol"]&/@List@@SafeSymbolName/@SeeAlso[sym],
           Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "]
         ],
         "SeeAlso"
@@ -49,7 +45,7 @@ MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
       ActionMenuBox[
         FrameBox[Cell[TextData[{"See Also"," ",$HeaderMenuArrow}]],StripOnInput->False],
         With[
-          {link=If[DocumentedQ@#,RawDocumentationLink@#,#]},
+          {link=If[DocumentedQ[#,"Symbol"],RawDocumentationLink[#,"Symbol"],#]},
           #:>Documentation`HelpLookup[link]
         ]&/@List@@SafeSymbolName/@SeeAlso[sym],
         Appearance->None,

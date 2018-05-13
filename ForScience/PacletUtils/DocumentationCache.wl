@@ -56,8 +56,16 @@ DocumentationCacheGet[sym_,OptionsPattern[]]:=With[
       cacheData=Import[cacheFile<>".mx"]
     },
     If[cacheData["Dependencies"]=!=curID,Return@Null];
-    If[AnyTrue[cacheData[Hyperlink],DocumentedQ],
-      Export[cacheFile<>".nb",Import[cacheFile<>".nb"]/.TagBox[s_String?DocumentedQ,Hyperlink,OptionsPattern[]]:>DocumentationLink[s]]
+    If[AnyTrue[cacheData[Hyperlink],Apply[DocumentedQ]],
+      Export[
+        cacheFile<>".nb",
+        Import[cacheFile<>".nb"]/.
+         TagBox[
+           _,
+           Hyperlink->spec:{_String,_String}/;DocumentedQ@@spec,
+           OptionsPattern[]
+         ]:>DocumentationLink@@spec
+      ]
     ];
     cacheFile<>".nb"
   ]
