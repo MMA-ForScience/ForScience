@@ -37,25 +37,7 @@ MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
 Attributes[MakeSeeAlsoHeader]={HoldFirst};
 
 
-MakeSeeAlsoHeader[sym_]:=If[Length@SeeAlso@sym>0,
-  Cell[
-    BoxData@TagBox[
-      ActionMenuBox[
-        FrameBox[Cell[TextData[{"See Also"," ",$HeaderMenuArrow}]],StripOnInput->False],
-        With[
-          {link=If[DocumentedQ[#,"Symbol"],RawDocumentationLink[#,"Symbol"],#]},
-          #:>Documentation`HelpLookup[link]
-        ]&/@List@@SafeSymbolName/@SeeAlso[sym],
-        Appearance->None,
-        MenuAppearance->Automatic,
-        MenuStyle->"SeeAlso"
-      ],
-      MouseAppearanceTag["LinkHand"]
-    ],
-    LineSpacing->{1.4,0}
-  ],
-  Nothing
-]
+MakeSeeAlsoHeader[sym_]:=MakeHeaderDropdown["See Also","SeeAlso",List@@SafeSymbolName/@SeeAlso[sym],"Symbol"]
 
 
 AppendTo[$DocumentationSections,MakeSeeAlsoSection];

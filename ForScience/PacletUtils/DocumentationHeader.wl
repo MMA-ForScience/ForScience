@@ -94,6 +94,27 @@ With[
 ]
 
 
+MakeHeaderDropdown[title_,style_,refs_,pageType_]:=If[Length@refs>0,
+  Cell[
+    BoxData@TagBox[
+      ActionMenuBox[
+        FrameBox[Cell[TextData[{title," ",$HeaderMenuArrow}]],StripOnInput->False],
+        With[
+          {link=RawDocumentationLink[#,pageType]/._Missing->#},
+          #:>Documentation`HelpLookup[link]
+        ]&/@refs,
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->style
+      ],
+      MouseAppearanceTag["LinkHand"]
+    ],
+    LineSpacing->{1.4,0}
+  ],
+  Nothing
+]
+
+
 AppendTo[$DependencyCollectors,DocumentationHeader];
 
 
