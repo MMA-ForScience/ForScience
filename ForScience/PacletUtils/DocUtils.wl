@@ -12,7 +12,7 @@ DefinedQ[sym_String]:=Internal`SymbolNameQ@sym&&Names[sym]=!={}
 DocSearch[sym_String]:=DocSearch[sym]=Last[DirectHitSearch[sym],Null]
 
 
-HeldSymbol[sym_String]:=ToExpression[sym,InputForm,Hold]
+HeldSymbol[sym_String?Internal`SymbolNameQ]:=ToExpression[sym,InputForm,Hold]
 
 
 Attributes[SafeSymbolName]={HoldFirst};
