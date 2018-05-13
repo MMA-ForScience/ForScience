@@ -12,9 +12,7 @@ Attributes[Details]={HoldFirst};
 Details::noList="Cannot set details of `` to ``, only lists are allowed.";
 
 
-Details/:HoldPattern[Details[sym_]=det_List]:=(Details[sym]^=det)
-HoldPattern[Details[sym_]=det_]^:=(Message[Details::noList,HoldForm@sym,det];det)
-Details[_]:={}
+DeclareMetadataHandler[Details,"noList",_List,{}]
 
 
 FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]<=3:=With[

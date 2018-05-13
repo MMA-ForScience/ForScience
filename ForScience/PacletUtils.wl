@@ -21,6 +21,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`DocumentationSummary`;
 <<`DocumentationBuilder`;
 <<`UsageSection`;
+<<`DeclareMetadataHandler`;
 <<`Details`;
 <<`Examples`;
 <<`SeeAlso`;

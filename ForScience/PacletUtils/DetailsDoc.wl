@@ -6,7 +6,7 @@ Usage[Details]="[*[*Details[sym]*]'''={```note```_1,\[Ellipsis]}'''*] sets the c
 BuildAction[
 
 
-DocumentationHeader[Details]=FSHeader["0.57.0","0.61.8"];
+DocumentationHeader[Details]=FSHeader["0.57.0","0.63.11"];
 
 
 Details[Details]={

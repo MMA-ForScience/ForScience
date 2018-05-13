@@ -12,9 +12,7 @@ Attributes[SeeAlso]={HoldFirst};
 SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list/held expression of symbols is expexted.";
 
 
-SeeAlso/:HoldPattern[SeeAlso[sym_]=rel:(List|Hold)[_Symbol...]]:=(SeeAlso[sym]^=rel)
-HoldPattern[SeeAlso[sym_]=rel_]^:=(Message[SeeAlso::invalidInput,HoldForm@sym,rel];rel)
-SeeAlso[_]:={}
+DeclareMetadataHandler[SeeAlso,"invalidInput",(List|Hold)[_Symbol...],{}]
 
 
 Attributes[MakeSeeAlsoSection]={HoldFirst};
