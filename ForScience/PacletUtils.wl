@@ -25,6 +25,8 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`Details`;
 <<`Examples`;
 <<`SeeAlso`;
+<<`Tutorials`;
+<<`Guides`;
 <<`FSHeader`;
 <<`CleanExampleDirectory`;
 <<`CompatibilityChecker`;
@@ -46,6 +48,8 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`DetailsDoc`;
 <<`ExamplesDoc`;
 <<`SeeAlsoDoc`;
+<<`TutorialsDoc`;
+<<`GuidesDoc`;
 
 
 EndPackage[]

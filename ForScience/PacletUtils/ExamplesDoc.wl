@@ -15,7 +15,7 @@ DocumentationHeader[Examples]=FSHeader["0.58.0","0.63.7"];
 
 
 Details[Examples]={
-  "[*Examples*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*] and [*SeeAlso*].",
+  "[*Examples*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*SeeAlso*], [*Tutorials*] and [*RelatedGuides*].",
   "[*Examples[sym]*] stores the complete structure with all examples and sections.",
   "Typically, examples are specified using [*[*Examples[sym,sec,subsec,\[Ellipsis]]*]'''={```ex_1```,\[Ellipsis]}'''*].",
   "Each example specified is expected to be a list of expressions. The following types are allowed:",
@@ -485,7 +485,7 @@ Examples[ExampleInput,"Possible issues"]={
 };
 
 
-SeeAlso[ExampleInput]={Examples,DocumentationBuilder,Usage,Details,SeeAlso};
+SeeAlso[ExampleInput]={Examples,DocumentationBuilder,Usage,Details,SeeAlso,Tutorials,RelatedGuides};
 
 
 ]

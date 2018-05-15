@@ -42,12 +42,12 @@ RawDocumentationLink[ref_String,type_String:""]:=Which[
 ]
 
 
-Options[DocumentationLink]={BaseStyle->{"InlineFormula"}};
+Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->{"InlineFormula"}};
 
 
 DocumentationLink[ref_String,type_String:"",OptionsPattern[]]:=RawDocumentationLink[ref,type]/.{
   _Missing->TagBox[ref,Hyperlink->Sow[{ref,type},Hyperlink],BaseStyle->OptionValue[BaseStyle]],
-  uri_->TemplateBox[{ref,uri},"RefLink",BaseStyle->OptionValue[BaseStyle]]
+  uri_->TemplateBox[{ref,uri},OptionValue["LinkStyle"],BaseStyle->OptionValue[BaseStyle]]
 }
 
 

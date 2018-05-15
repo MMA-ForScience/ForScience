@@ -10,7 +10,7 @@ DocumentationHeader[Details]=FSHeader["0.57.0","0.63.11"];
 
 
 Details[Details]={
-  "[*Details*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Examples*] and [*SeeAlso*].",
+  "[*Details*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Examples*], [*SeeAlso*], [*Tutorials*] and [*RelatedGuides*].",
   "The generated section includes the proper thumbnail.",
   "The value of [*Details[sym]*] is attached to ```sym``` as an upvalue.",
   "[*Details[sym]*] needs to be set to a list of notes. Possible types of notes are:",
@@ -109,7 +109,7 @@ Examples[Details,"Properties & Relations"]={
 };
 
 
-SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso};
+SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso,Tutorials,RelatedGuides};
 
 
 ]
