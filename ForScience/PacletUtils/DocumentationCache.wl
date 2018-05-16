@@ -62,9 +62,9 @@ DocumentationCacheGet[sym_,OptionsPattern[]]:=With[
         Import[cacheFile<>".nb"]/.
          TagBox[
            _,
-           Hyperlink->spec:{_String,_String}/;DocumentedQ@@spec,
+           Hyperlink->{spec:Repeated[_String,{2}],linkFunc_:DocumentationLink}/;DocumentedQ@spec,
            OptionsPattern[]
-         ]:>DocumentationLink@@spec
+         ]:>linkFunc@spec
       ]
     ];
     cacheFile<>".nb"
