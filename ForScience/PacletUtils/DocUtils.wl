@@ -38,7 +38,7 @@ RawDocumentationLink[ref_String,type_String:""]:=Which[
   Internal`SymbolNameQ@ref&&MatchQ[type,""|"Symbol"]&&DocumentationHeader@@HeldSymbol[ref]=!={},
   First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/ReferencePages/Symbols/"<>ref,
   True,
-  Missing[]
+  Sow[{ref,type},Hyperlink];Missing[]
 ]
 
 
@@ -46,7 +46,7 @@ Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->{"InlineFormula"}}
 
 
 DocumentationLink[ref_String,type_String:"",OptionsPattern[]]:=RawDocumentationLink[ref,type]/.{
-  _Missing->TagBox[ref,Hyperlink->Sow[{ref,type},Hyperlink],BaseStyle->OptionValue[BaseStyle]],
+  _Missing->TagBox[ref,Hyperlink->{ref,type},BaseStyle->OptionValue[BaseStyle]],
   uri_->TemplateBox[{ref,uri},OptionValue["LinkStyle"],BaseStyle->OptionValue[BaseStyle]]
 }
 
