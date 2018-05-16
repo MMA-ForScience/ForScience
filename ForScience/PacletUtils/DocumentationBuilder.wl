@@ -116,7 +116,7 @@ DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):
           ];
           NotebookClose[nb];
           DocumentationCachePut[sym,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
-          SetOptions[nb,Visible->True];
+          SetOptions[nb,Visible->!$BuildActive];
           nb
         ]
       ]

@@ -2,9 +2,13 @@
 
 BuildAction;
 CleanBuildActions;
+$EnableBuildActions;
 
 
 Begin["`Private`"]
+
+
+$EnableBuildActions=False;
 
 
 Attributes[BuildAction]={HoldAll};
@@ -13,7 +17,7 @@ Attributes[BuildAction]={HoldAll};
 SyntaxInformation[BuildAction]={"ArgumentsPattern"->{__}};
 
 
-BuildAction[acts__]/;$BuildActive:=CompoundExpression[acts]
+BuildAction[acts__]/;$BuildActive||$EnableBuildActions:=CompoundExpression[acts]
 BuildAction[acts__]:=Null
 
 

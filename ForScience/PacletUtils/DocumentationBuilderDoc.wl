@@ -7,7 +7,7 @@ DocumentationBuilder[sym] builds and displays the documentation page for the spe
 BuildAction[
 
 
-DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.61.8"];
+DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.65.0"];
 
 
 Details[DocumentationBuilder]={
@@ -16,7 +16,7 @@ Details[DocumentationBuilder]={
   "[*DocumentationBuilder*] generates search indexes for the documentation for both pre 11.2 and post 11.2 versions of Mathematica.",
   "The resulting documentation pages are cached and only rebuilt when necessary.",
   "Currently, only symbol reference pages are supported.",
-  "[*DocumentationBuilder[sym]*] can be used to manually build the documentation page for a single symbol. The resulting page is directly displayed and the [*Notebook[\[Ellipsis]]*] object is returned.",
+  "[*DocumentationBuilder[sym]*] can be used to manually build the documentation page for a single symbol. The resulting page is directly displayed (unless [*$BuildActive*] is [*True*]) and the [*Notebook[\[Ellipsis]]*] object is returned.",
   "[*DocumentationBuilder*] can only build documentation pages for symbols with [*DocumentationHeader[sym]*] set.",
   "[*DocumentationBuilder*] accepts the following options:",
   TableForm@{
