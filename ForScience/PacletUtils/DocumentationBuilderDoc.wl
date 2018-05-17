@@ -7,7 +7,7 @@ DocumentationBuilder[sym] builds and displays the documentation page for the spe
 BuildAction[
 
 
-DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.65.0"];
+DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.65.1"];
 
 
 Details[DocumentationBuilder]={

@@ -9,15 +9,19 @@ SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 DefinedQ[sym_String]:=Internal`SymbolNameQ@sym&&Names[sym]=!={}
 
 
-DocSearch[ref_String,type_String:""]:=DocSearch[ref,type]=First@First[
-  "Matches"/.
-   SearchDocumentation[
-     StringTemplate["+(ExactTitle:\"``\") +(NotebookType:``)"][ref,type],
-     "Limit"->1,
-     "MetaData"->"URI"
-    ],
-  {Missing[]}
-]
+DocSearch[ref_String,type_String:""]:=DocSearch[ref,type]=
+"Matches"/.
+ SearchDocumentation[
+   StringTemplate["+(ExactTitle:\"``\") +(NotebookType:``)"][ref,type],
+   "Limit"->1,
+   "MetaData"->{"Type","URI"}
+ ]/.{
+  {}->{type,Missing[]},
+  {{tp_,uri_}}:>{tp,"paclet:"<>uri}
+ }/.{
+   {"Format",uri_}:>{"\""<>ref<>"\"",uri},
+   {_,uri_}:>{ref,uri}
+ }
 
 
 HeldSymbol[sym_String?Internal`SymbolNameQ]:=ToExpression[sym,InputForm,Hold]
@@ -29,16 +33,19 @@ Attributes[SafeSymbolName]={HoldFirst};
 SafeSymbolName[sym_]:=SymbolName@Unevaluated@sym
 
 
-DocumentedQ[ref_String,type_String:""]:=!MissingQ@RawDocumentationLink[ref,type]
+DocumentedQ[ref_String,type_String:""]:=!MissingQ@Last@RawDocumentationLink[ref,type]
 
 
-RawDocumentationLink[ref_String,type_String:""]:=Which[
-  !MissingQ@DocSearch[ref,type],
-  "paclet:"<>DocSearch[ref,type],
-  Internal`SymbolNameQ@ref&&MatchQ[type,""|"Symbol"]&&DocumentationHeader@@HeldSymbol[ref]=!={},
-  First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/ReferencePages/Symbols/"<>ref,
-  True,
-  Sow[{ref,type},Hyperlink];Missing[]
+RawDocumentationLink[ref_String,type_String:""]:=With[
+  {res=DocSearch[ref,type]},
+  Which[
+    !MissingQ@Last@res,
+    res,
+    Internal`SymbolNameQ@ref&&MatchQ[type,""|"Symbol"]&&DocumentationHeader@@HeldSymbol[ref]=!={},
+    {First@res,First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/ReferencePages/Symbols/"<>ref},
+    True,
+    Sow[{ref,type},Hyperlink];{First@res,Missing[]}
+  ]
 ]
 
 
@@ -46,8 +53,8 @@ Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->{"InlineFormula"}}
 
 
 DocumentationLink[ref_String,type_String:"",OptionsPattern[]]:=RawDocumentationLink[ref,type]/.{
-  _Missing->TagBox[ref,Hyperlink->{ref,type},BaseStyle->OptionValue[BaseStyle]],
-  uri_->TemplateBox[{ref,uri},OptionValue["LinkStyle"],BaseStyle->OptionValue[BaseStyle]]
+  {tit_,_Missing}->TagBox[tit,Hyperlink->{ref,type},BaseStyle->OptionValue[BaseStyle]],
+  spec_->TemplateBox[spec,OptionValue["LinkStyle"],BaseStyle->OptionValue[BaseStyle]]
 }
 
 
