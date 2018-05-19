@@ -11,7 +11,7 @@ DocumentationHeader[SeeAlso]=FSHeader["0.59.0","0.63.12"];
 
 
 Details[SeeAlso]={
-  "[*SeeAlso*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*Examples*], [*RelatedGuides*] and [*Tutorials*].",
+  "[*SeeAlso*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*Examples*], [*Guides*] and [*Tutorials*].",
   "[*SeeAlso[sym]*] can either be set to a list of symbols or [*Hold[sym_1,\[Ellipsis]]*]. The latter should be used if some of the symbols have ownvalues.",
   "Symbols listed in [*SeeAlso[sym]*] appear at the bottom of the documentation page in the \"See Also\" section and in the header in the \"See Also\" dropdown."
 };
@@ -61,7 +61,7 @@ Examples[SeeAlso,"Possible issues"]={
 };
 
 
-SeeAlso[SeeAlso]={DocumentationBuilder,RelatedGuides,Tutorials,Usage,Details,Examples};
+SeeAlso[SeeAlso]={DocumentationBuilder,Guides,Tutorials,Usage,Details,Examples};
 
 
 ]

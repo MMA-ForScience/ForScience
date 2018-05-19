@@ -33,7 +33,7 @@ Details[DocumentationBuilder]={
     {"[*Examples[sym,\[Ellipsis]]*]","Contents of the \"Examples\" section"},
     {"[*SeeAlso[sym]*]","Related symbols that appear in the \"See Also\" section and at the top in the dropdown."},
     {"[*Tutorials[sym]*]","Related documentation tutorials that appear in the \"Tutorials\" section and at the top in the dropdown."},
-    {"[*RelatedGuides[sym]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown."}
+    {"[*Guides[sym]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown."}
   },
   "The complete documentation of the ForScience package is generated using [*DocumentationBuilder*]."
 };
@@ -137,7 +137,7 @@ Examples[DocumentationBuilder,"Options","Examples"]={
 };
 
 
-SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Usage,Details,Examples,SeeAlso,Tutorials,RelatedGuides};
+SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Usage,Details,Examples,SeeAlso,Tutorials,Guides};
 
 
 ]

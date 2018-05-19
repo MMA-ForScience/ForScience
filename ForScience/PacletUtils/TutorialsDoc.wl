@@ -10,10 +10,10 @@ DocumentationHeader[Tutorials]=FSHeader["0.64.0"];
 
 
 Details[Tutorials]={
-  "[*Tutorials*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*Examples*], [*SeeAlso*] and [*RelatedGuides*].",
+  "[*Tutorials*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*Examples*], [*SeeAlso*] and [*Guides*].",
   "[*Tutorials[sym]*] can be set to a list of (exact) guide titles that should appear in the \"Tutorials\" section of documentation pages",
   "Guides listed in [*Tutorials[sym]*] appear at the bottom of the documentation page in the \"Tutorials\" section and in the header in the \"Tutorials\" dropdown.",
-  "[*Tutorials*] is the exact analogue of [*RelatedGuides*] for documentation tutorials."
+  "[*Tutorials*] is the exact analogue of [*Guides*] for documentation tutorials."
 };
 
 
@@ -37,7 +37,7 @@ Examples[Tutorials,"Basic examples"]={
 };
 
 
-SeeAlso[Tutorials]={DocumentationBuilder,RelatedGuides,SeeAlso,Usage,Details,Examples};
+SeeAlso[Tutorials]={DocumentationBuilder,Guides,SeeAlso,Usage,Details,Examples};
 
 
 ]
