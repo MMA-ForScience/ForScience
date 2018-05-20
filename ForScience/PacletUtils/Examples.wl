@@ -193,7 +193,10 @@ MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
       ]
     ]},
     NotebookWrite[exNb,ExamplesSection[sym,nb],All];
-    NotebookEvaluate[exNb,InsertResults->True];
+    (*NotebookEvaluate leaks $Context/$ContextPath when called from a cell with CellContext*)
+    Block[{$Context=$Context,$ContextPath=$ContextPath},
+      NotebookEvaluate[exNb,InsertResults->True]
+    ];
     NotebookWrite[nb,First@NotebookGet@exNb];
     NotebookClose[exNb];
   ]

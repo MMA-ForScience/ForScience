@@ -11,7 +11,7 @@ Usage[ExampleInput]="ExampleInput[expr_1,\[Ellipsis]] represents an input cell f
 BuildAction[
 
 
-DocumentationHeader[Examples]=FSHeader["0.58.0","0.63.7"];
+DocumentationHeader[Examples]=FSHeader["0.58.0","0.65.2"];
 
 
 Details[Examples]={
