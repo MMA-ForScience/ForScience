@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-DocumentationHeader;
 $ForScienceColor;
 
 
