@@ -33,8 +33,8 @@ MakeUsageSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Usage&&UsageBoxes@sy
   ];
 ]
 
-AppendTo[$DocumentationSections,MakeUsageSection];
-AppendTo[$DependencyCollectors,Usage];
+AppendTo[$DocumentationSections["Symbol"],MakeUsageSection];
+AppendTo[$DependencyCollectors["Symbol"],Usage];
 
 
 End[]

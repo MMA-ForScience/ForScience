@@ -18,8 +18,8 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`DocumentationHeader`;
 <<`DocumentationFooter`;
 <<`IndexDocumentation`;
-<<`DocumentationSummary`;
 <<`DocumentationBuilder`;
+<<`SymbolDocumenter`;
 <<`UsageSection`;
 <<`DeclareMetadataHandler`;
 <<`Details`;

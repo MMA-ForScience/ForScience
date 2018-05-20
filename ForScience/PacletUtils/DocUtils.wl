@@ -36,15 +36,70 @@ SafeSymbolName[sym_]:=SymbolName@Unevaluated@sym
 DocumentedQ[ref_String,type_String:""]:=!MissingQ@Last@RawDocumentationLink[ref,type]
 
 
+$DocumentationTypeData={};
+HoldPattern@AppendTo[$DocumentationTypeData,data_]^:=(
+  data[_]={};
+  $DocumentationTypeData=Append[$DocumentationTypeData,data]
+)
+
+
+$DocumentationTypes=<||>;
+$DocumentationTypes/:HoldPattern@AppendTo[$DocumentationTypes,spec:(type_->_)]:=(
+  (#[type]={})&/@$DocumentationTypeData;
+  $DocumentationTypes=Append[$DocumentationTypes,spec]
+)
+
+
+DocumentationOfTypeQ;
+Attributes[DocumentationTitle]={HoldFirst};
+DocumentationTitle;
+
+
+DocumentationFileName[ref_String]:=StringTake[
+  StringReplace[
+    ToString@FullForm@ref,
+    {
+      " "-> "",
+      "\\["~~Shortest@n__~~"]"->n
+    }
+  ],
+  {2,-2}
+]
+
+
+DocumentationType[ref_String?Internal`SymbolNameQ,type_String:""]/;DocumentationHeader@@HeldSymbol[ref]=!={}:=
+SelectFirst[
+  Keys@$DocumentationTypes,
+  MatchQ[type,""|#]&&DocumentationOfTypeQ[#,ref]&,
+  None
+]
+DocumentationType[_String,_String:""]:=None
+
+
+Options[DocumentationPath]={"IncludeContext"->True};
+
+
+DocumentationPath[ref_String,type_String:"",OptionsPattern[]]:=DocumentationType[ref,type]/.{
+  rType:Except[None]:>StringTemplate["``ReferencePages/``/``"][
+    If[OptionValue["IncludeContext"],
+      First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/",
+      ""
+    ],
+    $DocumentationTypes[rType],
+    DocumentationFileName@ref
+  ]
+}
+
+
 RawDocumentationLink[ref_String,type_String:""]:=With[
   {res=DocSearch[ref,type]},
-  Which[
+  If[
     !MissingQ@Last@res,
     res,
-    Internal`SymbolNameQ@ref&&MatchQ[type,""|"Symbol"]&&DocumentationHeader@@HeldSymbol[ref]=!={},
-    {First@res,First@StringSplit[Context@@HeldSymbol[ref],"`"]<>"/ReferencePages/Symbols/"<>ref},
-    True,
-    Sow[{ref,type},Hyperlink];{First@res,Missing[]}
+    DocumentationPath[ref,type]/.{
+      None:>(Sow[{ref,type},Hyperlink];{First@res,Missing[]}),
+      path_:>{First@res,path}
+    }
   ]
 ]
 

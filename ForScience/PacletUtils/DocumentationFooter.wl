@@ -6,7 +6,7 @@ Begin["`Private`"]
 Attributes[MakeFooter]={HoldFirst};
 
 
-MakeFooter[sym_]:=With[
+MakeFooter[sym_,_]:=With[
   {
     splitter=StringSplit[#,RegularExpression["((?<![\\d.])(?=\\d+.[\\d.]+))"]]&,
     footer=DocumentationHeader[sym][[3]]

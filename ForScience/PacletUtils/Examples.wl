@@ -99,7 +99,7 @@ ExamplesSection[sec_Association,nb_,lev_]:=
   KeyValueMap[
     With[
       {type=$ExampleLevels[[Min[lev,Length@$ExampleLevels]]]},
-     Insert[type,{1,1,1,-2}]@
+      Insert[type,{1,1,1,-2}]@
       MapAt[
         BoxData@InterpretationBox[Cell[#],$Line=0;]&,{1,1,1,1}
       ]@CreateDocumentationOpener[
@@ -203,8 +203,8 @@ MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
 ]
 
 
-AppendTo[$DocumentationSections,MakeExampleSection];
-AppendTo[$DependencyCollectors,Examples];
+AppendTo[$DocumentationSections["Symbol"],MakeExampleSection];
+AppendTo[$DependencyCollectors["Symbol"],Examples];
 
 
 End[]

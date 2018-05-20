@@ -36,9 +36,9 @@ Attributes[MakeGuidesHeader]={HoldFirst};
 MakeGuidesHeader[sym_]:=MakeHeaderDropdown["Related Guides","MoreAbout",Guides[sym],"Guide"]
 
 
-AppendTo[$DocumentationSections,MakeGuidesSection];
-AppendTo[$HeaderEntries,MakeGuidesHeader];
-AppendTo[$DependencyCollectors,Guides];
+AppendTo[$DocumentationSections["Symbol"],MakeGuidesSection];
+AppendTo[$HeaderEntries["Symbol"],MakeGuidesHeader];
+AppendTo[$DependencyCollectors["Symbol"],Guides];
 
 
 End[]

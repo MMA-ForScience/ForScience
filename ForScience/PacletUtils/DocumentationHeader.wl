@@ -13,7 +13,7 @@ $ForScienceColor=Darker@Green;
 SyntaxInformation[DocumentationHeader]={"ArgumentsPattern"->{_}};
 
 
-$DocumentedSymbols=Hold[];
+$DocumentedObjects=Hold[];
 
 
 Attributes[DocumentationHeader]={HoldFirst};
@@ -25,12 +25,12 @@ DocumentationHeader::invalid="Can't set documentation header data of `` to ``. D
 DocumentationHeader/:
  HoldPattern[DocumentationHeader[sym_]=header:{_String,_?ColorQ,_String}]:=
  (
-   $DocumentedSymbols=Union[$DocumentedSymbols,Hold[sym]];
+   $DocumentedObjects=Union[$DocumentedObjects,Hold[sym]];
    DocumentationHeader[sym]^=header
  )
 HoldPattern[DocumentationHeader[sym_]=.]^:=
  (
-   DeleteCases[$DocumentedSymbols,sym];
+   DeleteCases[$DocumentedObjects,sym];
    sym/:DocumentationHeader[sym]=.
  )
 HoldPattern[DocumentationHeader[sym_]=header_]^:=
@@ -50,18 +50,18 @@ $HeaderMenuArrow=Cell@BoxData@GraphicsBox[
 ];
 
 
-$HeaderEntries={};
+AppendTo[$DocumentationTypeData,$HeaderEntries];
 
 
 Attributes[MakeHeader]={HoldFirst};
 
 
-MakeHeader[sym_]:=
+MakeHeader[sym_,type_]:=
 With[
   {
     title=DocumentationHeader[sym][[1]],
     col=DocumentationHeader[sym][[2]],
-    entries=#@sym&/@$HeaderEntries
+    entries=#@sym&/@$HeaderEntries[type]
   },
   Cell[
     BoxData@GridBox@{{
@@ -118,7 +118,7 @@ MakeHeaderDropdown[title_,style_,refs_,pageType_]:=If[Length@refs>0,
 ]
 
 
-AppendTo[$DependencyCollectors,DocumentationHeader];
+AppendTo[$DependencyCollectors["Symbol"],DocumentationHeader];
 
 
 End[]

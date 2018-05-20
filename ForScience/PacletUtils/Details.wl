@@ -210,8 +210,8 @@ MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
   ]
 
 
-AppendTo[$DocumentationSections,MakeDetailsSection];
-AppendTo[$DependencyCollectors,Details];
+AppendTo[$DocumentationSections["Symbol"],MakeDetailsSection];
+AppendTo[$DependencyCollectors["Symbol"],Details];
 
 
 End[]

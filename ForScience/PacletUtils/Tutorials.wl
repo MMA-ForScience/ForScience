@@ -36,9 +36,9 @@ Attributes[MakeTutorialsHeader]={HoldFirst};
 MakeTutorialsHeader[sym_]:=MakeHeaderDropdown["Tutorials","Tutorials",Tutorials[sym],"Tutorial"]
 
 
-AppendTo[$DocumentationSections,MakeTutorialsSection];
-AppendTo[$HeaderEntries,MakeTutorialsHeader];
-AppendTo[$DependencyCollectors,Tutorials];
+AppendTo[$DocumentationSections["Symbol"],MakeTutorialsSection];
+AppendTo[$HeaderEntries["Symbol"],MakeTutorialsHeader];
+AppendTo[$DependencyCollectors["Symbol"],Tutorials];
 
 
 End[]

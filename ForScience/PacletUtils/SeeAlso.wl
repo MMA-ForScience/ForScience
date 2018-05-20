@@ -40,9 +40,9 @@ Attributes[MakeSeeAlsoHeader]={HoldFirst};
 MakeSeeAlsoHeader[sym_]:=MakeHeaderDropdown["See Also","SeeAlso",List@@SafeSymbolName/@SeeAlso[sym],"Symbol"]
 
 
-AppendTo[$DocumentationSections,MakeSeeAlsoSection];
-AppendTo[$HeaderEntries,MakeSeeAlsoHeader];
-AppendTo[$DependencyCollectors,SeeAlso];
+AppendTo[$DocumentationSections["Symbol"],MakeSeeAlsoSection];
+AppendTo[$HeaderEntries["Symbol"],MakeSeeAlsoHeader];
+AppendTo[$DependencyCollectors["Symbol"],SeeAlso];
 
 
 End[]
