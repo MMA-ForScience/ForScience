@@ -12,14 +12,7 @@ DocumentationOfTypeQ["Symbol",sym_]:=True
 DocumentationTitle[sym_,"Symbol"]:=SafeSymbolName@sym
 
 
-DocumentationSummary[sym_,"Symbol"]:=StringRiffle[
-  StringReplace[
-    c:("\\["~~WordCharacter..~~"]"):>ToExpression["\""<>c<>"\""]
-  ]@
-   First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@#,"PlainText"]&/@
-    ForScience`PacletUtils`Private`UsageBoxes[sym],
-  " "
-]
+DocumentationSummary[sym_,"Symbol"]:=StringRiffle[StripFormatting/@UsageBoxes[sym]," "]
 
 
 MakeDocumentationContent[sym_,"Symbol",nb_,opts:OptionsPattern[]]:=(

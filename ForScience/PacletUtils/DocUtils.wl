@@ -155,6 +155,11 @@ BoxesToDocEntry[boxes_]:=BoxData@boxes
 ParseToDocEntry[str_String]:=BoxesToDocEntry@ParseFormatting@FormatUsageCase@str
 
 
+StripFormatting[boxes_]:=StringReplace[
+  c:("\\["~~WordCharacter..~~"]"):>ToExpression["\""<>c<>"\""]
+]@First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@boxes,"PlainText"]
+
+
 $SectionColor=RGBColor[217/255,101/255,0];
 $SectionArrow=Style[
   Graphics[
