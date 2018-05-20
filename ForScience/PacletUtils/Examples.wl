@@ -116,7 +116,7 @@ ExamplesSection[sec_List,_,_]:=
       Switch[#,
         _String,
         Cell[
-          BoxesToDocEntry@ParseFormatting@#,
+          ParseToDocEntry@#,
           "ExampleText"
         ],
         _ExampleInput,

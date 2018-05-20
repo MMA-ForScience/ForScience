@@ -22,7 +22,7 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
       Prepend[Cell["      ","TableRowIcon"]]/@Map[
         Switch[#,
           _String,
-          Cell[BoxesToDocEntry@ParseFormatting@FormatUsageCase@#,"TableText"],
+          Cell[ParseToDocEntry@#,"TableText"],
           _Symbol,
           Cell[BoxData@DocumentationLink[SafeSymbolName@#,"Symbol"],"TableText"],
           _Cell,
@@ -185,7 +185,7 @@ MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
       {
         notes=Switch[#,
           _String,
-          Cell[BoxesToDocEntry@ParseFormatting@FormatUsageCase@#,"Notes"],
+          Cell[ParseToDocEntry@#,"Notes"],
           _TableForm,
           FormatTable@#,
           _Cell,
