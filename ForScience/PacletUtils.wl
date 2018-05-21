@@ -13,6 +13,8 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`ProcessFile`;
 <<`BuildPaclet`;
 <<`BuildAction`;
+<<`DocumentationType`;
+<<`DocID`;
 <<`DocUtils`;
 <<`DocumentationCache`;
 <<`DocumentationHeader`;

@@ -60,13 +60,12 @@ DocumentationBuilder[opts:OptionsPattern[]]:=(
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=
 With[
   {
-    type=DocumentationType@SafeSymbolName@sym,
-    name=SafeSymbolName@sym
+    type=DocumentationType@sym
   },
   With[
     {
       cachedFile=DocumentationCacheGet[sym,type,FilterRules[{opts},Options@DocumentationCacheGet]],
-      docFile=FileNameJoin@{Directory[],$DocumentationBaseDirectory,DocumentationPath[name,"IncludeContext"->False]<>".nb"}
+      docFile=FileNameJoin@{Directory[],$DocumentationBaseDirectory,DocumentationPath[sym,"IncludeContext"->False]<>".nb"}
     },
     If[cachedFile=!=Null,
       If[automated,
@@ -102,7 +101,7 @@ With[
                   "paclet"->$BuiltPaclet,
                   "type"->type,
                   "windowtitle"->title,
-                  "uri"->DocumentationPath[name],
+                  "uri"->DocumentationPath[sym],
                   "summary"->DocumentationSummary[sym,type],
                   "keywords"->{}
                 }

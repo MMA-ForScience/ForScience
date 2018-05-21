@@ -94,8 +94,8 @@ With[
 
 
 HeaderDropdownLink/:(ref_:>HeaderDropdownLink[ref_,type_]):=RawDocumentationLink[ref,type]/.{
-  {tit_,_Missing}->(tit:>TagBox[ref,Hyperlink->{ref,type,HeaderDropdownLink}]),
-  {tit_,uri_}->(tit:>Documentation`HelpLookup[uri])
+  {tit_,_Missing}->(tit@SymbolName:>TagBox[ref,Hyperlink->{ref,type,HeaderDropdownLink}]),
+  {tit_,uri_}->(tit@SymbolName:>Documentation`HelpLookup[uri])
 }
 
 

@@ -24,7 +24,7 @@ MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
       Cell["See Also","SeeAlsoSection"],
       Cell[
         TextData@Riffle[
-          CodeCell@DocumentationLink[#,"Symbol"]&/@List@@SafeSymbolName/@SeeAlso[sym],
+          CodeCell@DocumentationLink[#,"Symbol"]&/@List@@DocID/@SeeAlso[sym],
           Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "]
         ],
         "SeeAlso"
@@ -37,7 +37,7 @@ MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
 Attributes[MakeSeeAlsoHeader]={HoldFirst};
 
 
-MakeSeeAlsoHeader[sym_]:=MakeHeaderDropdown["See Also","SeeAlso",List@@SafeSymbolName/@SeeAlso[sym],"Symbol"]
+MakeSeeAlsoHeader[sym_]:=MakeHeaderDropdown["See Also","SeeAlso",List@@DocID/@SeeAlso[sym],"Symbol"]
 
 
 AppendTo[$DocumentationSections["Symbol"],MakeSeeAlsoSection];
