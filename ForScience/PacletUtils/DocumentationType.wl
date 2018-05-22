@@ -17,7 +17,7 @@ $DocumentationTypes/:HoldPattern@AppendTo[$DocumentationTypes,spec:(type_->_)]:=
 )
 
 
-Attributes[DocumentationOfTypeQ]={HoldRest};
+Attributes[DocumentationOfTypeQ]={HoldFirst};
 DocumentationOfTypeQ;
 Attributes[DocumentationTitle]={HoldFirst};
 DocumentationTitle;

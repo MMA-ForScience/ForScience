@@ -21,6 +21,7 @@ Attributes[DocID]={HoldAll};
 DocID[id_DocID]:=id
 DocID[sym_String?DefinedQ]:=HeldSymbol[sym]/.Hold[s_]:>DocID[sym,s]
 DocID[sym_String]:=DocID[sym,None]
+DocID[sym_Symbol]:=With[{type=DocumentationType[sym]},DocID[Evaluate@DocumentationTitle[sym,type],sym]/;type=!=None]
 DocID[sym_Symbol]:=DocID[Evaluate@SafeSymbolName@sym,sym]
 
 
@@ -29,6 +30,25 @@ DocID[_,sym_][Symbol]:=Hold[sym]
 
 
 DocIDSpec=_String|_Symbol|_DocID;
+
+
+Attributes[DocumentationType]={HoldFirst};
+
+
+DocumentationType[sym_Symbol,type_String:""]:=If[
+  DocumentationHeader@sym=!={},
+  SelectFirst[
+    Keys@$DocumentationTypes,
+    MatchQ[type,""|#]&&DocumentationOfTypeQ[sym,#]&,
+    None
+  ],
+  None
+]
+DocumentationType[Evaluate[ref:DocIDSpec],type_String:""]:=With[
+  {heldSymbol=DocID[ref]@Symbol},
+  (heldSymbol/.Hold[s_]:>DocumentationType[s,type])/;heldSymbol=!=None
+]
+DocumentationType[Evaluate@DocIDSpec,_String:""]:=None
 
 
 Attributes[DocSearch]={HoldFirst};
@@ -64,22 +84,6 @@ DocumentationFileName[Evaluate[ref:DocIDSpec]]:=StringTake[
   ],
   {2,-2}
 ]
-
-
-Attributes[DocumentationType]={HoldFirst};
-
-
-DocumentationType[Evaluate[ref:DocIDSpec],type_String:""]:=With[
-  {id=DocID@ref},
-  With[{func=id[Symbol]/.Hold[s_]:>(DocumentationOfTypeQ[#,s]&)},
-    SelectFirst[
-      Keys@$DocumentationTypes,
-      MatchQ[type,""|#]&&func@#&,
-      None
-    ]/;id[Symbol]=!=None&&DocumentationHeader@@id[Symbol]=!={}
-  ]
-]
-DocumentationType[Evaluate@DocIDSpec,_String:""]:=None
 
 
 Attributes[DocumentationPath]={HoldFirst};

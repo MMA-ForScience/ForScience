@@ -6,7 +6,7 @@ Begin["`Private`"]
 AppendTo[$DocumentationTypes,"Symbol"->"Symbols"];
 
 
-DocumentationOfTypeQ["Symbol",sym_]:=True
+DocumentationOfTypeQ[sym_,"Symbol"]:=True
 
 
 DocumentationTitle[sym_,"Symbol"]:=SafeSymbolName@sym
