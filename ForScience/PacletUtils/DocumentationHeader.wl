@@ -18,14 +18,14 @@ $DocumentedObjects=Hold[];
 Attributes[DocumentationHeader]={HoldFirst};
 
 
-DocumentationHeader::invalid="Can't set documentation header data of `` to ``. Data should be of the form {str,col,indroduction}.";
+DocumentationHeader::invalid="Can't set documentation header data of `` to ``. Data should be of the form {str,col,introduction|None}.";
 
 
 DocumentationHeader/:
- HoldPattern[DocumentationHeader[sym_]=header:{_String,_?ColorQ,_String}]:=
+ HoldPattern[DocumentationHeader[sym_]={hd_String,col_?ColorQ,ft:_String|None:None}]:=
  (
    $DocumentedObjects=Union[$DocumentedObjects,Hold[sym]];
-   DocumentationHeader[sym]^=header
+   DocumentationHeader[sym]^={hd,col,ft}
  )
 HoldPattern[DocumentationHeader[sym_]=.]^:=
  (

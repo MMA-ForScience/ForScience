@@ -7,7 +7,7 @@ Usage[$ForScienceColor]="$ForScienceColor is the documentation header color used
 BuildAction[
 
 
-DocumentationHeader[DocumentationHeader]=FSHeader["0.55.0","0.61.8"];
+DocumentationHeader[DocumentationHeader]=FSHeader["0.55.0","0.65.9"];
 
 
 Details[DocumentationHeader]={
@@ -17,9 +17,10 @@ Details[DocumentationHeader]={
   TableForm@{
     {"```header```","The header text, describing the type of documentation page"},
     {"```color```","The color of the header bar"},
-    {"```footer```","The content of the footer of the documentaion page, containg introduction and modification dates."}
+    {"```footer```","The content of the footer of the documentaion page, containg introduction and modification dates"}
   },
   "In the footer text, version numbers of the form #.#.# automatically formatted as such.",
+  "The footer text can be set to [*None*] or left away if no footer shuold be included.",
   "[*DocumentationHeader[sym]*] can be removed with [*DocumentationHeader[sym]*]'''=.'''"
 };
 
@@ -30,7 +31,15 @@ Examples[DocumentationHeader,"Basic examples"]={
     ExampleInput[Needs["ForScience`PacletUtils`"]],
     "Create an empty documentation page with the specified coloring and text:",
     ExampleInput[
-      DocumentationHeader[foo]={"MY FANCY DOCUMENTATION",Magenta,"This is was introduced in 0.0.0"};
+      DocumentationHeader[foo]={"MY FANCY DOCUMENTATION",Magenta,"This is was introduced in 0.0.0"};,
+      DocumentationBuilder[foo]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Do not include a footer:",
+    ExampleInput[
+      DocumentationHeader[foo]={"MY FANCY DOCUMENTATION",Green};,
       DocumentationBuilder[foo]
     ],
     ExampleInput[NotebookClose[%];DocumentationHeader[foo]=.,Visible->False]
