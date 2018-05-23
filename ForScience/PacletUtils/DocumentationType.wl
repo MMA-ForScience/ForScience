@@ -1,5 +1,8 @@
 (* ::Package:: *)
 
+DocumentationTitle;
+
+
 Begin["`Private`"]
 
 
@@ -20,7 +23,6 @@ $DocumentationTypes/:HoldPattern@AppendTo[$DocumentationTypes,spec:(type_->_)]:=
 Attributes[DocumentationOfTypeQ]={HoldFirst};
 DocumentationOfTypeQ;
 Attributes[DocumentationTitle]={HoldFirst};
-DocumentationTitle;
 
 
 End[]

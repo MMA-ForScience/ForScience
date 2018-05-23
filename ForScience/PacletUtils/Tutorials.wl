@@ -41,4 +41,9 @@ AppendTo[$HeaderEntries["Symbol"],MakeTutorialsHeader];
 AppendTo[$DependencyCollectors["Symbol"],Tutorials];
 
 
+AppendTo[$DocumentationSections["Guide"], MakeTutorialsSection];
+AppendTo[$HeaderEntries["Guide"],MakeTutorialsHeader];
+AppendTo[$DependencyCollectors["Guide"],Tutorials];
+
+
 End[]

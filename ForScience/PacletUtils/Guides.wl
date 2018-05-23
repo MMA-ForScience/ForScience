@@ -12,7 +12,7 @@ Attributes[Guides]={HoldFirst};
 Guides::invalidInput="Guides information of `` cannot be set to ``. A list of guide titles is expected.";
 
 
-DeclareMetadataHandler[Guides,"invalidInput",{___String},{}]
+DeclareMetadataHandler[Guides,"invalidInput",{(_String|_?GuideQ)...},{}]
 
 
 Attributes[MakeGuidesSection]={HoldFirst};
@@ -39,6 +39,11 @@ MakeGuidesHeader[sym_]:=MakeHeaderDropdown["Related Guides","MoreAbout",Guides[s
 AppendTo[$DocumentationSections["Symbol"],MakeGuidesSection];
 AppendTo[$HeaderEntries["Symbol"],MakeGuidesHeader];
 AppendTo[$DependencyCollectors["Symbol"],Guides];
+
+
+AppendTo[$DocumentationSections["Guide"], MakeGuidesSection];
+AppendTo[$HeaderEntries["Guide"],MakeGuidesHeader];
+AppendTo[$DependencyCollectors["Guide"],Guides];
 
 
 End[]
