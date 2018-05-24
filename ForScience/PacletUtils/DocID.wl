@@ -20,7 +20,10 @@ Attributes[DocID]={HoldAll};
 
 DocID[id_DocID]:=id
 DocID[sym_String?DefinedQ]:=HeldSymbol[sym]/.Hold[s_]:>DocID[sym,s]
-DocID[sym_String]:=DocID[sym,None]
+DocID[tit_String]:=Select[
+  $DocumentedObjects,
+  Function[sym,DocumentationTitle[sym,DocumentationType@sym]==tit,{HoldFirst}]
+]/.Hold[sym_:None,___]:>DocID[tit,sym]
 DocID[sym_Symbol]:=With[{type=DocumentationType[sym]},DocID[Evaluate@DocumentationTitle[sym,type],sym]/;type=!=None]
 DocID[sym_Symbol]:=DocID[Evaluate@SafeSymbolName@sym,sym]
 
