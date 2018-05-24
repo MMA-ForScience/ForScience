@@ -10,9 +10,10 @@ Attributes[Guides]={HoldFirst};
 
 
 Guides::invalidInput="Guides information of `` cannot be set to ``. A list of guide titles is expected.";
+Guides::invalidSymbol="Symbol `` is not tagged as guide and cannot be added to the guides section.";
 
 
-DeclareMetadataHandler[Guides,"invalidInput",{(_String|_?GuideQ)...},{}]
+DeclareMetadataHandler[Guides,"invalidInput",{(_String|_Symbol)...},{}]
 
 
 Attributes[MakeGuidesSection]={HoldFirst};
@@ -24,7 +25,7 @@ MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=If[Length@Guides@sym>0,
       Cell[
         BoxData@DocumentationLink[#,"Guide","LinkStyle"->"RefLinkPlain",BaseStyle->{"MoreAbout"}],
         "MoreAbout"
-      ]&/@Guides[sym]
+      ]&/@Select[GuideQ]@Guides[sym]
     ]
   ]
 ]
@@ -33,7 +34,18 @@ MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=If[Length@Guides@sym>0,
 Attributes[MakeGuidesHeader]={HoldFirst};
 
 
-MakeGuidesHeader[sym_]:=MakeHeaderDropdown["Related Guides","MoreAbout",Guides[sym],"Guide"]
+MakeGuidesHeader[sym_]:=MakeHeaderDropdown[
+  "Related Guides",
+  "MoreAbout",
+  Replace[
+    Guides[sym],
+    s_Symbol?(Not@*GuideQ):>(
+      Message[Guides::invalidSymbol,HoldForm@s];Nothing
+    ),
+    1
+  ],
+  "Guide"
+]
 
 
 AppendTo[$DocumentationSections["Symbol"],MakeGuidesSection];
