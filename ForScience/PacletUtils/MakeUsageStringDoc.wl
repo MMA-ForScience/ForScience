@@ -20,4 +20,7 @@ Details[MakeUsageString]={
 SeeAlso[MakeUsageString]={Usage,ParseFormatting,FormatUsage};
 
 
+Guides[MakeUsageString]={$GuideCreatingDocPages};
+
+
 ]

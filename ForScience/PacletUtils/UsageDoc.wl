@@ -65,4 +65,7 @@ Examples[Usage,"Properties & Relations"]={
 SeeAlso[Usage]={FormatUsage,ParseFormatting,DocumentationBuilder,Details,Examples,SeeAlso,Tutorials,Guides};
 
 
+Guides[Usage]={$GuideCreatingDocPages};
+
+
 ]

@@ -221,6 +221,9 @@ Examples[Examples,"Possible issues"]={
 SeeAlso[Examples]={DocumentationBuilder,ExampleInput,Usage,Details,SeeAlso};
 
 
+Guides[Examples]={$GuideCreatingDocPages};
+
+
 DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.63.6"];
 
 
@@ -486,6 +489,9 @@ Examples[ExampleInput,"Possible issues"]={
 
 
 SeeAlso[ExampleInput]={Examples,DocumentationBuilder,Usage,Details,SeeAlso,Tutorials,Guides};
+
+
+Guides[ExampleInput]={$GuideCreatingDocPages};
 
 
 ]

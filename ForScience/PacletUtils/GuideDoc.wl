@@ -110,6 +110,9 @@ Examples[Guide,"Properties & Relations"]={
 SeeAlso[Guide]={DocumentationBuilder,DocumentationHeader,Abstract,Sections,Tutorials,Guides,GuideQ};
 
 
+Guides[Guide]={$GuideCreatingDocPages};
+
+
 DocumentationHeader[GuideQ]=FSHeader["0.66.0"];
 
 
@@ -121,6 +124,9 @@ Details[GuideQ]={
 
 
 SeeAlso[GuideQ]={Guide,DocumentationHeader,DocumentationBuilder};
+
+
+Guides[GuideQ]={$GuideCreatingDocPages};
 
 
 ]

@@ -112,4 +112,7 @@ Examples[Details,"Properties & Relations"]={
 SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso,Tutorials,Guides};
 
 
+Guides[Details]={$GuideCreatingDocPages};
+
+
 ]

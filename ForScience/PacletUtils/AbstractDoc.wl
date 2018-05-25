@@ -46,4 +46,7 @@ Examples[Abstract,"Basic examples"]={
 SeeAlso[Abstract]={Guide,DocumentationBuilder,Sections,Tutorials,Guides};
 
 
+Guides[Abstract]={$GuideCreatingDocPages};
+
+
 ]

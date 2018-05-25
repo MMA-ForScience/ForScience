@@ -64,4 +64,7 @@ Examples[SeeAlso,"Possible issues"]={
 SeeAlso[SeeAlso]={DocumentationBuilder,Guides,Tutorials,Usage,Details,Examples};
 
 
+Guides[SeeAlso]={$GuideCreatingDocPages};
+
+
 ]

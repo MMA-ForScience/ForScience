@@ -142,4 +142,7 @@ Examples[DocumentationBuilder,"Options","Examples"]={
 SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Guide,Usage,Details,Examples,SeeAlso,Tutorials,Guides};
 
 
+Guides[DocumentationBuilder]={$GuideCreatingDocPages};
+
+
 ]

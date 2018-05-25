@@ -76,4 +76,7 @@ Examples[FormatUsage,"Possible issues"]={
 SeeAlso[FormatUsage]={Usage,FormatUsageCase,ParseFormatting,MakeUsageString};
 
 
+Guides[FormatUsage]={$GuideCreatingDocPages};
+
+
 ]

@@ -21,4 +21,7 @@ Details[ParseFormatting]={
 SeeAlso[ParseFormatting]={Usage,MakeUsageString,FormatUsage};
 
 
+Guides[ParseFormatting]={$GuideCreatingDocPages};
+
+
 ]

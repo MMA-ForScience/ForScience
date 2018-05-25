@@ -124,6 +124,9 @@ Examples[Sections,"Properties & Relations"]={
 SeeAlso[Sections]={DocumentationBuilder,SectionTitle,Guide,Abstract,Tutorials,Guides};
 
 
+Guides[Sections]={$GuideCreatingDocPages};
+
+
 DocumentationHeader[SectionTitle]=FSHeader["0.66.0"];
 
 
@@ -209,6 +212,9 @@ Examples[SectionTitle,"Options","Hyperlink"]={
 
 
 SeeAlso[SectionTitle]={Sections,DocumentationBuilder};
+
+
+Guides[SectionTitle]={$GuideCreatingDocPages};
 
 
 ]

@@ -54,4 +54,7 @@ Examples[Tutorials,"Properties & Relations"]={
 SeeAlso[Tutorials]={DocumentationBuilder,Guides,SeeAlso,Usage,Details,Examples};
 
 
+Guides[Tutorials]={$GuideCreatingDocPages};
+
+
 ]

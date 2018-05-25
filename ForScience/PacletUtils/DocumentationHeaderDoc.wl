@@ -68,10 +68,16 @@ Examples[DocumentationHeader,"Properties & Relations"]={
 SeeAlso[DocumentationHeader]=Hold[DocumentationBuilder,$ForScienceColor,Usage,Details,Examples,SeeAlso];
 
 
+Guides[DocumentationHeader]={$GuideCreatingDocPages};
+
+
 DocumentationHeader[$ForScienceColor]=FSHeader["0.55.0"];
 
 
 SeeAlso[$ForScienceColor]={DocumentationHeader,DocumentationBuilder};
+
+
+Guides[$ForScienceColor]={$GuideCreatingDocPages};
 
 
 ]
