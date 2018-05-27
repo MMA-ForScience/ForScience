@@ -60,6 +60,9 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`GuidesDoc`;
 
 
+<<`PacletSelfCheck`;
+
+
 BuildAction[
   <<`GuidePacletUtils`;
   <<`GuideCreatingDocumentationPages`;
