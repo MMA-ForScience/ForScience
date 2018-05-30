@@ -19,13 +19,20 @@ End[];
 
 Begin["Graphics`PolarPlotDump`"];
 If[!TrueQ@ForScience`Private`$PolarPlotsFixed2&&($VersionNumber==11.2||$VersionNumber==11.3),
-(*fix for ListPolarPlot[{},PolarAxes\[Rule]True]*)
+(* fix for ListPolarPlot[{},PolarAxes\[Rule]True] *)
   ListPolarPlot@{};
   ForScience`Private`$PolarPlotsFixed2=True;
   DownValues@listPolarPlot=DownValues@listPolarPlot/.
    HoldPattern[l:{rmin,rmax}|{tmin,tmax}=r_]:>
     (l=r/.{\[Infinity],-\[Infinity]}->{0,1});
 ]
+If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=11.3,
+(* fix for inconsistent sizing of ListPolarPlot[...,PolarAxes->True,PlotRange->All] *)
+  ListPolarPlot@{};
+  ForScience`Private`$PolarPlotsFixed3=True;
+  DownValues[listPolarPlot]=DownValues[listPolarPlot]/.
+  expr:HoldPattern[allPos=_]:>(expr;maxRadius=layoutData@"RadialAxesRadius");
+ ]
 End[];
 
 
