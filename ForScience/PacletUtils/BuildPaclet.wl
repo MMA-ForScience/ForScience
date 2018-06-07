@@ -35,7 +35,9 @@ BuildPaclet[dir_,procs:procLists,gPostProcs:procList:{},o:flatOpts]:=
 BuildPaclet[dir_,procs:{preProcs:procList,postProcs:procList},gProcs:{gPreProcs:procList,gPostProcs:procList},o:flatOpts]:=
 With[
   {
-    buildDir=OptionValue["BuildDirectory"]
+    buildDir=OptionValue["BuildDirectory"],
+    oldBuildActive=$BuildActive,
+    oldBuiltPaclet=$BuiltPaclet
   },
   If[!DirectoryQ[dir],Message[BuildPaclet::noDir,dir];Return@$Failed];
   If[
@@ -82,8 +84,8 @@ With[
     ProcessFile[postProcs]/@loadedFiles;
     #[]&/@gPostProcs;
     ResetDirectory[];
-    $BuildActive=False;
-    $BuiltPaclet="";
+    $BuildActive=oldBuildActive;
+    $BuiltPaclet=oldBuiltPaclet;
     PackPaclet[buildDir]
   ]
 ]
