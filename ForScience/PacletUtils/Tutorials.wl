@@ -33,7 +33,17 @@ MakeTutorialsSection[sym_,nb_,OptionsPattern[]]:=If[Length@Tutorials@sym>0,
 Attributes[MakeTutorialsHeader]={HoldFirst};
 
 
-MakeTutorialsHeader[sym_]:=MakeHeaderDropdown["Tutorials","Tutorials",Tutorials[sym],"Tutorial"]
+MakeTutorialsHeader[sym_]:=MakeHeaderDropdown[
+  "Tutorials",
+  "Tutorials",
+  Replace[
+    Tutorials[sym],
+    {
+      t_:>DocID[t,"Tutorial"]
+    },
+    1
+  ]
+]
 
 
 AppendTo[$DocumentationSections["Symbol"],MakeTutorialsSection];

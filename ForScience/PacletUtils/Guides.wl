@@ -39,12 +39,14 @@ MakeGuidesHeader[sym_]:=MakeHeaderDropdown[
   "MoreAbout",
   Replace[
     Guides[sym],
-    s_Symbol?(Not@*GuideQ):>(
-      Message[Guides::invalidSymbol,HoldForm@s];Nothing
-    ),
+    {
+      s_Symbol?(Not@*GuideQ):>(
+        Message[Guides::invalidSymbol,HoldForm@s];Nothing
+      ),
+      g_:>DocID[g,"Guide"]
+    },
     1
-  ],
-  "Guide"
+  ]
 ]
 
 

@@ -93,18 +93,18 @@ With[
 ]
 
 
-HeaderDropdownLink/:(ref_:>HeaderDropdownLink[ref_,type_]):=RawDocumentationLink[ref,type]/.{
-  {tit_,_Missing}->(tit@SymbolName:>TagBox[ref,Hyperlink->{ref,type,HeaderDropdownLink}]),
-  {tit_,uri_}->(tit@SymbolName:>Documentation`HelpLookup[uri])
+HeaderDropdownLink/:(ref_:>HeaderDropdownLink[ref_]):=RawDocumentationLink[ref]/.{
+  {id_,_Missing}->(id@Label:>TagBox[ref,Hyperlink->{id,HeaderDropdownLink}]),
+  {id_,uri_}->(id@Label:>Documentation`HelpLookup[uri])
 }
 
 
-MakeHeaderDropdown[title_,style_,refs_,pageType_]:=If[Length@refs>0,
+MakeHeaderDropdown[title_,style_,refs_]:=If[Length@refs>0,
   Cell[
     BoxData@TagBox[
       ActionMenuBox[
         FrameBox[Cell[TextData[{title," ",$HeaderMenuArrow}]],StripOnInput->False],
-        #:>HeaderDropdownLink[#,pageType]&/@refs,
+        #:>HeaderDropdownLink[#]&/@refs,
         Appearance->None,
         MenuAppearance->Automatic,
         MenuStyle->style

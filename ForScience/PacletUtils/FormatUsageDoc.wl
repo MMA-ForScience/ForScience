@@ -23,7 +23,8 @@ Details[FormatUsage]={
   "[*FormatUsage*] effectively calls [*FormatUsageCase*] with [*StartOfLine->True*].",
   "Format specifications can be arbitrarily nested.",
   "The formatted strings returned by [*FormatUsage*] are usable as usage messages for symbols.",
-  BoxData@RowBox@{"In ",StyleBox["<*\!\(\*StyleBox[\"spec\", \"TI\"]\)*>","CodeFont"],FormatUsage@", ```spec``` either be the exact title of a documentation page or ```type```/```title```, where type is any documentation page type, such as Symbol,Format,Workflow,..."}
+  BoxData@RowBox@{"In ",StyleBox["<*\!\(\*StyleBox[\"spec\", \"TI\"]\)*>","CodeFont"],FormatUsage@", ```spec``` can either be the exact title of a documentation page or ```type```//```title```, where type is any documentation page type, such as Symbol,Format,Workflow,..."},
+  BoxData@RowBox@{"The label of a link specified by ",StyleBox["<*\!\(\*StyleBox[\"spec\", \"TI\"]\)*>","CodeFont"],FormatUsage@" can be specified by prepending ```label```::, i.e. ```label```::```title``` or ```label```::```type```//```title```."}
 };
 
 
