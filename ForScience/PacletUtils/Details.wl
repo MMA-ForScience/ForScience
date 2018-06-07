@@ -25,12 +25,8 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
           Cell[ParseToDocEntry@#,"TableText"],
           _Symbol,
           Cell[BoxData@DocumentationLink[#,"Symbol"],"TableText"],
-          _Cell,
-          #,
-          _BoxData,
-          Cell[#,"TableText"],
           _,
-          Cell@BoxData@ToBoxes@#
+          SpecToCell[#,"TableText"]
         ]&,
         tab,
         {2}
@@ -188,12 +184,8 @@ MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
           Cell[ParseToDocEntry@#,"Notes"],
           _TableForm,
           FormatTable@#,
-          _Cell,
-          #,
-          _BoxData,
-          Cell@#,
           _,
-          Cell@BoxData@ToBoxes@#
+          SpecToCell[#,"Notes"]
         ]&/@Details[sym]
       },
       NotebookWrite[

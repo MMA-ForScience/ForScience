@@ -48,6 +48,11 @@ BoxesToDocEntry[boxes_]:=BoxData@boxes
 ParseToDocEntry[str_String]:=BoxesToDocEntry@ParseFormatting@FormatUsageCase@str
 
 
+SpecToCell[spec_Cell,_]:=spec
+SpecToCell[spec_BoxData,style_]:=Cell[spec,style,style]
+SpecToCell[spec_,style_]:=Cell[BoxData@ToBoxes@spec,style,style]
+
+
 StripFormatting[boxes_]:=StringReplace[
   c:("\\["~~WordCharacter..~~"]"):>ToExpression["\""<>c<>"\""]
 ]@First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@boxes,"PlainText"]

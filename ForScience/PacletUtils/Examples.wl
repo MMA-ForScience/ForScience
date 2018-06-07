@@ -158,12 +158,8 @@ ExamplesSection[sec_List,_,_]:=
           "Input",
           InitializationCell->(InitializationCell/.Join[Options[#],Options[ExampleInput]]/.Automatic:>MemberQ[#,_Needs])
         ],
-        _Cell,
-        #,
-        _BoxData,
-        Cell@#,
         _,
-        Cell@BoxData@ToBoxes@#
+        SpecToCell[#,"ExampleText"]
       ]&,
       sec,
       {2}

@@ -69,12 +69,8 @@ MakeSectionContent[sec_,link_:Missing[]]:=Switch[#,
     ],
     "InlineGuideFunctionListing"
   ],
-  _Cell,
-  #,
-  _BoxData,
-  Cell[#,"GuideText"],
   _,
-  Cell@BoxData@ToBoxes@#
+  SpecToCell[#,"ExampleText"]
 ]&/@sec
 
 
