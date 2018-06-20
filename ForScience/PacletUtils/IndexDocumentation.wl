@@ -5,7 +5,7 @@ DownValues[NewDocumentationNotebookIndexer]=DownValues[NewDocumentationNotebookI
   HoldPattern@AddToClassPath[p_]:>AddToClassPath[p,Prepend->True];
 
 
-Options[IndexDocumentation]=Options[DocumentationCachePut];
+Options[IndexDocumentation]=Join[{ProgressIndicator->True},Options[DocumentationCachePut]];
 
 
 IndexDocumentation[dir_,useCached_,OptionsPattern[]]:=With[
@@ -26,6 +26,7 @@ IndexDocumentation[dir_,useCached_,OptionsPattern[]]:=With[
         cachedDirs={cachedIndex,cachedSpell,cachedSearch},
         dirs={indexDirectory,spellDirectory,searchDirectory}
       },
+      If[OptionValue[ProgressIndicator],PrintTemporary@"Creating documentation index..."];
       If[
         !useCached||
         !AllTrue[cachedDirs,DirectoryQ]||

@@ -25,26 +25,32 @@ Attributes[MakeDocumentationContent]={HoldFirst};
 DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as DocumentationHeader[`1`] is not set.";
 
 
-Options[DocumentationBuilder]=Options[DocumentationCachePut];
+Options[DocumentationBuilder]=Join[{ProgressIndicator->True},Options[DocumentationCachePut]];
 
 
 Attributes[DocumentationBuilder]={HoldFirst};
 
 
-DocumentationBuilder[opts:OptionsPattern[]]:=(
+DocumentationBuilder[opts:OptionsPattern[]]:=Module[
+  {curObj,prog=0},
   With[
     {changed=Length@First[
       Last@Reap[
-        List@@(Function[
-          sym,
-          DocumentationBuilder[
+        If[OptionValue@ProgressIndicator,Apply@Monitor,First]@Hold[
+          List@@(Function[
             sym,
-            True,
-            If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
-            opts
-          ],
-          {HoldFirst}
-        ]/@$DocumentedObjects),
+            curObj=DocumentationTitle[sym,DocumentationType@sym];
+            ++prog;
+            DocumentationBuilder[
+              sym,
+              True,
+              If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+              opts
+            ],
+            {HoldFirst}
+          ]/@$DocumentedObjects),
+          Row@{ProgressIndicator[prog,{0,Length@$DocumentedObjects}]," ",curObj}
+        ],
         {DocumenationCacheGet,"Uncached"}
       ],
       {}
@@ -56,7 +62,8 @@ DocumentationBuilder[opts:OptionsPattern[]]:=(
       FilterRules[{opts},Options@IndexDocumentation]
     ];
   ]
-)
+]
+
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=
 With[
   {

@@ -14,7 +14,7 @@ If[!TrueQ[$BuildActive],
 ]
 
 
-Options[BuildPaclet]={"BuildDirectory"->"build/"};
+Options[BuildPaclet]={"BuildDirectory"->"build/",ProgressIndicator->True};
 
 
 SyntaxInformation[BuildPaclet]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
@@ -57,9 +57,10 @@ With[
   ];
   $BuildActive=True;
   $BuiltPaclet=KeyMap[ToString,Association@@Get["PacletInfo.m"]]["Name"];
+  If[OptionValue@ProgressIndicator,PrintTemporary@"Running pre-processors..."];
   #[]&/@gPreProcs;
   Module[
-    {trackGet=True,getTag,loadedFiles},
+    {trackGet=True,getTag,loadedFiles,curFile,prog=0},
     (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
     PacletDirectoryAdd["."];
     loadedFiles=First@Last@Reap[
@@ -75,13 +76,19 @@ With[
             )
           ]
         },
+        If[OptionValue@ProgressIndicator,PrintTemporary@"Loading paclet files..."];
         Get[dir<>"`"]
       ],
       getTag
     ];
     PacletDirectoryRemove["."];
     loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
-    ProcessFile[postProcs]/@loadedFiles;
+    If[OptionValue@ProgressIndicator,PrintTemporary@"Processing files..."];
+    If[OptionValue@ProgressIndicator,Apply@Monitor,First]@Hold[
+      (curFile=#;++prog;ProcessFile[postProcs]@#)&/@loadedFiles,
+      Row@{ProgressIndicator[prog,{0,Length@loadedFiles}]," ",curFile}
+    ];
+    If[OptionValue@ProgressIndicator,PrintTemporary@"Running post-processors..."];
     #[]&/@gPostProcs;
     ResetDirectory[];
     $BuildActive=oldBuildActive;
