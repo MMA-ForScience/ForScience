@@ -4,9 +4,12 @@ Jet::usage="magic colors from http://stackoverflow.com/questions/5753508/custom-
 <<`SetupForSciencePlotTheme`
 
 
-Begin["`Private`"]
+Begin["`Private`Jet`"]
 
 
+$EnableJetAutoReplacement=False;
+Jet/:f_[pre___,Jet,post___]/;$EnableJetAutoReplacement:=f[pre,Jet@#&,post]
+$EnableJetAutoReplacement=True;
 Jet[u_?NumericQ]:=Blend[{{0,RGBColor[0,0,9/16]},{1/9,Blue},{23/63,Cyan},{13/21,Yellow},{47/63,Orange},{55/63,Red},{1,RGBColor[1/2,0,0]}},u]/;0<=u<=1
 SyntaxInformation[Jet]={"ArgumentsPattern"->{_}};
 
