@@ -83,8 +83,9 @@ MakeSectionLine[elements_,sep_,link_]:=Riffle[
         Cell["...","InlineFunctionSans"],
         TemplateBox[{"...",link},"RefLinkPlain",BaseStyle->{"InlineFunctionSans"}]
       ],
-      ref_String:>DocumentationLink[ref,BaseStyle->"InlineFunctionSans"],
-      sym_:>DocumentationLink[sym,BaseStyle->"InlineFunctionSans"]
+      Hyperlink["\[Ellipsis]",ref_String]:>DocumentationLink[Evaluate["\[Ellipsis]::"<>ref],BaseStyle->"InlineFunctionSans"],
+      Hyperlink["\[Ellipsis]",ref_Symbol]:>DocumentationLink[DocID[ref,"","\[Ellipsis]"],BaseStyle->"InlineFunctionSans"],
+      ref:(_String|_Symbol):>DocumentationLink[ref,BaseStyle->"InlineFunctionSans"]
     },
     1
   ],

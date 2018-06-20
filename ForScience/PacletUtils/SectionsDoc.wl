@@ -15,9 +15,10 @@ Details[Sections]={
   "[*Sections[guide]*] is expected to be set to a list of sections, each section being a list of the following elements:",
   TableForm@{
     {"[*SectionTitle[title]*]","The title of the section, if any. Can only appear as the first element"},
-    {"{```sym```_1,\[Ellipsis]}","A list of symbols"},
-    {"{```sym```_1,\[Ellipsis],\"\[Ellipsis]\"}","A truncated list of symbols, with the ellipsis linked to the same page as the section title"},
-    {"{```sym```_1,\[Ellipsis],[*Text[desc]*]}","A list of symbols, with a description at the end"},
+    {"{*{*{```sym```_1,\[Ellipsis]}*}*}","A list of symbols/reference specifications (see [*FormatUsage*] for possible formats)"},
+    {"{*{*{```sym```_1,\[Ellipsis],\"\[Ellipsis]\"}*}*}","A truncated list of symbols, with the ellipsis linked to the same page as the section title"},
+    {"{*{*{```sym```_1,\[Ellipsis],[*Hyperlink*][\"\[Ellipsis]\",ref]}*}*}","A truncated list of symbols, with the ellipsis linked to the page specified by ```ref```"},
+    {"{*{*{```sym```_1,\[Ellipsis],[*Text[desc]*]}*}*}","A list of symbols, with a description at the end"},
     {"[*Cell[\[Ellipsis]]*]","A custom cell expression, to be inserted as is"},
     {"[*BoxData[\[Ellipsis]]*]","A [*BoxData*] expression, to be inserted wrapped into a cell"},
     {"```expr```","An arbitrary expression, to be converted to boxes using [*ToBoxes*]"}
