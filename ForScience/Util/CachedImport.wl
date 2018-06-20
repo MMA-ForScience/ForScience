@@ -11,17 +11,20 @@ $ImportCache::usage=FormatUsage@"This symbol that handles the cache for [*Cached
 Begin["`Private`CachedImport`"]
 
 
+EnsureUnmodified[file_,path_,importer_,ts_,sz_,result_]:=If[
+  FileDate[path]===ts&&FileByteCount[path]===sz,
+  result,
+  UpdateCache[file,path,importer]
+]
+
+
 UpdateCache[file_,path_,importer_]:=With[
   {result=importer@file},
-  Unset/@First/@Cases[
-    DownValues@$ImportCache,
-    HoldPattern[_[_[$ImportCache[file,path,importer],_]]:>_]
-  ];
+  Quiet[$ImportCache[file,path,importer]=.];
   If[!FailureQ@result,
     With[
-      {newTS=FileDate@path,newSz=FileByteCount@path},
-      $ImportCache[file,path,importer]/;FileDate[path]===newTS&&FileByteCount[path]===newSz=
-       result
+      {ts=FileDate@path,sz=FileByteCount@path},
+      $ImportCache[file,path,importer]:=EnsureUnmodified[file,path,importer,ts,sz,result]
     ]
   ];
   result
@@ -38,15 +41,18 @@ SetupImportCache[]:=(
   $ImportCache[file_,path_,importer_]:=UpdateCache[file,path,importer]
 )
 
+
 SetupImportCache[];
+
 
 Options[CachedImport]={"CacheImports"->True};
 $MixedOptions=Join[Options[Import],Options[CachedImport]];
 
+
 CachedImport[file_,{type_,o:OptionsPattern[Import]},oo:OptionsPattern[CachedImport]]:=
  CachedImport[file,Import[#,type,o]&,oo]
 CachedImport[file_,type:(_List|_String),o:OptionsPattern[$MixedOptions]]:=
- CachedImport[file,Import[#,type,o]&,FilterRules[o,Options[CachedImport]]]
+ CachedImport[file,Import[#,type,o]&,FilterRules[{o},Options[CachedImport]]]
 CachedImport[file_,importer_:Import,OptionsPattern[]]:=With[
   {path=Quiet@AbsoluteFileName@file},
   If[OptionValue["CacheImports"]&&path=!=$Failed,
