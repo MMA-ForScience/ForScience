@@ -38,7 +38,7 @@ BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=Replace[
     t:(_TemplateBox|_TagBox):>Cell@BoxData@t,
     1
   ],
-  TextData@{el_}:>el
+  TextData@{el_String}:>el
 ]
 BoxesToDocEntry[boxes_String]:=TextData@boxes
 BoxesToDocEntry[boxes_]:=BoxData@boxes
