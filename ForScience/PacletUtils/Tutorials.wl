@@ -12,7 +12,7 @@ Attributes[Tutorials]={HoldFirst};
 Tutorials::invalidInput="Tutorials information of `` cannot be set to ``. A list of tutorial titles is expected.";
 
 
-DeclareMetadataHandler[Tutorials,"invalidInput",{___String},{}]
+DeclareMetadataHandler[Tutorials,"invalidInput",_,{___String},{}]
 
 
 Attributes[MakeTutorialsSection]={HoldFirst};

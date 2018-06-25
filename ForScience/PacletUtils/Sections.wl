@@ -10,7 +10,7 @@ Begin["`Private`"]
 Sections::invalidFormat="Sections of `` cannot be set to ``. A list of lists is expected.";
 
 
-DeclareMetadataHandler[Sections,"invalidFormat",{_List...},{}]
+DeclareMetadataHandler[Sections,"invalidFormat",_,{_List...},{}]
 
 
 Options[SectionTitle]={Hyperlink->Automatic};

@@ -13,7 +13,7 @@ Guides::invalidInput="Guides information of `` cannot be set to ``. A list of gu
 Guides::invalidSymbol="Symbol `` is not tagged as guide and cannot be added to the guides section.";
 
 
-DeclareMetadataHandler[Guides,"invalidInput",{(_String|_Symbol)...},{}]
+DeclareMetadataHandler[Guides,"invalidInput",_,{(_String|_Symbol)...},{}]
 
 
 Attributes[MakeGuidesSection]={HoldFirst};
