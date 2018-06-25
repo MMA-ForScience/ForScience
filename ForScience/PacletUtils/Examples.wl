@@ -18,59 +18,9 @@ Examples::needSubCat="Cannot add an example to ``, need to specify at least one 
 Examples::noStringKey="Example section key `` must be string";
 
 
-CheckExampleAssoc[ass_Association]:=With[
-  {errKeys=Select[Keys@ass,Not@*StringQ]},
-  Message[Examples::noStringKey,#]&/@errKeys;
-  If[Length@errKeys>0,
-    False,
-    AllTrue[ass,CheckExampleAssoc]
-  ]
-]
-CheckExampleAssoc[{_List...}]:=True
-CheckExampleAssoc[ex_]:=(Message[Examples::invalidFormat,ex];False)
+DeclareSectionAccessor[Examples,{"invalidFormat","noMixingEx","noMixingSub","needSubCat","noStringKey"},_,_String]
 
 
-Examples/:HoldPattern[Examples[sym_,cats__String]=newEx:{_List...}|_Association?CheckExampleAssoc]:=
-  Catch[
-    Module[
-      {
-        path={cats},
-        ex=Examples[sym],
-        subEx
-      },
-      subEx=ex;
-      Do[
-        subEx=Lookup[
-          subEx,
-          path[[i]],
-          ex=Insert[ex,path[[i]]-><||>,Append[path[[;;i-1]],-1]];<||>
-        ];
-        If[ListQ@subEx,
-          Message[Examples::noMixingSub,path[[i+1]],HoldForm@sym,path[[;;i]]];
-          Throw[Null]
-        ],
-        {i,Length@path-1}
-      ];
-      If[ListQ@newEx&&AssociationQ@subEx@Last@path,
-        Message[Examples::noMixingEx,HoldForm@sym,path];
-        Throw[Null]
-      ];
-      If[AssociationQ@newEx&&ListQ@subEx@Last@path,
-        Message[Examples::noMixingSub,Last@path,HoldForm@sym,path];
-        Throw[Null]
-      ];
-      Examples[sym]^=Insert[ex,Last@path->newEx,If[!MissingQ@subEx@Last@path,path,Append[Most@path,-1]]];
-      newEx
-    ]
-  ]
-Examples[sym_,cats__String]:=Quiet@Check[Extract[Examples[sym],{cats}],{}]
-HoldPattern[Examples[_,__]=newEx_]^:=(Message[Examples::invalidFormat,newEx];newEx)
-Examples/:HoldPattern[Examples[sym_]=ex_Association?CheckExampleAssoc]:=(Examples[sym]^=ex);
-Examples/:HoldPattern[Examples[sym_]={_List...}]:=Message[Examples::needSubCat,HoldForm@sym];
-Examples/:HoldPattern[Examples[sym_,cats__String]=.]:=(Examples[sym,##]=Quiet@KeyDrop[Examples[sym,##],Last@{cats}])&@@Most@{cats}
-Examples/:HoldPattern[Examples[sym_]=.]:=Examples[sym]=<||>
-Examples[_]:=<||>
-Examples[_,__]:={}
 Attributes[ExampleInput]={HoldAll};
 Options[ExampleInput]={InitializationCell->Automatic,Visible->True};
 
