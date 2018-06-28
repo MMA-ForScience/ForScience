@@ -29,6 +29,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`Abstract`;
 <<`Sections`;
 <<`Details`;
+<<`ExampleInput`;
 <<`Examples`;
 <<`SeeAlso`;
 <<`Tutorials`;
@@ -56,6 +57,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`SectionsDoc`;
 <<`DetailsDoc`;
 <<`ExamplesDoc`;
+<<`ExampleInputDoc`;
 <<`SeeAlsoDoc`;
 <<`TutorialsDoc`;
 <<`GuidesDoc`;

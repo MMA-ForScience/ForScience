@@ -2,7 +2,6 @@
 
 
 Examples;
-ExampleInput;
 
 
 Begin["`Private`"]
@@ -21,10 +20,6 @@ Examples::noStringKey="Example section key `` must be string";
 DeclareSectionAccessor[Examples,{"invalidFormat","noMixingEx","noMixingSub","needSubCat","noStringKey"},_,_String]
 
 
-Attributes[ExampleInput]={HoldAll};
-Options[ExampleInput]={InitializationCell->Automatic,Visible->True};
-
-
 ExampleHeader[title_,num_]:={title,"\[NonBreakingSpace]\[NonBreakingSpace]",Cell[StringTemplate["(``)"]@num,"ExampleCount"]}
 
 
@@ -37,13 +32,6 @@ Attributes[ExamplesSection]={HoldFirst};
 
 $ExampleLevels={"PrimaryExamplesSection","ExampleSection","ExampleSubsection"};
 
-resetInOut[in_,out_]:=(
-  Unprotect@{In,Out};
-  DownValues@In=oldIn;
-  DownValues@Out=oldOut;
-  Protect@{In,Out};
-  Out[$Line]
-)
 
 ExamplesSection[sec_Association,nb_,lev_]:=
   KeyValueMap[
@@ -70,44 +58,7 @@ ExamplesSection[sec_List,_,_]:=
           "ExampleText"
         ],
         _ExampleInput,
-        Cell[
-          Replace[
-            #/.ExampleInput[in__,OptionsPattern[]]:>If[
-              Visible/.Join[Options[#],Options[ExampleInput]],
-              ExampleInput[in],
-              ExampleInput[
-                oldIn=Most@DownValues@In;
-                oldOut=DownValues@Out;
-                oldLine=--$Line;
-                resetInOut[oldIn,oldOut];,
-                in,
-                NotebookDelete@EvaluationCell[];
-                Unprotect@{In,Out};
-                DownValues@In=oldIn;
-                DownValues@Out=oldOut;
-                Protect@{In,Out};
-                $Line=oldLine;
-                resetInOut[oldIn,oldOut];
-              ]
-            ],
-            {
-              s_String:>(MathLink`CallFrontEnd[
-                FrontEnd`UndocumentedTestFEParserPacket[
-                  StringReplace[s,StartOfLine~~WhitespaceCharacter..->""],
-                  False
-                ]
-              ][[1, 1]]/."
-"->"\[IndentingNewLine]"),
-              expr_:>ToBoxes@Unevaluated@expr
-            },
-            1
-          ]/.{
-            ExampleInput[in_]:>BoxData@in,
-            ExampleInput[in__]:>BoxData@Riffle[{in},"\[IndentingNewLine]"]
-          },
-          "Input",
-          InitializationCell->(InitializationCell/.Join[Options[#],Options[ExampleInput]]/.Automatic:>MemberQ[#,_Needs])
-        ],
+        ExampleInputToCell[#],
         _,
         SpecToCell[#,"ExampleText"]
       ]&,
@@ -138,13 +89,7 @@ MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
         Cell[StyleData[#],Evaluatable->True,CellContext->Notebook]&/@$ExampleLevels
       ]
     ]},
-    NotebookWrite[exNb,ExamplesSection[sym,nb],All];
-    (*NotebookEvaluate leaks $Context/$ContextPath when called from a cell with CellContext*)
-    Block[{$Context=$Context,$ContextPath=$ContextPath},
-      NotebookEvaluate[exNb,InsertResults->True]
-    ];
-    NotebookWrite[nb,First@NotebookGet@exNb];
-    NotebookClose[exNb];
+    EvaluateAndWrite[nb,ExamplesSection[sym,nb]];
   ]
 ]
 
