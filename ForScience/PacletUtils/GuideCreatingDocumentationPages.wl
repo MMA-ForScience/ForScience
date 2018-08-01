@@ -9,7 +9,7 @@ DocumentationHeader[$GuideCreatingDocPages]=FSGuideHeader;
 Abstract[$GuideCreatingDocPages]="The ForScience PacletUtils subpaclet contains powerful documentation creation utilities, enabling a fully Wolfram Language based workflow.";
 
 
-Sections[$GuideCreatingDocPages]={
+GuideSections[$GuideCreatingDocPages]={
   {
     {DocumentationBuilder,Text["build individual pages or everything that is documented"]},
     {DocumentationHeader,Text["control basic documentation page appearance"]}
@@ -31,7 +31,7 @@ Sections[$GuideCreatingDocPages]={
     SectionTitle["Documenation Guides"],
     {Guide,GuideQ,Text["create a new guide"]},
     {Abstract,Text["specify a summary"]},
-    {Sections,SectionTitle,Text["specify sections with different functions"]},
+    {GuideSections,SectionTitle,Text["specify sections with different functions"]},
     {Tutorials,Guides,Text["refer to related tutorials and guides"]}
   }
 };

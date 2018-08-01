@@ -10,7 +10,7 @@ DocumentationHeader[Abstract]=FSHeader["0.66.0"];
 
 
 Details[Abstract]={
-  "[*Abstract*] is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]). Others include [*Sections*], [*Tutorials*] and [*Guides*].",
+  "[*Abstract*] is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]). Others include [*GuideSections*], [*Tutorials*] and [*Guides*].",
   "[*Abstract[guide]*] should be set to a string.",
   "The string ```abstract``` in [*Abstract[guide]*]'''=```abstract```''' can contain formatting specifications supported by [*FormatUsage*].",
   "The text of [*Abstract[guide]*] is also used to populate the summary seen in the search results page."
@@ -43,7 +43,7 @@ Examples[Abstract,"Basic examples"]={
 };
 
 
-SeeAlso[Abstract]={Guide,DocumentationBuilder,Sections,Tutorials,Guides};
+SeeAlso[Abstract]={Guide,DocumentationBuilder,GuideSections,Tutorials,Guides};
 
 
 Guides[Abstract]={$GuideCreatingDocPages};

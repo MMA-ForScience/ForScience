@@ -1,22 +1,22 @@
-(*::Package::*)
+(* ::Package:: *)
 
-Sections;
+GuideSections;
 SectionTitle;
 
 
 Begin["`Private`"]
 
 
-Sections::invalidFormat="Sections of `` cannot be set to ``. A list of lists is expected.";
+GuideSections::invalidFormat="GuideSections of `` cannot be set to ``. A list of lists is expected.";
 
 
-DeclareMetadataHandler[Sections,"invalidFormat",_,{_List...},{}]
+DeclareMetadataHandler[GuideSections,"invalidFormat",_,{_List...},{}]
 
 
 Options[SectionTitle]={Hyperlink->Automatic};
 
 
-MakeSection[{SectionTitle[title_,tOpts:OptionsPattern[]],rest___}]:=
+MakeGuideSection[{SectionTitle[title_,tOpts:OptionsPattern[]],rest___}]:=
 With[
   {
     spec=Hold[Hyperlink]/.Join[{tOpts},Options[SectionTitle]]
@@ -45,24 +45,24 @@ With[
         },
         "GuideFunctionsSubsection"
       ]
-    ]@MakeSectionContent[{rest},link]
+    ]@MakeGuideSectionContent[{rest},link]
   ]
 ]
-MakeSection[sec_List]:=MakeSectionContent[sec]
+MakeGuideSection[sec_List]:=MakeGuideSectionContent[sec]
 
 
-MakeSectionContent[sec_,link_:Missing[]]:=Switch[#,
+MakeGuideSectionContent[sec_,link_:Missing[]]:=Switch[#,
   (Hold|List)[__,_Text],
   Cell[
     TextData@Join[
-      MakeSectionLine[Most@#,", ",link],
+      MakeGuideSectionLine[Most@#,", ",link],
       {" ",StyleBox["\[LongDash]","GuideEmDash"]," ",ParseToDocEntry@First@Last@#}
     ],
     "GuideText"
   ],
   (Hold|List)[__],
   Cell[
-    TextData@MakeSectionLine[
+    TextData@MakeGuideSectionLine[
       #,
       Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "],
       link
@@ -74,7 +74,7 @@ MakeSectionContent[sec_,link_:Missing[]]:=Switch[#,
 ]&/@sec
 
 
-MakeSectionLine[elements_,sep_,link_]:=Riffle[
+MakeGuideSectionLine[elements_,sep_,link_]:=Riffle[
   Cell[BoxData@#,"InlineFunctionSans"]&/@List@@Replace[
     elements,
     {
@@ -93,19 +93,19 @@ MakeSectionLine[elements_,sep_,link_]:=Riffle[
 ]
 
 
-MakeGuideSections[gd_,nb_,OptionsPattern[]]:=If[Sections[gd]=!={},
+MakeGuideSections[gd_,nb_,OptionsPattern[]]:=If[GuideSections[gd]=!={},
   NotebookWrite[
     nb,
     #
   ]&/@Riffle[
-    MakeSection[#]&/@Sections[gd],
+    MakeGuideSection[#]&/@GuideSections[gd],
     Cell["\t","GuideDelimiter"]
   ]
 ]
 
 
 AppendTo[$DocumentationSections["Guide"],MakeGuideSections];
-AppendTo[$DependencyCollectors["Guide"],Sections];
+AppendTo[$DependencyCollectors["Guide"],GuideSections];
 
 
 End[]

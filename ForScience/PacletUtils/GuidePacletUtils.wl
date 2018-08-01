@@ -9,7 +9,7 @@ DocumentationHeader[$GuidePacletUtils]=FSGuideHeader;
 Abstract[$GuidePacletUtils]="The ForScience PacletUtils subpaclet contains various function to simplify paclet development. [*BuildPaclet*] enables building/packing of paclets with pre/post processing, also of individual files. Another core part of the PacletUtils is the automated documentation building toolbox. It enables the creation of documentation pages with the exact same look and feel as the original documentation. The built documentation pages are also automatically packed together with the paclet and indexed, to make deployment as easy as possible.";
 
 
-Sections[$GuidePacletUtils]={
+GuideSections[$GuidePacletUtils]={
   {
     SectionTitle["Paclet Building and Deployment"],
     {BuildPaclet,Text["manage paclet building"]},
@@ -21,7 +21,7 @@ Sections[$GuidePacletUtils]={
   {
     SectionTitle["Creating Documentation Pages"],
     {DocumentationBuilder,DocumentationHeader,Text["build documentation pages"]},
-    {Guide,Sections,Abstract,"\[Ellipsis]",Text["create guide pages"]},
+    {Guide,GuideSections,Abstract,"\[Ellipsis]",Text["create guide pages"]},
     {Usage,Details,Examples,"\[Ellipsis]",Text["create symbol reference pages"]}
   },
   {

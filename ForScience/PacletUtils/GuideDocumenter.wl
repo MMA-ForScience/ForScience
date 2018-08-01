@@ -23,6 +23,7 @@ AppendTo[$DocumentationTypes,"Guide"->"Guides"];
 
 DocumentationOfTypeQ[sym_,"Guide"]:=GuideQ@sym
 
+
 DocumentationSummary[gd_,"Guide"]:=StripFormatting@Abstract@gd
 
 

@@ -19,7 +19,7 @@ Details[Guide]={
   TableForm@{
     {"[*DocumentationTitle*][```sym```,\"Guide\"]","The title of the guide, as set via '''```sym```='''[*Guide[title]*]"},
     {"[*Abstract[gd]*]","A short description of the contents of this guide. [*Abstract[gd]*] is also used for the summary seen in the search results page"},
-    {"[*Sections[gd*]","The different sections of the guide, containing lists of symbols with optional short descriptions"},
+    {"[*GuideSections[gd*]","The different sections of the guide, containing lists of symbols with optional short descriptions"},
     {"[*Tutorials[gd]*]","Related documentation tutorials that appear in the \"Tutorials\" section and at the top in the dropdown"},
     {"[*Guides[gd]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown"}
   },
@@ -51,7 +51,7 @@ Examples[Guide,"Basic examples"]={
   {
     "Add some sections to the guide:",
     ExampleInput[
-      "Sections[myGuide]={
+      "GuideSections[myGuide]={
         {
           {Plot,Plot3D,ListPlot,Text[\"Some plotting functions\"]},
           {With,Block,Module}
@@ -107,7 +107,7 @@ Examples[Guide,"Properties & Relations"]={
 };
 
 
-SeeAlso[Guide]={DocumentationBuilder,DocumentationHeader,Abstract,Sections,Tutorials,Guides,GuideQ};
+SeeAlso[Guide]={DocumentationBuilder,DocumentationHeader,Abstract,GuideSections,Tutorials,Guides,GuideQ};
 
 
 Guides[Guide]={$GuideCreatingDocPages};

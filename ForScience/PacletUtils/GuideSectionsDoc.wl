@@ -1,18 +1,18 @@
 (* ::Package:: *)
 
-Usage[Sections]="[*[*Sections[guide]*]'''={{```line```_1,\[Ellipsis]},\[Ellipsis]}'''*] sets the sections for the guide page ```guide``` to the specified contents.";
+Usage[GuideSections]="[*[*GuideSections[guide]*]'''={{```line```_1,\[Ellipsis]},\[Ellipsis]}'''*] sets the sections for the guide page ```guide``` to the specified contents.";
 Usage[SectionTitle]="SectionTitle[title] can be used as first element of a guide page section to indicate the title.";
 
 
 BuildAction[
 
 
-DocumentationHeader[Sections]=FSHeader["0.66.0"];
+DocumentationHeader[GuideSections]=FSHeader["0.66.0"];
 
 
-Details[Sections]={
-  "[*Sections*]  is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]). Others include [*Abstract*], [*Tutorials*] and [*Guides*].",
-  "[*Sections[guide]*] is expected to be set to a list of sections, each section being a list of the following elements:",
+Details[GuideSections]={
+  "[*GuideSections*]  is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]). Others include [*Abstract*], [*Tutorials*] and [*Guides*].",
+  "[*GuideSections[guide]*] is expected to be set to a list of sections, each section being a list of the following elements:",
   TableForm@{
     {"[*SectionTitle[title]*]","The title of the section, if any. Can only appear as the first element"},
     {"{*{*{```sym```_1,\[Ellipsis]}*}*}","A list of symbols/reference specifications (see [*FormatUsage*] for possible formats)"},
@@ -27,7 +27,7 @@ Details[Sections]={
 };
 
 
-Examples[Sections,"Basic examples"]={
+Examples[GuideSections,"Basic examples"]={
   {
     "Load the ForScience package:",
     ExampleInput[Needs["ForScience`PacletUtils`"]],
@@ -37,7 +37,7 @@ Examples[Sections,"Basic examples"]={
     ExampleInput[DocumentationHeader[guide]={"EXAMPLE GUIDE",Orange};,InitializationCell->True],
     "Add a simple section:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           {Plot,ListPlot,Histogram}
         }
@@ -49,7 +49,7 @@ Examples[Sections,"Basic examples"]={
   {
     "Create a section with a title:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"Section title\"],
           {First,Last,Rest,Most}
@@ -62,7 +62,7 @@ Examples[Sections,"Basic examples"]={
   {
     "Specify multiple sections:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"Some symbols\"],
           {Part,Extract}
@@ -78,7 +78,7 @@ Examples[Sections,"Basic examples"]={
   {
     "Indicate that there are many symbols in this category:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"Equation Solving\"],
           {Solve,DSolve,NSolve,NDSolve,\"\[Ellipsis]\"}
@@ -91,7 +91,7 @@ Examples[Sections,"Basic examples"]={
   {
     "A section with multiple lines of different types:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"A title\"],
           {Region,RegionPlot,MeshRegion},
@@ -105,11 +105,11 @@ Examples[Sections,"Basic examples"]={
 };
 
 
-Examples[Sections,"Properties & Relations"]={
+Examples[GuideSections,"Properties & Relations"]={
   {
     "The ellipsis in a section always link to the same page as the section title:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"A title\",Hyperlink->\"Associations\"],
           {Association,AssociationMap,AssociationThread,\"\[Ellipsis]\"}
@@ -122,10 +122,10 @@ Examples[Sections,"Properties & Relations"]={
 };
 
 
-SeeAlso[Sections]={DocumentationBuilder,SectionTitle,Guide,Abstract,Tutorials,Guides};
+SeeAlso[GuideSections]={DocumentationBuilder,SectionTitle,Guide,Abstract,Tutorials,Guides};
 
 
-Guides[Sections]={$GuideCreatingDocPages};
+Guides[GuideSections]={$GuideCreatingDocPages};
 
 
 DocumentationHeader[SectionTitle]=FSHeader["0.66.0"];
@@ -133,7 +133,7 @@ DocumentationHeader[SectionTitle]=FSHeader["0.66.0"];
 
 Details[SectionTitle]={
   "[*SectionTitle[title]*] can be used to specify the title of a section in a guide page built by [*DocumentationBuilder*].",
-  "[*SectionTitle[\[Ellipsis]]*] can appear as the first element of a section specified in [*Sections[guide]*].",
+  "[*SectionTitle[\[Ellipsis]]*] can appear as the first element of a section specified in [*GuideSections[guide]*].",
   "[*SectionTitle*] accepts the following options:",
   TableForm@{
     {Hyperlink,Automatic,"The link target of the section title"}
@@ -154,7 +154,7 @@ Examples[SectionTitle,"Basic examples"]={
     ExampleInput[DocumentationHeader[guide]={"EXAMPLE GUIDE",Orange};,InitializationCell->True],
     "Add a title to a simple section:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {
           SectionTitle[\"Associations\"],
           {Association,Map,AssociationMap}
@@ -171,7 +171,7 @@ Examples[SectionTitle,"Options","Hyperlink"]={
   {
     "By default, titles are hyperlinked if a guide with the exact same title exists:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {SectionTitle[\"Associations\"]},
         {SectionTitle[\"Custom title\"]}
       };",
@@ -182,7 +182,7 @@ Examples[SectionTitle,"Options","Hyperlink"]={
   {
     "Specify a custom link target:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {SectionTitle[\"My custom title\",Hyperlink->\"Associations\"]}
       };",
       DocumentationBuilder[guide]
@@ -192,7 +192,7 @@ Examples[SectionTitle,"Options","Hyperlink"]={
   {
     "Prevent a title from being hyperlinked:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {SectionTitle[\"Associations\",Hyperlink->False]}
       };",
       DocumentationBuilder[guide]
@@ -202,7 +202,7 @@ Examples[SectionTitle,"Options","Hyperlink"]={
   {
     "Refer to a guide page using its symbol:",
     ExampleInput[
-      "Sections[guide]={
+      "GuideSections[guide]={
         {SectionTitle[\"Self reference\",Hyperlink->guide]}
       };",
       DocumentationBuilder[guide]
@@ -212,7 +212,7 @@ Examples[SectionTitle,"Options","Hyperlink"]={
 };
 
 
-SeeAlso[SectionTitle]={Sections,DocumentationBuilder};
+SeeAlso[SectionTitle]={GuideSections,DocumentationBuilder};
 
 
 Guides[SectionTitle]={$GuideCreatingDocPages};
