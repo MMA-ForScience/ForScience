@@ -68,7 +68,13 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
 ]
 
 
-EvaluateAndWrite[nb_,cells_]:=(
+EvaluateAndWrite[nb_,cells_,nbOpts:OptionsPattern[]]:=
+With[
+  {exNb=CreateNotebook[
+    Visible->False,
+    InitializationCellEvaluation->False,
+    nbOpts
+  ]},
   NotebookWrite[exNb,cells,All];
   (* NotebookEvaluate leaks $Context/$ContextPath when called from a cell with CellContext *)
   Block[{$Context=$Context,$ContextPath=$ContextPath},
@@ -76,7 +82,7 @@ EvaluateAndWrite[nb_,cells_]:=(
   ];
   NotebookWrite[nb,First@NotebookGet@exNb];
   NotebookClose[exNb];
-)
+]
 
 
 End[]

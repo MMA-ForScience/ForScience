@@ -78,19 +78,12 @@ Attributes[MakeExampleSection]={HoldFirst};
 
 
 MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@Examples@sym>0,
-  With[
-    {exNb=CreateNotebook[
-      Visible->False,
-      InitializationCellEvaluation->False,
-      (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
-      StyleDefinitions->Notebook@Join[
+  EvaluateAndWrite[nb,ExamplesSection[sym,nb],StyleDefinitions->Notebook@Join[
         First[StyleDefinitions/.Options[nb,StyleDefinitions]],
+    (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
         {Cell[StyleData["ExampleDelimiter"],Evaluatable->True,CellContext->Notebook]},
         Cell[StyleData[#],Evaluatable->True,CellContext->Notebook]&/@$ExampleLevels
-      ]
-    ]},
-    EvaluateAndWrite[nb,ExamplesSection[sym,nb]];
-  ]
+  ]];
 ]
 
 
