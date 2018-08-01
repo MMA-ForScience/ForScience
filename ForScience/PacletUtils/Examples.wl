@@ -17,7 +17,7 @@ Examples::needSubCat="Cannot add an example to ``, need to specify at least one 
 Examples::noStringKey="Example section key `` must be string";
 
 
-DeclareSectionAccessor[Examples,{"invalidFormat","noMixingEx","noMixingSub","needSubCat","noStringKey"},_,_String]
+DeclareSectionAccessor[Examples,{"invalidFormat","noMixingEx","noMixingSub","needSubCat","noStringKey"},_,_String,{_List...}]
 
 
 ExampleHeader[title_,num_]:={title,"\[NonBreakingSpace]\[NonBreakingSpace]",Cell[StringTemplate["(``)"]@num,"ExampleCount"]}
