@@ -11,7 +11,7 @@ Attributes[ExampleInput]={HoldAll};
 Options[ExampleInput]={InitializationCell->Automatic,Visible->True};
 
 
-EIOptionValue[opt_,opts___]:=opt/.Join[opts,Options[ExampleInput]]
+EIOptionValue[opt_,opts___]:=opt/.Join[{opts},Options[ExampleInput]]
 
 
 resetInOut[in_,out_]:=(
