@@ -7,7 +7,7 @@ Usage[GuideQ]="GuideQ[sym] returns whether ```sym``` is tagged as documentation 
 BuildAction[
 
 
-DocumentationHeader[Guide]=FSHeader["0.66.0"];
+DocumentationHeader[Guide]=FSHeader["0.66.0","0.67.14"];
 
 
 Details[Guide]={

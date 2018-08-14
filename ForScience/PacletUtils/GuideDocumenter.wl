@@ -4,6 +4,9 @@ Guide;
 GuideQ;
 
 
+Abstract;
+
+
 Begin["`Private`"]
 
 
