@@ -77,7 +77,7 @@ Ubwv4c6ZTywGHFIW9Inax83aIHbg3Ju+z+lYDDmgO6QTj8l4m8G7hp31QWyD
 SOsh6aeKx6Z1pHzJFQv0gNTq0P8PLFVrpHzINQtURLpBekP6QsJlNErCw/k8
 qY/0ifSKdJVUIImbXrG44dDWPqZyyoJzyFnOOZywIO4L/yeXFxx2WCQMecVh
 wqJgyDsOHYuGIS85ZCw40xqG9245TlkZFo3lO4MJS4bhL7E9ExQ=
-"], "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 0.5, MetaInformation -> Association["XMP" -> Association["BasicSchema" -> Association["CreatorTool" -> "Adobe Photoshop CS6 (Windows)"], "MediaManagementSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]], "DocumentID" -> "xmp.did:315E8AECF23F11E68D40D1AD19F900C2", "InstanceID" -> "xmp.iid:315E8AEBF23F11E68D40D1AD19F900C2"], "RightsManagementSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]]], "PagedTextSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]]]], "Comments" -> Association["Software" -> "Adobe ImageReady"]]];
+"], "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 0.5];
 $MagnifierGlassHover=Image[CompressedData["
 1:eJzdmc9vE0cUxyNAosfeckGIXnujJy6tVKk9VOLStFVz4AIlRD00VQMSouXQ
 /hEIIfXAta0qFTggkBqpCA40CSUJtKX8ik1i4ti7XjuJfyQkw/uud52345nx
@@ -109,7 +109,7 @@ zUTex14UfQv6SewfkKvgO8TWcn1deW9aloS/D35B+kPHE1MTYV7MiiUGR6jP
 SZcT2v+TF/QasCFLlgQcofaSPiB9T/qNNEtaJHmkHGmK9AvpW9K7pN1y3syK
 JSWHsfexVVKWOXYW0Q8cSViQ9/lvcv3CEYdFZug3DhsWFUM/cphYdAz9yqFi
 QUzrGEgX03LssDosBl1MUQf7haXD8BJ6c/TW
-"], "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 0.5, MetaInformation -> Association["XMP" -> Association["BasicSchema" -> Association["CreatorTool" -> "Adobe Photoshop CS6 (Windows)"], "MediaManagementSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]], "DocumentID" -> "xmp.did:315E8AECF23F11E68D40D1AD19F900C2", "InstanceID" -> "xmp.iid:315E8AEBF23F11E68D40D1AD19F900C2"], "RightsManagementSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]]], "PagedTextSchema" -> Association["DerivedFrom" -> Association["DerivedFrom" -> Association["InstanceID" -> "xmp.iid:315E8AE9F23F11E68D40D1AD19F900C2", "DocumentID" -> "xmp.did:315E8AEAF23F11E68D40D1AD19F900C2"]]]], "Comments" -> Association["Software" -> "Adobe ImageReady"]]];
+"], "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 0.5];
 
 
 DetailsSummaryOverlay[img_,opac_]:=Overlay[{Graphics[{Opacity@opac,RGBColor[0,2/3,1],Rectangle[{-360,-40},{360,40}]},ImageSize->{720,80},PlotRangePadding->None,ImagePadding->None],img},Alignment->{-0.85,Center}]
