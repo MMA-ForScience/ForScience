@@ -16,9 +16,9 @@ Details[Details]={
   "[*Details[sym]*] needs to be set to a list of notes. Possible types of notes are:",
   TableForm@{
     {"\"```note```\"","A string, to be formatted by [*ParseFormatting*]"},
-    {"TableForm[\[Ellipsis]]","A table with the specified contents"},
-    {"Cell[\[Ellipsis]]","A cell, to be inserted exactly as-is"},
-    {"BoxData[\[Ellipsis]]","A custom cell with the specied [*BoxData*] content"},
+    {"[*TableForm[\[Ellipsis]]*]","A table with the specified contents"},
+    {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
+    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
   "In formatted strings, symbols wrapped in [\[InvisibleSpace]*\[Ellipsis]*\[InvisibleSpace]] are converted into hyperlinks if they are documented.",
@@ -26,8 +26,8 @@ Details[Details]={
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"```symbol```","A symbol, to be hyperlinked if it is documented"},
-    {"Cell[\[Ellipsis]]","A cell, to be inserted exactly as-is"},
-    {"BoxData[\[Ellipsis]]","A custom cell with the specied [*BoxData*] content"},
+    {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
+    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}    
   }
 };
