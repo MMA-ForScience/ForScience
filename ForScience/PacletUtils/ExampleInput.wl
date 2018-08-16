@@ -64,7 +64,7 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
     EIToBoxes/@ProcessVisibleOption[exInput,EIOptionValue[Visible,opts]]
   ],
   "Input",
-  InitializationCell->(EIOptionValue[InitializationCell,opts]/.Automatic:>MemberQ[#,_Needs])
+  InitializationCell->(EIOptionValue[InitializationCell,opts]/.Automatic:>MemberQ[Hold[in],_Needs])
 ]
 
 
