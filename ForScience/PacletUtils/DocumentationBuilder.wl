@@ -36,7 +36,11 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
   With[
     {changed=Length@First[
       Last@Reap[
-        If[OptionValue@ProgressIndicator,Apply@Monitor,First]@Hold[
+        If[
+          OptionValue@ProgressIndicator,
+          PrintTemporary["Building documentation pages..."];Apply@Monitor,
+          First
+        ]@Hold[
           List@@(Function[
             sym,
             curObj=DocumentationTitle[sym,DocumentationType@sym];
