@@ -2,9 +2,9 @@
 
 Usage[Examples]="Examples[sym] contains all examples to be added to the examples section of the notebook.
 [*[*Examples[sym,sec,subsec,\[Ellipsis]]*]'''={```ex_1```,\[Ellipsis]}'''*] assigns examples ```ex_i``` to the example section ```sec\[Rule]subsec```. Each ```ex_i``` must be a list.
-[*[*Examples[sym,sec,subsec,\[Ellipsis]]*]'''=\[LeftAssociation]```subsec```\[Rule]\[Ellipsis],\[Ellipsis]\[RightAssociation]'''*] assigns the (sub)section to the specified (sub)section.
+[*[*Examples[sym,sec,subsec,\[Ellipsis]]*]'''=\[LeftAssociation]```subsubsec```\[Rule]\[Ellipsis],\[Ellipsis]\[RightAssociation]'''*] assigns the (sub)subsections to the specified (sub)section.
 Examples[sym,\[Ellipsis]] returns the assigned list of examples/example subsection.
-[*[*Examples[sym,\[Ellipsis]]*]'''=.'''*] removed the specified example section";
+[*[*Examples[sym,\[Ellipsis]]*]'''=.'''*] removes the specified example section.";
 
 
 BuildAction[
@@ -20,9 +20,9 @@ Details[Examples]={
   "Each example specified is expected to be a list of expressions. The following types are allowed:",
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
-    {"ExampleInput[\[Ellipsis]]","An input cell with the output automatically generated"},
-    {"Cell[\[Ellipsis]]","A cell, to be inserted exactly as-is"},
-    {"BoxData[\[Ellipsis]]","A custom cell with the specied [*BoxData*] content"},
+    {"[*ExampleInput[\[Ellipsis]]*]","An input cell with the output automatically generated"},
+    {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
+    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
   "Example sections are generated in the order they are added, or, more generally, in the order they appear in [*Examples[sym]*].",
