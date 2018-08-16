@@ -52,7 +52,7 @@ DeclareSectionAccessor[acc_,{invFormMsg_,noMixItemMsg_,noMixSubMsg_,needSubMsg_,
   acc[sym:symPat,cats:(keyPat..)]:=Quiet@Check[Extract[acc[sym],Key/@{cats}],{}];
   HoldPattern[acc[symPat,__]=newItem_]^:=(Message[MessageName[acc,invFormMsg],newItem];newItem);
   acc/:HoldPattern[acc[sym:symPat]=item_Association?(CheckSectionAssoc[acc])]:=(acc[sym]^=item);
-  acc/:HoldPattern[acc[sym:symPat]={_List...}]:=Message[MessageName[acc,needSubMsg],HoldForm@sym];
+  acc/:HoldPattern[acc[sym:symPat]=_]:=Message[MessageName[acc,needSubMsg],HoldForm@sym];
   acc/:HoldPattern[acc[sym:symPat,cats:(keyPat..)]=.]:=(acc[sym,##]=Quiet@KeyDrop[acc[sym,##],Last@{cats}])&@@Most@{cats};
   acc/:HoldPattern[acc[sym:symPat]=.]:=acc[sym]=<||>;
   acc[symPat]:=<||>;
