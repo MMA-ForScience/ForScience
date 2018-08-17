@@ -41,6 +41,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`ContextualRule`;
 <<`SkipCommentsStream`;
 <<`PartLookup`;
+<<`SimpleTOC`;
 
 
 EndPackage[]
