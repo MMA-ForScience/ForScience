@@ -19,15 +19,18 @@ DeclareMetadataHandler[Guides,"invalidInput",_,{(_String|_Symbol)...},{}]
 Attributes[MakeGuidesSection]={HoldFirst};
 
 
-MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=If[Length@Guides@sym>0,
+MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=With[
+  {valid=DeleteCases[_Symbol?(Not@*GuideQ)]@Guides[sym]},
+  If[Length@valid>0,
   NotebookWrite[nb,
     Cell@CellGroupData@Prepend[Cell["Related Guides","MoreAboutSection"]][
       Cell[
         BoxData@DocumentationLink[#,"Guide","LinkStyle"->"RefLinkPlain",BaseStyle->{"MoreAbout"}],
         "MoreAbout"
-      ]&/@Select[GuideQ]@Guides[sym]
+        ]&/@valid
     ]
   ]
+]
 ]
 
 
