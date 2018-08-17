@@ -28,10 +28,16 @@ GuideSections[$GuideCreatingDocPages]={
     {Tutorials,Guides,Text["refer to related tutorials and guides"]}
   },
   {
-    SectionTitle["Documenation Guides"],
+    SectionTitle["Documentation Guides"],
     {Guide,GuideQ,Text["create a new guide"]},
     {Abstract,Text["specify a summary"]},
     {GuideSections,SectionTitle,Text["specify sections with different functions"]},
+    {Tutorials,Guides,Text["refer to related tutorials and guides"]}
+  },
+  {
+    SectionTitle["Documentation Tutorials"],
+    {Guide,GuideQ,Text["create a new tutorial"]},
+    {TutorialSections,Text["specify (sub)sections with text, examples, \[Ellipsis]"]},
     {Tutorials,Guides,Text["refer to related tutorials and guides"]}
   }
 };

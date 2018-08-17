@@ -11,6 +11,7 @@ DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.63.6"];
 
 Details[ExampleInput]={
   "[*ExampleInput[\[Ellipsis]]*] represents an input cell with corresponding output within an example of a documentation page.",
+  "[*ExampleInput*] expressions can be used within [*Examples[sym]*] for symbol documentation pages and within [*TutorialSections[tut,\[Ellipsis]]*] for tutorial pages.",
   "The input cells are effectively evaluated inside the example notebook, meaning all output, including print output, echoed expressions and messages are included in the final notebook.",
   "Every [*ExampleInput[\[Ellipsis]]*] generates one input cell.",
   "In [*ExampleInput[in_1,\[Ellipsis]]*], each ```in```_i is one input. The following types are allowed:",
@@ -183,6 +184,23 @@ Examples[ExampleInput,"Options","Visible"]={
 };
 
 
+Examples[ExampleInput,"Properties & Relations"]={
+  {
+    "[*ExampleInput*] expressions can be used for tutorials in exactly the same way as for symbols:",
+    ExampleInput[
+      tut=Tutorial["Example tutorial"];,
+      DocumentationHeader[tut]={"TUTORIAL",Blue};,
+      "TutorialSections[tut,None]={
+        \"This is an example within a tutorial page:\",
+        ExampleInput[Plot[Sin[x],{x,0,\[Pi]}]]
+      };",
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  }
+};
+
+
 Examples[ExampleInput,"Possible issues"]={
   {
     "Symbols will have their full context prepended if they are not on [*$ContextPath*] during the call to [*DocumentationBuilder*]:",
@@ -270,7 +288,7 @@ Examples[ExampleInput,"Possible issues"]={
 };
 
 
-SeeAlso[ExampleInput]={Examples,DocumentationBuilder,Usage,Details,SeeAlso,Tutorials,Guides};
+SeeAlso[ExampleInput]={Examples,TutorialSections,DocumentationBuilder,Usage,Details,SeeAlso,Tutorials,Guides};
 
 
 Guides[ExampleInput]={$GuideCreatingDocPages};

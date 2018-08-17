@@ -57,6 +57,9 @@ StripFormatting[boxes_]:=StringReplace[
 ]@First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@boxes,"PlainText"]
 
 
+GenerateCellID[expr_]:=Mod[Hash[expr],2^31]
+
+
 $SectionColor=RGBColor[217/255,101/255,0];
 $SectionArrow=Style[
   Graphics[

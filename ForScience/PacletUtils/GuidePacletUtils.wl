@@ -21,8 +21,9 @@ GuideSections[$GuidePacletUtils]={
   {
     SectionTitle["Creating Documentation Pages"],
     {DocumentationBuilder,DocumentationHeader,Text["build documentation pages"]},
-    {Guide,GuideSections,Abstract,"\[Ellipsis]",Text["create guide pages"]},
-    {Usage,Details,Examples,"\[Ellipsis]",Text["create symbol reference pages"]}
+    {Usage,Details,Examples,"\[Ellipsis]",Text["create symbol reference pages"]},
+    {Guide,Abstract,GuideSections,"\[Ellipsis]",Text["create guide pages"]},
+    {Tutorial,TutorialSections,"\[Ellipsis]",Text["create tutorial pages"]}
   },
   {
     {Usage,FormatUsage,ParseFormatting,"\[Ellipsis]",Text["create nicely formatted usage messages"]}

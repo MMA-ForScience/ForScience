@@ -6,12 +6,16 @@ Usage[Tutorials]="[*[*Tutorials[sym]*]'''={```tutorial```_1,\[Ellipsis]}'''*] se
 BuildAction[
 
 
-DocumentationHeader[Tutorials]=FSHeader["0.64.0","0.66.0"];
+DocumentationHeader[Tutorials]=FSHeader["0.64.0","0.68.0"];
 
 
 Details[Tutorials]={
   "[*Tutorials*] is one of the metadata symbols used by [*DocumentationBuilder*]. Others include [*Usage*], [*Details*], [*Examples*], [*SeeAlso*] and [*Guides*].",
-  "[*Tutorials[\[Ellipsis]]*] can be set to a list of (exact) tutorial titles that should appear in the \"Tutorials\" section of documentation pages",
+  "In [*Tutorials[\[Ellipsis]]*]'''={```tutorial```_1,\[Ellipsis]}''', every ```tutorial_i``` should be one of the following:",
+  TableForm@{
+    {"\"```title```\"","Exact title of a tutorial"},
+    {"```tutorial```","A symbol tagged as [*Tutorial*]"}
+  },
   "Tutorials listed in [*Tutorials[\[Ellipsis]]*] appear at the bottom of the documentation page in the \"Tutorials\" section and in the header in the \"Tutorials\" dropdown.",
   "[*Tutorials*] is the exact analogue of [*Guides*] for documentation tutorials."
 };

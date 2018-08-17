@@ -22,15 +22,15 @@ Attributes[MakeGuidesSection]={HoldFirst};
 MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=With[
   {valid=DeleteCases[_Symbol?(Not@*GuideQ)]@Guides[sym]},
   If[Length@valid>0,
-  NotebookWrite[nb,
-    Cell@CellGroupData@Prepend[Cell["Related Guides","MoreAboutSection"]][
-      Cell[
-        BoxData@DocumentationLink[#,"Guide","LinkStyle"->"RefLinkPlain",BaseStyle->{"MoreAbout"}],
-        "MoreAbout"
+    NotebookWrite[nb,
+      Cell@CellGroupData@Prepend[Cell["Related Guides","MoreAboutSection"]][
+        Cell[
+          BoxData@DocumentationLink[#,"Guide","LinkStyle"->"RefLinkPlain",BaseStyle->{"MoreAbout"}],
+          "MoreAbout"
         ]&/@valid
+      ]
     ]
   ]
-]
 ]
 
 
@@ -61,6 +61,11 @@ AppendTo[$DependencyCollectors["Symbol"],Guides];
 AppendTo[$DocumentationSections["Guide"], MakeGuidesSection];
 AppendTo[$HeaderEntries["Guide"],MakeGuidesHeader];
 AppendTo[$DependencyCollectors["Guide"],Guides];
+
+
+AppendTo[$DocumentationSections["Tutorial"], MakeGuidesSection];
+AppendTo[$HeaderEntries["Tutorial"],MakeGuidesHeader];
+AppendTo[$DependencyCollectors["Tutorial"],Guides];
 
 
 End[]

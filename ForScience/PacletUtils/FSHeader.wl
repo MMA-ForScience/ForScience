@@ -7,6 +7,9 @@ FSHeader[verStr,modVerStr] returns the documentation header with both introducti
 Usage[FSGuideHeader]="FSGuideHeader is the common documentation header to ForScience guide pages.";
 
 
+Usage[FSTutorialHeader]="FSTutorialHeader is the common documentation header to ForScience tutorial pages.";
+
+
 Begin["`Private`"]
 
 
@@ -15,6 +18,9 @@ FSHeader[verStr_,modVerStr_]:={"FOR-SCIENCE SYMBOL",$ForScienceColor,StringTempl
 
 
 FSGuideHeader={"FOR-SCIENCE GUIDE",Lighter@$ForScienceColor};
+
+
+FSTutorialHeader={"FOR-SCIENCE TUTORIAL",Darker@$ForScienceColor};
 
 
 End[]
@@ -26,13 +32,19 @@ BuildAction[
 DocumentationHeader[FSHeader]=FSHeader["0.62.0"];
 
 
-SeeAlso[FSHeader]=Hold[DocumentationHeader,FSGuideHeader];
+SeeAlso[FSHeader]=Hold[DocumentationHeader,FSGuideHeader,FSTutorialHeader];
 
 
 DocumentationHeader[FSGuideHeader]=FSHeader["0.66.0"];
 
 
-SeeAlso[FSGuideHeader]={DocumentationHeader,FSHeader};
+SeeAlso[FSGuideHeader]=Hold[DocumentationHeader,FSHeader,FSTutorialHeader];
+
+
+DocumentationHeader[FSTutorialHeader]=FSHeader["0.68.0"];
+
+
+SeeAlso[FSTutorialHeader]=Hold[DocumentationHeader,FSHeader,FSGuideHeader];
 
 
 ]

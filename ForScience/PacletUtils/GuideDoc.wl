@@ -14,12 +14,12 @@ Details[Guide]={
   "'''```sym```='''[*Guide[title]*] tags ```sym``` as guide, causing [*DocumentationBuilder*] to generate a guide page based on the data attached to ```sym```.",
   "Tagging a symbol as guide using '''```sym```='''[*Guide[title]*] assigns [*DocumentationTitle*][```sym```,\"Guide\"]'''=```title```''' as upvalue to ```sym```.",
   "Data can be attached to symbols tagged as guide in the same way as for standard symbols.",
-  "As for symbols, documentation pages are built by [*DocumentationBuilder*] if and only if [*DocumentationHeader[gd]*] is set for the guide symbol.",
+  "As for symbols and tutorials, documentation pages are built by [*DocumentationBuilder*] if and only if [*DocumentationHeader[gd]*] is set for the guide symbol.",
   "The following data are used to build guide reference pages:",
   TableForm@{
-    {"[*DocumentationTitle*][```sym```,\"Guide\"]","The title of the guide, as set via '''```sym```='''[*Guide[title]*]"},
+    {"[*DocumentationTitle*][```gd```,\"Guide\"]","The title of the guide, as set via '''```gd```='''[*Guide[title]*]"},
     {"[*Abstract[gd]*]","A short description of the contents of this guide. [*Abstract[gd]*] is also used for the summary seen in the search results page"},
-    {"[*GuideSections[gd*]","The different sections of the guide, containing lists of symbols with optional short descriptions"},
+    {"[*GuideSections[gd]*]","The different sections of the guide, containing lists of symbols with optional short descriptions"},
     {"[*Tutorials[gd]*]","Related documentation tutorials that appear in the \"Tutorials\" section and at the top in the dropdown"},
     {"[*Guides[gd]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown"}
   },
@@ -107,7 +107,7 @@ Examples[Guide,"Properties & Relations"]={
 };
 
 
-SeeAlso[Guide]={DocumentationBuilder,DocumentationHeader,Abstract,GuideSections,Tutorials,Guides,GuideQ};
+SeeAlso[Guide]={DocumentationBuilder,DocumentationHeader,Abstract,GuideSections,Tutorials,Guides,GuideQ,Tutorial};
 
 
 Guides[Guide]={$GuideCreatingDocPages};
