@@ -12,12 +12,12 @@ DocumentationHeader[Tutorial]=FSHeader["0.68.0"];
 
 Details[Tutorial]={
   "'''```sym```='''[*Tutorial[title]*] tags ```sym``` as tutorial, causing [*DocumentationBuilder*] to generate a tutorial page based on the data attached to ```sym```.",
-  "Tagging a symbol as tutorial using '''```sym```='''[*Tutorial[title]*] assigns [*DocumentationTitle*][```sym```,\"Tutorial\"]'''=```title```''' as upvalue to ```sym```.",
+  "Tagging a symbol as tutorial using '''```sym```='''[*Tutorial[title]*] assigns [*DocumentationTitle*][```sym```]'''=```title```''' as upvalue to ```sym```.",
   "Data can be attached to symbols tagged as tutorial in the same way as for standard symbols.",
   "As for symbols and guides, documentation pages are built by [*DocumentationBuilder*] if and only if [*DocumentationHeader[tut]*] is set for the tutorial symbol.",
   "The following data are used to build tutorial reference pages:",
   TableForm@{
-    {"[*DocumentationTitle*][```tut```,\"Tutorial\"]","The title of the tutorial, as set via '''```tut```='''[*Tutorial[title]*]"},
+    {"[*DocumentationTitle*][```tut```]","The title of the tutorial, as set via '''```tut```='''[*Tutorial[title]*]"},
     {"[*TutorialSections[tut]*]","The different sections of the tutorial, containing text, examples, tables, etc."},
     {"[*Tutorials[tut]*]","Related documentation tutorials that appear in the \"Tutorials\" section and at the top in the dropdown"},
     {"[*Guides[tut]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown"}

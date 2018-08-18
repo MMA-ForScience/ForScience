@@ -9,7 +9,7 @@ AppendTo[$DocumentationTypes,"Symbol"->"Symbols"];
 DocumentationOfTypeQ[sym_,"Symbol"]:=True
 
 
-DocumentationTitle[sym_,"Symbol"]:=SafeSymbolName@sym
+DocumentationTitle[sym_]:=SafeSymbolName@sym
 
 
 DocumentationSummary[sym_,"Symbol"]:=StringRiffle[StripFormatting/@UsageBoxes[sym]," "]

@@ -9,7 +9,7 @@ AppendTo[$DocumentationTypeData,$DependencyCollectors];
 Attributes[CacheFile]={HoldFirst};
 
 
-CacheFile[sym_,type_]:=StringReplace[Context@sym<>DocumentationTitle[sym,type],"`"->"_"]
+CacheFile[sym_]:=StringReplace[Context@sym<>DocumentationTitle[sym],"`"->"_"]
 
 
 Attributes[CreateCacheID]={HoldFirst};
@@ -30,7 +30,7 @@ Attributes[DocumentationCachePut]={HoldFirst};
 DocumentationCachePut[sym_,type_,doc_,links_,OptionsPattern[]]:=With[
   {cacheDir=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],type}},
   With[
-    {cacheFile=FileNameJoin@{cacheDir,CacheFile[sym,type]}},
+    {cacheFile=FileNameJoin@{cacheDir,CacheFile[sym]}},
     If[!DirectoryQ@cacheDir,
       If[FileExistsQ@FileNameDrop[cacheDir,0],Message[DocumentationCachePut::noDir,cacheDir];Return@Null];
       CreateDirectory[cacheDir];
@@ -48,7 +48,7 @@ Attributes[DocumentationCacheGet]={HoldFirst};
 
 
 DocumentationCacheGet[sym_,type_,OptionsPattern[]]:=With[
-  {cacheFile=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],type,CacheFile[sym,type]}},  
+  {cacheFile=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],type,CacheFile[sym]}},  
   If[!FileExistsQ[cacheFile<>".mx"],Return@Null];
   With[
     {

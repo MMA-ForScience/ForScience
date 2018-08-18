@@ -15,7 +15,7 @@ TutorialQ[_]=False;
 
 
 HoldPattern[tut_=Tutorial[title_]]^:=(
-  tut/:DocumentationTitle[tut,"Tutorial"]=title;
+  DocumentationTitle[tut]^=title;
   TutorialQ[tut]=True;
   tut
 )
@@ -31,7 +31,7 @@ DocumentationSummary[tut_,"Tutorial"]:=StripFormatting@First[KeySortBy[{StringQ}
 
 
 MakeDocumentationContent[tut_,"Tutorial",nb_,opts:OptionsPattern[]]:=(
-  NotebookWrite[nb,Cell[DocumentationTitle[tut,"Tutorial"],"Title"]];
+  NotebookWrite[nb,Cell[DocumentationTitle[tut],"Title"]];
   #[tut,nb,FilterRules[{opts},Options@#]]&/@$DocumentationSections["Tutorial"]
 )
 

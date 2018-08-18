@@ -43,7 +43,7 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
         ]@Hold[
           List@@(Function[
             sym,
-            curObj=DocumentationTitle[sym,DocumentationType@sym];
+            curObj=DocumentationTitle[sym];
             ++prog;
             DocumentationBuilder[
               sym,
@@ -87,7 +87,7 @@ With[
       Sow[Hold[sym,type],{DocumenationCacheGet,"Uncached"}];
       With[
         {
-          title=DocumentationTitle[sym,type]
+          title=DocumentationTitle[sym]
         },
         With[
           {
