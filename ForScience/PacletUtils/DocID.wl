@@ -41,8 +41,7 @@ DocID[name_String,type_String,tit_String]:=Select[
   $DocumentedObjects,
   Function[sym,DocumentationTitle[sym]==tit,{HoldFirst}]
 ]/.Hold[sym_:None,___]:>DocID[name,sym,type,tit]
-DocID[sym_Symbol,type_:"",tit:(_String|PatternSequence[])]:=With[{rType=DocumentationType[sym,type]},DocID[Evaluate@DocumentationTitle[sym],sym,rType,tit]/;rType=!=None]
-DocID[sym_Symbol,type_:"",tit:(_String|PatternSequence[])]:=DocID[Evaluate@SafeSymbolName@sym,sym,type,tit]
+DocID[sym_Symbol,type_:"",tit:(_String|PatternSequence[])]:=DocID[Evaluate@DocumentationTitle[sym],sym,Evaluate[DocumentationType[sym,type]/.None->type],tit]
 DocID[name_String,sym_Symbol,type_String]:=DocID[name,sym,type,name]
 
 DocID[name_,_,_,_][SymbolName]:=name
