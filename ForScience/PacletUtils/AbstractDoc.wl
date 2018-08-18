@@ -1,19 +1,20 @@
 (*::Package::*)
 
-Usage[Abstract]="[*[*Abstract[guide]*]'''=```abstract```'''*] sets the abstract for the guide page ```guide``` to ```abstract```.";
+Usage[Abstract]="[*[*Abstract[guide]*]'''=```abstract```'''*] sets the abstract for the guide page ```guide``` to ```abstract```.
+[*[*Abstract[overview]*]'''=```abstract```'''*] sets the abstract for the overview page ```overview``` to ```abstract```.";
 
 
 BuildAction[
 
 
-DocumentationHeader[Abstract]=FSHeader["0.66.0"];
+DocumentationHeader[Abstract]=FSHeader["0.66.0","0.70.0"];
 
 
 Details[Abstract]={
-  "[*Abstract*] is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]). Others include [*GuideSections*], [*Tutorials*] and [*Guides*].",
-  "[*Abstract[guide]*] should be set to a string.",
-  "The string ```abstract``` in [*Abstract[guide]*]'''=```abstract```''' can contain formatting specifications supported by [*FormatUsage*].",
-  "The text of [*Abstract[guide]*] is also used to populate the summary seen in the search results page."
+  "[*Abstract*] is one of the metadata symbols used by [*DocumentationBuilder*] for guide pages (see [*Guide*]) and tutorial overviews (see [*TutorialOverview*]). Others include [*GuideSections*], [*Tutorials*] and [*Guides*] (for guides) and [*OverviewEntries*] (for tutorial overviews).",
+  "[*Abstract[\[Ellipsis]]*] should be set to a string.",
+  "The string ```abstract``` in [*Abstract[\[Ellipsis]]*]'''=```abstract```''' can contain formatting specifications supported by [*FormatUsage*].",
+  "The text of [*Abstract[\[Ellipsis]]*] is also used to populate the summary seen in the search results page."
 };
 
 
@@ -33,7 +34,7 @@ Examples[Abstract,"Basic examples"]={
     ExampleInput[NotebookClose[%];,Visible->False]
   },
   {
-    "Use formtating:",
+    "Use formatting:",
     ExampleInput[
       Abstract[guide]="This is an abstract with ```formatted``` text. This is a linked symbol: [*List*]. This is a link to another guide: <*Guide/Associations*>.";,
       DocumentationBuilder[guide]
@@ -43,7 +44,7 @@ Examples[Abstract,"Basic examples"]={
 };
 
 
-SeeAlso[Abstract]={Guide,DocumentationBuilder,GuideSections,Tutorials,Guides};
+SeeAlso[Abstract]={Guide,TutorialOverview,DocumentationBuilder,GuideSections,Tutorials,Guides};
 
 
 Guides[Abstract]={$GuideCreatingDocPages};

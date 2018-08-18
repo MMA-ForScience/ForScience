@@ -22,4 +22,9 @@ AppendTo[$DocumentationSections["Guide"],MakeAbstract];
 AppendTo[$DependencyCollectors["Guide"],Abstract];
 
 
+
+AppendTo[$DocumentationSections["Overview"],MakeAbstract];
+AppendTo[$DependencyCollectors["Overview"],Abstract];
+
+
 End[]

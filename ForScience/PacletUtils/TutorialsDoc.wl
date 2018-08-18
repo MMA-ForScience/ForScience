@@ -1,7 +1,8 @@
 (* ::Package:: *)
 
 Usage[Tutorials]="[*[*Tutorials[sym]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the tutorials to appear in the \"Tutorials\" section of the documentation page built by [*DocumentationBuilder*].
-[*[*Tutorials[guide]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the related tutorials for ```guide```.";
+[*[*Tutorials[guide]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the related tutorials for ```guide```.
+[*[*Tutorials[tut]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the related tutorials for ```tut```.";
 
 BuildAction[
 
@@ -14,7 +15,8 @@ Details[Tutorials]={
   "In [*Tutorials[\[Ellipsis]]*]'''={```tutorial```_1,\[Ellipsis]}''', every ```tutorial_i``` should be one of the following:",
   TableForm@{
     {"\"```title```\"","Exact title of a tutorial"},
-    {"```tutorial```","A symbol tagged as [*Tutorial*]"}
+    {"```tutorial```","A symbol tagged as [*Tutorial*]"},
+    {"```overview```","A symbol tagged as [*TutorialOverview*]"}
   },
   "Tutorials listed in [*Tutorials[\[Ellipsis]]*] appear at the bottom of the documentation page in the \"Tutorials\" section and in the header in the \"Tutorials\" dropdown.",
   "[*Tutorials*] is the exact analogue of [*Guides*] for documentation tutorials."
@@ -55,7 +57,7 @@ Examples[Tutorials,"Properties & Relations"]={
 };
 
 
-SeeAlso[Tutorials]={DocumentationBuilder,Guides,SeeAlso,Usage,Details,Examples};
+SeeAlso[Tutorials]={DocumentationBuilder,Tutorial,TutorialOverview,Guides,SeeAlso,Usage,Details,Examples};
 
 
 Guides[Tutorials]={$GuideCreatingDocPages};

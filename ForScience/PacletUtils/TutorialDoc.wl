@@ -23,7 +23,8 @@ Details[Tutorial]={
     {"[*Guides[tut]*]","Related documentation guides that appear in the \"Related Guides\" section and at the top in the dropdown"}
   },
   "If a symbol ```sym``` is tagged as tutorial, [*TutorialQ[sym]*] returns [*True*].",
-  "Symbols tagged as tutorial can be used to refer to the tutorial page in [*Tutorials[sym]*]."
+  "Symbols tagged as tutorial can be used to refer to the tutorial page in [*Tutorials[sym]*].",
+  "Overviews of (multiple) tutorials can be created using [*TutorialOverview*]."
 };
 
 
@@ -102,11 +103,22 @@ Examples[Tutorial,"Properties & Relations"]={
     ExampleInput[
       TutorialQ/@{notATutorial,42,"Some text"}
     ]
+  },
+  {
+    "Create an overview of the tutorial:",
+    ExampleInput[
+      overview=TutorialOverview["Overview"];,
+      DocumentationHeader[overview]={"OVERVIEW",Black};,
+      Abstract[overview]="This is an overview over a great tutorial.";,
+      OverviewEntries[overview,myTutorial]=Automatic;,
+      DocumentationBuilder[overview];
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
   }
 };
 
 
-SeeAlso[Tutorial]={DocumentationBuilder,DocumentationHeader,TutorialSections,Tutorials,Guides,TutorialQ};
+SeeAlso[Tutorial]={DocumentationBuilder,DocumentationHeader,TutorialSections,Tutorials,Guides,TutorialQ,TutorialOverview};
 
 
 Guides[Tutorial]={$GuideCreatingDocPages};

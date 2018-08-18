@@ -16,8 +16,8 @@ Details[DocumentationBuilder]={
   "[*DocumentationBuilder*] generates documentation pages in the exact same style as the official Mathematica documentation.",
   "[*DocumentationBuilder*] generates search indexes for the documentation for both pre 11.2 and post 11.2 versions of Mathematica.",
   "The resulting documentation pages are cached and only rebuilt when necessary.",
-  "Currently, symbol reference pages, guides and tutorials are supported.",
-  "[*DocumentationBuilder[sym]*] can be used to manually build the documentation page for a single symbol/guide/tutorial. The resulting page is directly displayed (unless [*$BuildActive*] is [*True*]) and the [*Notebook[\[Ellipsis]]*] object is returned.",
+  "Currently, symbol reference pages, guides, tutorials and tutorial overviews are supported.",
+  "[*DocumentationBuilder[sym]*] can be used to manually build the documentation page for a single symbol/guide/tutorial/overview. The resulting page is directly displayed (unless [*$BuildActive*] is [*True*]) and the [*Notebook[\[Ellipsis]]*] object is returned.",
   "[*DocumentationBuilder*] can only build documentation pages for symbols/guides with [*DocumentationHeader[sym]*] set.",
   "[*DocumentationBuilder*] accepts the following options:",
   TableForm@{
@@ -26,7 +26,7 @@ Details[DocumentationBuilder]={
     {Details,True,"Whether to generate the details section"},
     {Examples,True,"Whether to generate the examples section"}
   },
-  "Data for reference pages are attached to the symbol/guide/tutorial symbol to be documented (e.g. [*Usage[sym]*]'''=```usage```''').",
+  "Data for reference pages are attached to the symbol/guide/tutorial/overview symbol to be documented (e.g. [*Usage[sym]*]'''=```usage```''').",
   "The following data are used to build symbol reference pages:",
   TableForm@{
     {"[*Usage[sym]*]","Usage cases for the symbol. [*Usage[sym]*] These are also used to generate the summary seen in the search results page"},
@@ -38,6 +38,7 @@ Details[DocumentationBuilder]={
   },
   "For a list of data used to generate guide pages, see the documentation of [*Guide*].",
   "For a list of data used to generate tutorial pages, see the documentation of [*Tutorial*].",
+  "For a list of data used to generate tutorial overviews, see the documentation of [*TutorialOverview*].",
   "The complete documentation of the ForScience package is generated using [*DocumentationBuilder*]."
 };
 
@@ -140,7 +141,7 @@ Examples[DocumentationBuilder,"Options","Examples"]={
 };
 
 
-SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Guide,Tutorial,Usage,Details,Examples,SeeAlso,Tutorials,Guides};
+SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Guide,Tutorial,TutorialOverview,Usage,Details,Examples,SeeAlso,Tutorials,Guides};
 
 
 Guides[DocumentationBuilder]={$GuideCreatingDocPages};

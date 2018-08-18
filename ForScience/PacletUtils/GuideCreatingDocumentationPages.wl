@@ -39,6 +39,12 @@ GuideSections[$GuideCreatingDocPages]={
     {Guide,GuideQ,Text["create a new tutorial"]},
     {TutorialSections,Text["specify (sub)sections with text, examples, \[Ellipsis]"]},
     {Tutorials,Guides,Text["refer to related tutorials and guides"]}
+  },
+  {
+    SectionTitle["Tutorial overviews"],
+    {TutorialOverview,TutorialOverviewQ,Text["create a new tutorial"]},
+    {Abstract,Text["specify a summary"]},
+    {OverviewEntries,Text["specify the structure and linked tutorials of the overview"]}
   }
 };
 
