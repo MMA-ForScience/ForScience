@@ -71,6 +71,9 @@ SeeAlso[DocumentationHeader]=Hold[DocumentationBuilder,$ForScienceColor,Usage,De
 Guides[DocumentationHeader]={$GuideCreatingDocPages};
 
 
+Tutorials[DocumentationHeader]={$TutorialCreatingSymbolPages};
+
+
 DocumentationHeader[$ForScienceColor]=FSHeader["0.55.0"];
 
 

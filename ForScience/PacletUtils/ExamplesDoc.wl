@@ -223,4 +223,7 @@ SeeAlso[Examples]={DocumentationBuilder,ExampleInput,Usage,Details,SeeAlso};
 Guides[Examples]={$GuideCreatingDocPages};
 
 
+Tutorials[Examples]={$TutorialCreatingSymbolPages};
+
+
 ]

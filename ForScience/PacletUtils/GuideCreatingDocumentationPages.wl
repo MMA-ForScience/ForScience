@@ -50,3 +50,6 @@ GuideSections[$GuideCreatingDocPages]={
 
 
 Guides[$GuideCreatingDocPages]={$GuidePacletUtils};
+
+
+Tutorials[$GuideCreatingDocPages]={$TutorialCreatingSymbolPages};

@@ -68,4 +68,7 @@ SeeAlso[Usage]={FormatUsage,ParseFormatting,DocumentationBuilder,Details,Example
 Guides[Usage]={$GuideCreatingDocPages};
 
 
+Tutorials[Usage]={$TutorialCreatingSymbolPages};
+
+
 ]

@@ -147,4 +147,7 @@ SeeAlso[DocumentationBuilder]={DocumentationHeader,BuildPaclet,Guide,Tutorial,Tu
 Guides[DocumentationBuilder]={$GuideCreatingDocPages};
 
 
+Tutorials[DocumentationBuilder]={$TutorialCreatingSymbolPages};
+
+
 ]

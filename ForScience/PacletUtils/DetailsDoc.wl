@@ -115,4 +115,7 @@ SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso,Tutorials,Guides};
 Guides[Details]={$GuideCreatingDocPages};
 
 
+Tutorials[Details]={$TutorialCreatingSymbolPages};
+
+
 ]

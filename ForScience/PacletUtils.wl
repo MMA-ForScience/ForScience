@@ -77,6 +77,8 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 BuildAction[
   <<`GuidePacletUtils`;
   <<`GuideCreatingDocumentationPages`;
+
+  <<`TutorialCreatingSymbolPages`;
 ]
 
 
