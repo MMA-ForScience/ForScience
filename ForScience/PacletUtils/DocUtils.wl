@@ -31,7 +31,7 @@ BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=Replace[
       {    
         TagBox[RowBox@l_List,"[**]"]:>
          RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol"],1],
-        TagBox[RowBox@l:{__String},"<**>"]:>DocumentationLink@StringJoin@l
+        TagBox[RowBox@l:{__String},"<**>"]:>DocumentationLink@Evaluate@StringJoin@l
       },
       All
     ],
