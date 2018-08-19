@@ -16,7 +16,7 @@ TutorialOverviewQ[_]=False;
 
 HoldPattern[overview_=TutorialOverview[title_]]^:=(
   DocumentationTitle[overview]^=title;
-  TutorialOverviewQ[overview]=True;
+  TutorialOverviewQ[overview]^=True;
   overview
 )
 

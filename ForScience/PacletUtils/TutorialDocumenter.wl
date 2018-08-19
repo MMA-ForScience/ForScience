@@ -16,7 +16,7 @@ TutorialQ[_]=False;
 
 HoldPattern[tut_=Tutorial[title_]]^:=(
   DocumentationTitle[tut]^=title;
-  TutorialQ[tut]=True;
+  TutorialQ[tut]^=True;
   tut
 )
 

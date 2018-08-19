@@ -16,7 +16,7 @@ GuideQ[_]=False;
 
 HoldPattern[gd_=Guide[title_]]^:=(
   DocumentationTitle[gd]^=title;
-  GuideQ[gd]=True;
+  GuideQ[gd]^=True;
   gd
 )
 
