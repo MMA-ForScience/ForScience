@@ -21,7 +21,7 @@ MakeFooter[sym_,_]:=With[
       ],
       "History"
     ],
-    {}
+    Cell[" ","FooterCell"]
   ]
 ]
 

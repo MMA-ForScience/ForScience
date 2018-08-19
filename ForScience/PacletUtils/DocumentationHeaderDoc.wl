@@ -7,7 +7,7 @@ Usage[$ForScienceColor]="$ForScienceColor is the documentation header color used
 BuildAction[
 
 
-DocumentationHeader[DocumentationHeader]=FSHeader["0.55.0","0.65.9"];
+DocumentationHeader[DocumentationHeader]=FSHeader["0.55.0","0.70.2"];
 
 
 Details[DocumentationHeader]={
@@ -17,10 +17,10 @@ Details[DocumentationHeader]={
   TableForm@{
     {"```header```","The header text, describing the type of documentation page"},
     {"```color```","The color of the header bar"},
-    {"```footer```","The content of the footer of the documentaion page, containg introduction and modification dates"}
+    {"```footer```","The content of the footer of the documentation page, containing introduction and modification dates"}
   },
   "In the footer text, version numbers of the form #.#.# automatically formatted as such.",
-  "The footer text can be set to [*None*] or left away if no footer shuold be included.",
+  "The footer text can be set to [*None*] or left away if no footer should be included.",
   "[*DocumentationHeader[sym]*] can be removed with [*DocumentationHeader[sym]*]'''=.'''"
 };
 
