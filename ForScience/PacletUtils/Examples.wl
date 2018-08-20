@@ -53,10 +53,9 @@ ExamplesSection[sec_List,_,_]:=
     Map[
       Switch[#,
         _String,
-        Cell[
-          ParseToDocEntry@#,
-          "ExampleText"
-        ],
+        Cell[ParseToDocEntry@#,"ExampleText"],
+        Labeled[_String,_],
+        Cell[ParseToDocEntry@First@#,"ExampleText",CellID->GenerateCellID@Last@#],
         _ExampleInput,
         ExampleInputToCell[#],
         _,

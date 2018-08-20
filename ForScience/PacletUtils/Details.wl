@@ -169,6 +169,24 @@ SummaryThumbnail[nb_,sum_]:=With[
 ]
 
 
+ExampleLink[ref_]:=ButtonBox["\[NonBreakingSpace]\[RightGuillemet]",BaseStyle->"ExampleLink",ButtonData->GenerateCellID[ref]]
+
+
+ExampleLinkedCell[Hyperlink[text_String,ref_]]:=
+Cell[
+  Replace[
+    ParseToDocEntry@text,
+    {
+      TextData@t_:>TextData@Append[t,ExampleLink@ref],
+      s_String:>TextData@{s,ExampleLink@ref},
+      b_BoxData:>TextData@{Cell@b,ExampleLink@ref},
+      d_:>BoxData@{Cell@d,ExampleLink@ref}
+    }
+  ],
+  "Notes"
+]
+
+
 Options[MakeDetailsSection]={Details->True};
 
 
@@ -182,6 +200,8 @@ MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
         notes=Switch[#,
           _String,
           Cell[ParseToDocEntry@#,"Notes"],
+          Hyperlink[_String,_],
+          ExampleLinkedCell@#,
           _TableForm,
           FormatTable@#,
           _,

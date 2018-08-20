@@ -10,7 +10,7 @@ Examples[sym,\[Ellipsis]] returns the assigned list of examples/example subsecti
 BuildAction[
 
 
-DocumentationHeader[Examples]=FSHeader["0.58.0","0.65.2"];
+DocumentationHeader[Examples]=FSHeader["0.58.0","0.70.8"];
 
 
 Details[Examples]={
@@ -20,11 +20,13 @@ Details[Examples]={
   "Each example specified is expected to be a list of expressions. The following types are allowed:",
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
+    {"[*Labeled*][\"```text```\",```ref```]","A formatted string with label ```ref```"},
     {"[*ExampleInput[\[Ellipsis]]*]","An input cell with the output automatically generated"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
+  Hyperlink["Labeled strings can be used to refer to examples from the [*Details*] section.","Labeled"],
   "Example sections are generated in the order they are added, or, more generally, in the order they appear in [*Examples[sym]*].",
   "[*Examples[sym]*] is always an association with string keys, representing the section titles.",
   "The entries of [*Examples[sym]*] are themselves either associations representing (sub)subsections or lists of examples.",
@@ -178,6 +180,22 @@ Examples[Examples,"Properties & Relations"]={
         }
       };",
       DocumentationBuilder[test,Examples->False]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+  Labeled["Using [*Labeled*][\"```text```\",```ref```], examples can be referenced from the [*Details*] section:","Labeled"],
+    ExampleInput[
+      "Examples[test,\"Basic examples\"]={
+        {
+          Labeled[\"This example is linked to from \\\"Details and Options\\\":\",\"Example 1\"],
+          ExampleInput[1+2]
+        }
+      };",
+      "Details[test]={
+        Hyperlink[\"Click the arrow to get to an important example\",\"Example 1\"]
+      };",
+      DocumentationBuilder[test]
     ],
     ExampleInput[NotebookClose[%];,Visible->False]
   },

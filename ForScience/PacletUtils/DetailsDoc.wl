@@ -6,7 +6,7 @@ Usage[Details]="[*[*Details[sym]*]'''={```note```_1,\[Ellipsis]}'''*] sets the c
 BuildAction[
 
 
-DocumentationHeader[Details]=FSHeader["0.57.0","0.63.11"];
+DocumentationHeader[Details]=FSHeader["0.57.0","0.70.8"];
 
 
 Details[Details]={
@@ -16,18 +16,20 @@ Details[Details]={
   "[*Details[sym]*] needs to be set to a list of notes. Possible types of notes are:",
   TableForm@{
     {"\"```note```\"","A string, to be formatted by [*ParseFormatting*]"},
+    {"[*Hyperlink*][\"```note```\",```ref```]","A formatted string linking to ```ref```"},
     {"[*TableForm[\[Ellipsis]]*]","A table with the specified contents"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
-    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
+    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specified [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
+  Hyperlink["Hyperlinked notes can be used to refer to examples in the [*Examples*] section.","Hyperlink"],
   "In formatted strings, symbols wrapped in [\[InvisibleSpace]*\[Ellipsis]*\[InvisibleSpace]] are converted into hyperlinks if they are documented.",
   "Tables can have 2 or 3 columns. Possible types of entries are:",
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"```symbol```","A symbol, to be hyperlinked if it is documented"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
-    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
+    {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specified [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}    
   }
 };
@@ -103,6 +105,22 @@ Examples[Details,"Properties & Relations"]={
         \"Some important details\"
       };",
       DocumentationBuilder[test,Details->False]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    Labeled["Using [*Hyperlink*][\"```note```\",```ref```], examples in the [*Examples*] section can be referenced:","Hyperlink"],
+    ExampleInput[
+      "Details[test]={
+        Hyperlink[\"Click the arrow to get to an important example\",\"Example 1\"]
+      };",
+      "Examples[test,\"Basic examples\"]={
+        {
+          Labeled[\"This example is linked to from \\\"Details and Options\\\":\",\"Example 1\"],
+          ExampleInput[1+2]
+        }
+      };",
+      DocumentationBuilder[test]
     ],
     ExampleInput[NotebookClose[%];,Visible->False]
   }
