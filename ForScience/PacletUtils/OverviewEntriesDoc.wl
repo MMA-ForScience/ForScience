@@ -135,7 +135,7 @@ Examples[OverviewEntries,"Scope"]={
 };
 
 
-Examples[Examples,"Properties & Relations"]={
+Examples[OverviewEntries,"Properties & Relations"]={
   {
     "Refer to a tutorial using a tagged symbol:",
     ExampleInput[
