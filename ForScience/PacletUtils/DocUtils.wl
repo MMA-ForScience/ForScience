@@ -12,35 +12,35 @@ SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 CodeCell[box_]:=Cell[BoxData@box,"InlineFormula",FontFamily->"Source Sans Pro"]
 
 
-BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=Replace[
-  TextData@Replace[
-    First@Replace[
-      Switch[boxes,
-        _RowBox,
-        Replace[
-          boxes,
-          {
-            s_String:>StringReplace[s,","~~EndOfString:>", "],
-            b_:>CodeCell[b]
-          },
-          {2}
-        ],
-        _,
-        boxes
-      ],
-      {    
-        TagBox[RowBox@l_List,"[**]"]:>
-         RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol"],1],
-        TagBox[RowBox@l:{__String},"<**>"]:>DocumentationLink@Evaluate@StringJoin@l
-      },
-      All
+BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=
+Replace[ (* clean up box structures *)
+  Replace[ (* process all TagBoxes, from the inside out *)
+    Replace[ (* for RowBoxes ... *)
+      boxes,
+      row_RowBox:>Replace[ (* ... add space after comma on topmost level *)
+        row,
+        {
+          s_String:>StringReplace[s,","~~EndOfString:>", "],
+          b_:>CodeCell[b]
+        },
+        {2}
+      ]
     ],
-    t:(_TemplateBox|_TagBox):>Cell@BoxData@t,
-    1
+    {    
+      TagBox[RowBox@l_List,"[**]"]:>
+        RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol"],1],
+      TagBox[RowBox@l:{__String},"<**>"]:>DocumentationLink@Evaluate@StringJoin@l
+    },
+    All
   ],
-  TextData@{el_String}:>el
+  {
+    RowBox[s_String|{s_String}]:>s (* single strings don't need any wrapper *),
+    RowBox@c_List:> (* RowBox->TextData, any nested boxes need to be wrapped in Cell@BoxData@... *)
+      TextData@Replace[c,b:Except[_String|_Cell(* from CodeCell *)]:>Cell@BoxData@b,1],
+    b_:>BoxData@CodeCell@b
+  }
 ]
-BoxesToDocEntry[boxes_String]:=TextData@boxes
+BoxesToDocEntry[boxes_String]:=boxes
 BoxesToDocEntry[boxes_]:=BoxData@boxes
 
 
