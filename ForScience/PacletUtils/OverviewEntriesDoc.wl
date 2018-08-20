@@ -139,11 +139,16 @@ Examples[OverviewEntries,"Properties & Relations"]={
   {
     "Refer to a tutorial using a tagged symbol:",
     ExampleInput[
-      tut=Tutorial["A TUTORIAL"];,
+      tut=Tutorial["A Tutorial"];,
+      DocumentationHeader[tut]={"EXAMPLE TUTORIAL",Red};,
       TutorialSections[tut,"Section 1"]={};,
       TutorialSections[tut,"Section 2"]={};,
       OverviewEntries[overview,tut]=Automatic;
-    ]
+    ],
+    ExampleInput[
+      DocumentationBuilder[overview];
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
   }
 };
 
