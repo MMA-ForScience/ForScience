@@ -46,13 +46,14 @@ SetupImportCache[];
 
 
 Options[CachedImport]={"CacheImports"->True};
-$MixedOptions=Join[Options[Import],Options[CachedImport]];
 
 
-CachedImport[file_,{type_,o:OptionsPattern[Import]},oo:OptionsPattern[CachedImport]]:=
+CachedImport[file_,{type_,o:OptionsPattern[]},oo:OptionsPattern[]]:=
  CachedImport[file,Import[#,type,o]&,oo]
-CachedImport[file_,type:(_List|_String),o:OptionsPattern[$MixedOptions]]:=
- CachedImport[file,Import[#,type,o]&,FilterRules[{o},Options[CachedImport]]]
+CachedImport[file_,type:(_List|_String),o:OptionsPattern[]]:=With[
+  {ciOpts=FilterRules[{o},Options[CachedImport]]},
+  CachedImport[file,Import[#,type,Complement[{o},ciOpts]]&,ciOpts]
+]
 CachedImport[file_,importer_:Import,OptionsPattern[]]:=With[
   {path=Quiet@AbsoluteFileName@file},
   If[OptionValue["CacheImports"]&&path=!=$Failed,
