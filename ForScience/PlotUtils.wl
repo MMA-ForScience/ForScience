@@ -7,6 +7,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`NiceRadialTicks`
 <<`SetupForSciencePlotTheme`
 <<`VectorMarker`;
+<<`TransformedTicks`;
 
 
 EndPackage[]

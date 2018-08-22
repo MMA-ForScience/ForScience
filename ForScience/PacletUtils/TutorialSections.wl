@@ -2,16 +2,16 @@
 
 
 TutorialSections;
-SectionTitle;
 FormatTutorialTable;
 
 
 Begin["`Private`"]
 
-TutorialSections::invalidFormat="`` is not a valid section format. Tutorial sections must be set to lists or an associaton.";
-TutorialSections::noMixingEx="Cannot add an tutorial content to `` under ``, as subcategories are already registered.";
-TutorialSections::noMixingSub="Cannot add tutorial subcategory '``' to `` under ``, as content is already added at this level.";
-TutorialSections::needSubCat="Cannot add content to ``, need to specify at least one subcategory.";
+
+TutorialSections::invalidFormat="`` is not a valid section format. Tutorial sections must be set to lists or an association.";
+TutorialSections::noMixingEx="Cannot add tutorial content to `` under ``, as subsections are already registered.";
+TutorialSections::noMixingSub="Cannot add tutorial subsection '``' to `` under ``, as content is already added at this level.";
+TutorialSections::needSubCat="Cannot add content to ``, need to specify at least one subsection or None.";
 TutorialSections::invalidKey="Tutorial section key `` must be a string or None.";
 
 
