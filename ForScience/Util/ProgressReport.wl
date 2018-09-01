@@ -12,20 +12,18 @@ SetCurrentBy[] defaults ```curFunc``` to the identity function.";
 Begin["`Private`"]
 
 
-PRPrettyTime[time_]:=With[
-  {s=time},
-  Which[
-    s>86400,
-    SPrintF["``days",Round[s/86400,0.1]],
-    s>3600,
-    SPrintF["``h",Round[s/3600,0.1]],
-    s>60,
-    SPrintF["``min",Round[s/60,0.1]],
-    s>1,
-    SPrintF["``s",Round[s,0.1]],
-    True,
-    SPrintF["``ms",Round[1000s,0.1]]
-  ]
+PRPrettyTime[s_]:=
+Which[
+  s>86400,
+  SPrintF["``days",Round[s/86400,0.1]],
+  s>3600,
+  SPrintF["``h",Round[s/3600,0.1]],
+  s>60,
+  SPrintF["``min",Round[s/60,0.1]],
+  s>1,
+  SPrintF["``s",Round[s,0.1]],
+  True,
+  SPrintF["``ms",Round[1000s,0.1]]
 ]
 ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
   If[OptionValue[Timing],
@@ -56,14 +54,14 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   i=0;
   cur=None;
   Return@Monitor[
-    time=start=CurrentDate[];
+    time=start=AbsoluteTime[];
     ReleaseHold@pExpr,
     Panel@Row@{
       Dynamic[
         With[
           {
-            dur=QuantityMagnitude@UnitConvert[time-start],
-            pdur=QuantityMagnitude@UnitConvert[Last[times,0]-start],
+            dur=time-start,
+            pdur=Last[times,0]-start,
             prog=Last[Keys@times,0]
           },
           If[prog>prevProg,
@@ -89,20 +87,41 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
       ],
       Spacer@10,
       Dynamic[
-        ListLinePlot[
-          {durations,If[Length@totals>0,totals,Nothing]},
-          FrameTicks->None,
-          Frame->False,
-          Axes->None,
-          PlotRangePadding->0,
-          ImageSize->300,
-          PlotStyle->{White,{White,Dashed}},
-          PlotRange->{{0,len},All},
-          GridLines->Automatic,
-          GridLinesStyle->Directive[White,Opacity@0.75],
-          Method -> {"GridLinesInFront" -> True},
-          Background->GrayLevel@0.9,
-          Filling->{1->{Bottom,Directive[Darker@Green,Opacity@1]},2->Top,2->{Bottom,{Directive[Darker@Green,Opacity@0.4],Directive[Darker@Green,Opacity@0.65]}}}
+        With[
+          {max=Max[totals,0]},
+          With[
+            {
+              tPts=List@@@Normal@totals,
+              dPts=List@@@Normal@durations
+            },
+            Graphics[
+              {
+                Darker@Green,
+                Opacity@0.3,
+                Rectangle[{0,0},{prevProg,max}],
+                Opacity@0.5,
+                Polygon[Join[tPts,{{prevProg,0},{0,0}}]],
+                Opacity@1,
+                Polygon[Join[dPts,{{prevProg,0},{0,0}}]],
+                White,
+                AbsoluteThickness@1.6,
+                Line@dPts,
+                Dashed,
+                Line@tPts
+              },
+              FrameTicks->None,
+              Frame->False,
+              Axes->None,
+              PlotRangePadding->0,
+              ImageSize->300,
+              PlotRange->{{0,len},{0,max}},
+              GridLines->{len*{0.2,0.4,0.6,0.8},Automatic},
+              GridLinesStyle->Directive[White,Opacity@0.75],
+              Method->{"GridLinesInFront"->True},
+              Background->GrayLevel@0.9,
+             AspectRatio->1/GoldenRatio
+            ]
+          ]
         ]
       ]
     }
@@ -181,7 +200,7 @@ ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
 Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
-IStep[i_,res_,time_,times_][expr___]:=(time=CurrentDate[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];Unevaluated@expr)
+IStep[i_,res_,time_,times_][expr___]:=(time=AbsoluteTime[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];Unevaluated@expr)
 IStep[i_][expr___]:=(++i;Unevaluated@expr)
 Attributes[IStep]={HoldAll};
 SyntaxInformation[Step]={"ArgumentsPattern"->{_.}};
