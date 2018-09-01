@@ -25,12 +25,34 @@ Which[
   True,
   SPrintF["``ms",Round[1000s,0.1]]
 ]
-ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
-  If[OptionValue[Timing],
-  iTimedProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]],
-  iProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]]]
-ProgressReport[expr_,0,OptionsPattern[]]:=expr
+
+
+Attributes[ProgressReport]={HoldFirst};
+
+
+SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
+
+
 Options[ProgressReport]={"Resolution"->20,Timing->True,"Parallel"->False};
+
+
+ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for supported types.";
+
+
+ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
+If[OptionValue[Timing],
+  iTimedProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]],
+  iProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]]
+]
+ProgressReport[expr_,0,OptionsPattern[]]:=expr
+ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
+
+
+Attributes[iTimedProgressReport]={HoldFirst};
+
+
+Options[iTimedProgressReport]=Options[ProgressReport];
+
 
 iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   {
@@ -119,7 +141,7 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
               GridLinesStyle->Directive[White,Opacity@0.75],
               Method->{"GridLinesInFront"->True},
               Background->GrayLevel@0.9,
-             AspectRatio->1/GoldenRatio
+              AspectRatio->1/GoldenRatio
             ]
           ]
         ]
@@ -127,8 +149,14 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     }
   ]
 ]
-Attributes[iTimedProgressReport]={HoldFirst};
-Options[iTimedProgressReport]=Options[ProgressReport];
+
+
+Attributes[iProgressReport]={HoldFirst};
+
+
+Options[iProgressReport]=Options[ProgressReport];
+
+
 iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
   {
     i,
@@ -163,15 +191,90 @@ iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     ]
   ]
 ]
-Attributes[iProgressReport]={HoldFirst};
-Options[iProgressReport]=Options[ProgressReport];
+
+
+Attributes[IStep]={HoldAll};
+
+
+IStep[i_,res_,time_,times_][expr___]:=(
+  time=AbsoluteTime[];
+  If[Floor[res i]<Floor[res (++i)],
+    AppendTo[times,i->time]
+  ];
+  Unevaluated@expr
+)
+
+
+IStep[i_][expr___]:=(++i;Unevaluated@expr)
+
+
+SyntaxInformation[Step]={"ArgumentsPattern"->{_.}};
+
+
+Attributes[ISetCurrent]={HoldFirst};
+
+
+ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
+
+
+SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
+
+
+Attributes[ISetCurrentBy]={HoldFirst};
+
+
+ISetCurrentBy[cur_Symbol,curFunc_][expr___]:=(cur=curFunc@expr;Unevaluated@expr)
+
+
+SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
+
+
+DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
+
 
 Attributes[ProgressReportTransform]={HoldFirst};
-ProgressReportTransform[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]],o:OptionsPattern[ProgressReport]]/;m=!=AssociationMap||Length@{level}===0:=
-With[{elist=list},ProgressReportTransform[m[func,elist,level],Evaluated,o]]
-ProgressReportTransform[(m:Map|ParallelMap|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],Evaluated,o:OptionsPattern[ProgressReport]]:=
-ProgressReport[m[(SetCurrent[HoldForm@#];With[{ret=func@Unevaluated@##},Step[];ret])&,list,InvCondDef[am][level]],Length@Level[list,level,Hold],o,"Parallel"->m===ParallelMap]
-ProgressReportTransform[(m:Map|MapIndexed)[func_,ass_Association,{1}],Evaluated,o:OptionsPattern[ProgressReport]]:=ProgressReport[
+
+
+ProgressReportTransform[
+  (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]],
+  o:OptionsPattern[ProgressReport]
+]/;m=!=AssociationMap||Length@{level}===0:=
+With[
+  {elist=list},
+  ProgressReportTransform[
+    m[func,elist,level],
+    Evaluated,
+    o
+  ]
+]
+ProgressReportTransform[
+  (m:Map|ParallelMap|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],
+  Evaluated,
+  o:OptionsPattern[ProgressReport]
+]:=
+ProgressReport[
+  m[
+    (
+      SetCurrent[HoldForm@#];
+      With[
+        {ret=func@Unevaluated@##},
+        Step[];
+        ret
+      ]
+    )&,
+    list,
+    InvCondDef[am][level]
+  ],
+  Length@Level[list,level,Hold],
+  o,
+  "Parallel"->m===ParallelMap
+]
+ProgressReportTransform[
+  (m:Map|MapIndexed)[func_,ass_Association,{1}],
+  Evaluated,
+  o:OptionsPattern[ProgressReport]
+]:=
+ProgressReport[
   MapIndexed[
     SetCurrent[#&@@First@#2&];
     With[{ret=If[m===MapIndexed,func@Unevaluated@##,func@Unevaluated@#]},Step[];ret]&,
@@ -180,40 +283,34 @@ ProgressReportTransform[(m:Map|MapIndexed)[func_,ass_Association,{1}],Evaluated,
   Length@ass,
   o
 ]
-ProgressReportTransform[(t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],o:OptionsPattern[ProgressReport]]:=Let[
+ProgressReportTransform[
+  (t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],
+  o:OptionsPattern[ProgressReport]
+]:=
+Let[
   {
-    pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.{s_Symbol:Automatic,r__}:>{s,r}/.Automatic:>With[{var=Unique@"ProgressVariable"},var/;True],
+    pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.
+     {s_Symbol:Automatic,r__}:>{s,r}/.
+      Automatic:>With[
+        {var=Unique@"ProgressVariable"},
+        var/;True
+      ],
     symbols=List@@(First/@pSpec)
   },
   ProgressReport[
     t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
-    Times@@(pSpec/.{{_Symbol,l_List}:>Length@l,{_Symbol:None,s__}:>Length@Range@s}),
+    Times@@(
+      pSpec/.
+       {
+         {_Symbol,l_List}:>Length@l,
+         {_Symbol:None,s__}:>Length@Range@s
+       }
+    ),
     o,
     "Parallel"->t===ParallelTable
   ]
 ]
 ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
-
-ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for currently supported types.";
-ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
-
-Attributes[ProgressReport]={HoldFirst};
-SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
-
-IStep[i_,res_,time_,times_][expr___]:=(time=AbsoluteTime[];If[Floor[res i]<Floor[res (++i)],AppendTo[times,i->time]];Unevaluated@expr)
-IStep[i_][expr___]:=(++i;Unevaluated@expr)
-Attributes[IStep]={HoldAll};
-SyntaxInformation[Step]={"ArgumentsPattern"->{_.}};
-
-ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
-Attributes[ISetCurrent]={HoldFirst};
-SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
-
-ISetCurrentBy[cur_Symbol,curFunc_][expr___]:=(cur=curFunc@expr;Unevaluated@expr)
-Attributes[ISetCurrentBy]={HoldFirst};
-SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
-
-DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
 
 
 End[]
