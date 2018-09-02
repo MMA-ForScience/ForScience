@@ -237,6 +237,16 @@ Attributes[ProgressReportTransform]={HoldFirst};
 
 
 ProgressReportTransform[
+  Map[Map[func_],list_,level:RepeatedNull[{_Integer},1]]|
+   HoldPattern[Map[Map[func_],#,level:RepeatedNull[{_Integer},1]]&[list_]]|
+   Map[Map[func_]][list_],
+  o:OptionsPattern[]
+]:=
+With[
+  {newLevel=1+DefTo[level,{1}]},
+  ProgressReportTransform[Map[func,list,newLevel],o]
+]
+ProgressReportTransform[
   (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]]|
    HoldPattern[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,#,level:RepeatedNull[_,1]]&[list_]]|
    (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_][list_],
@@ -316,6 +326,25 @@ ProgressReport[
     i
   ],
   o
+]
+ProgressReportTransform[q:Query[__],o:OptionsPattern[ProgressReport]]:=
+With[
+  {
+    op=Check[
+      ProgressReportTransform[Evaluate@Normal@q,o],
+      $Failed,
+      {ProgressReport::injectFailed}
+    ]
+  },
+  (
+    op/.ProgressReportingFunction[_,args__]:>
+     ProgressReportingFunction[Query,args]
+  )/;op=!=$Failed
+]
+ProgressReportTransform[(q:Query[__])[expr_],o:OptionsPattern[ProgressReport]]:=
+With[
+  {nq=Normal@q},
+  ProgressReportTransform[q[expr],o]
 ]
 ProgressReportTransform[
   (t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],
