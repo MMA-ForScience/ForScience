@@ -284,6 +284,30 @@ ProgressReport[
   o
 ]
 ProgressReportTransform[
+  MapAt[func_,list_,pos_]|MapAt[func_,pos_][list_],
+  o:OptionsPattern[ProgressReport]
+]:=
+ProgressReport[
+  MapAt[
+    (
+      SetCurrent[HoldForm@#];
+      With[
+        {ret=func@Unevaluated@#},
+        Step[];
+        ret
+      ]
+    )&,
+    list,
+    pos
+  ],
+  Module[
+    {i=0},
+    MapAt[++i&,list,pos];
+    i
+  ],
+  o
+]
+ProgressReportTransform[
   (t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],
   o:OptionsPattern[ProgressReport]
 ]:=
