@@ -238,6 +238,7 @@ Attributes[ProgressReportTransform]={HoldFirst};
 
 ProgressReportTransform[
   (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]]|
+   HoldPattern[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,#,level:RepeatedNull[_,1]]&[list_]]|
    (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_][list_],
   o:OptionsPattern[ProgressReport]
 ]/;m=!=AssociationMap||Length@{level}===0:=
@@ -251,9 +252,10 @@ With[
 ]
 ProgressReportTransform[
   op:(m:Map|ParallelMap|AssociationMap|MapIndexed)[_]|
+   ((m:Map|ParallelMap|AssociationMap|MapIndexed)[_,#,level:RepeatedNull[_,1]]&)|
    (m:MapAt)[_,_],
   o:OptionsPattern[ProgressReport]
-]:=
+]/;m=!=AssociationMap||Length@{level}===0:=
 ProgressReportingFunction[m,op,o]
 ProgressReportTransform[
   (m:Map|ParallelMap|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],
