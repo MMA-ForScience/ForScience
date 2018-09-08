@@ -2,9 +2,9 @@
 
 Usage[VectorMarker]="VectorMarker[str] represents a vectorized plotmarker with the same shape as ```str```.
 [*VectorMarker*][[*Style*][str,\[Ellipsis]]] represents a vectorized plotmarker with the same shape as [*Style[str,\[Ellipsis]]*].
-VectorMarker[n] represents a ```n```-sided polygon plotmarker standing on its flat base.
-VectorMarker[-n] represents a ```n```-sided polygon plotmarker standing on its tip.
-VectorMarker[{sideSpec,\[Theta]}] represents a polygon plotmarker rotated by ```\[Theta]```.
+[*VectorMarker*][[*Polygon[n]*]] represents a ```n```-sided polygon plotmarker standing on its flat base.
+[*VectorMarker*][[*Polygon[-n]*]] represents a ```n```-sided polygon plotmarker standing on its tip.
+[*VectorMarker*][[*Polygon[sideSpec,\[Theta]]*]] represents a polygon plotmarker rotated by ```\[Theta]```.
 VectorMarker[{spec,size}] represents a polygon plotmarker with size ```size```.
 VectorMarker[{marker_1,\[Ellipsis]}] represents a list of polygon plotmarkers.";
 
@@ -26,8 +26,7 @@ GlyphMetrics[s:(_String|Style[_String,___])]:=GlyphMetrics[s]=Let[
 ]
 
 
-PolygonMetrics[n_Integer]:=PolygonMetrics[{n,0}]
-PolygonMetrics[{n_Integer,th_}]:=PolygonMetrics[{n,th}]=Let[
+PolygonMetrics[n_Integer,th_]:=PolygonMetrics[n,th]=Let[
   {
     ph0=Pi(1+1/n)+th+If[n<0,-Pi/n,0],
     polygon=Polygon@N@Array[
@@ -48,22 +47,23 @@ $EmptyFilledMapping=<|"\[EmptyCircle]"->"\[FilledCircle]","\[EmptyDiamond]"->"\[
 Options[VectorMarker]={Background->White,"MakeEmpty"->Automatic,Thickness->Inherited,AlignmentPoint->Automatic,JoinForm->{"Miter",20},EdgeForm->Automatic};
 
 
-VectorMarker[spec:_Integer|{_Integer,_},opts:OptionsPattern[]]:=VectorMarker[PolygonMetrics[spec],opts]
-VectorMarker[specs:{_|{_,_?NumericQ}...},opts:OptionsPattern[]]:=VectorMarker[#,opts]&/@specs
-VectorMarker[{g_,size_?NumericQ},opts:OptionsPattern[]]:={VectorMarker[g,opts],size}
-VectorMarker[spec:(s_String|Style[s_String,styles___]),opts:OptionsPattern[]]:=If[
-OptionValue["MakeEmpty"]===Automatic&&KeyMemberQ[$EmptyFilledMapping,s],
-VectorMarker[
-GlyphMetrics[Style[$EmptyFilledMapping[s],styles]],
-"MakeEmpty"->True,
-opts
-],
-VectorMarker[
-GlyphMetrics[spec],
-opts
+VectorMarker[Polygon[n_Integer,th_:0]|{Polygon[n_Integer,th_:0],size_?NumericQ},opts:OptionsPattern[]]:=VectorMarker[PolygonMetrics[n,th],size,opts]
+VectorMarker[(spec:s_String|Style[s_String,styles___])|{spec:s_String|Style[s_String,styles___],size_?NumericQ},opts:OptionsPattern[]]:=If[
+  OptionValue["MakeEmpty"]===Automatic&&KeyMemberQ[$EmptyFilledMapping,s],
+  VectorMarker[
+    GlyphMetrics[Style[$EmptyFilledMapping[s],styles]],
+    size,
+    "MakeEmpty"->True,
+    opts
+  ],
+  VectorMarker[
+    GlyphMetrics[spec],
+    size,
+    opts
+  ]
 ]
-]
-VectorMarker[metrics_Association,OptionsPattern[]]:=Let[
+VectorMarker[specs_List,opts:OptionsPattern[]]:=VectorMarker[#,opts]&/@specs
+VectorMarker[metrics_Association,size:_?NumericQ:10,OptionsPattern[]]:=Let[
   {
     makeEmpty=OptionValue["MakeEmpty"]/.{Full->!metrics["hasHoles"],Automatic->False,All->True},
     background=OptionValue[Background],
@@ -86,39 +86,54 @@ VectorMarker[metrics_Association,OptionsPattern[]]:=Let[
       }
     ]
   },
-  Graphics[
-    {
-      Style@{
-        bgPrimitives,
-        faceForm,
-        edgeForm,
-        metrics["primitives"]
-      }
-    },
-    VectorMarker,
-    AlignmentPoint->alignmentPoint,
-    ImageSize->10,
-    PlotRangeClipping->False,
-    PlotRangePadding->Scaled@0.3,
-    PlotRange->metrics["plotRange"]
+  {
+    Graphics[
+      {
+        Style@{
+          bgPrimitives,
+          faceForm,
+          edgeForm,
+          metrics["primitives"]
+        }
+      },
+      VectorMarker,
+      AlignmentPoint->alignmentPoint,
+      ImageSize->{Automatic,3size} ,
+      PlotRangeClipping->False,
+      PlotRangePadding->Scaled@0.3,
+      PlotRange->metrics["plotRange"]
+    ],
+    size
+  }
+]
+InsertBaseStyles[g_,styles_]:=g/.h_@Inherited:>Directive@@Cases[
+  FixedPoint[
+    Flatten[Replace[#,Directive[s___]:>{s},1]]&,
+    List@@styles
+  ],
+  Switch[h,
+    RGBColor,
+    _?ColorQ,
+    Thickness,
+    (h|AbsoluteThickness)[__],
+    Dashing,
+    (h|AbsoluteDashing)[__],
+    _,
+    h[__]
   ]
 ]
 VectorMarker/:Graphics[{styles__,Style[prim_]},VectorMarker,opts___]:=
-VectorMarker[Graphics[prim,opts],Automatic]/.
- h_@Inherited:>Directive@@Cases[
-   Flatten@Directive[styles],Switch[h,
-     RGBColor,
-     _?ColorQ,
-     Thickness,
-     (h|AbsoluteThickness)[__],
-     Dashing,
-     (h|AbsoluteDashing)[__],
-     _,
-     h[__]
-   ]
- ]
-VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_]:=Inset[g,pos]
-VectorMarker/:Inset[VectorMarker[Graphics[prim_,o___],Automatic],pos_,Automatic,Scaled@{s_,s_}]:=Inset[Graphics[prim,ImageSize->{Automatic,3s} ,o],pos]
+ VectorMarker[InsertBaseStyles[Graphics[prim,opts],{styles}],Automatic]
+VectorMarker/:Graphics[prim_,VectorMarker,opts___]/;MemberQ[{opts},DefaultBaseStyle->_,All]:=
+VectorMarker[
+  InsertBaseStyles[
+    Graphics[prim,FilterRules[{opts},Except[DefaultBaseStyle]]],
+    OptionValue[Graphics,{opts},DefaultBaseStyle]/.
+     {"Graphics",s__}:>{s}
+  ],
+  Automatic
+]
+VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_,Automatic,_]:=Inset[g,pos]
 
 
 (* Typesetting of marker-type graphics expression (contains "invalid option" VectorMarker) *)
