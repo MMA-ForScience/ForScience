@@ -49,7 +49,7 @@ $HeaderMenuArrow=Cell@BoxData@GraphicsBox[
 ];
 
 
-AppendTo[$DocumentationTypeData,$HeaderEntries];
+AppendTo[$DocumentationTypeData,$HeaderEntries->{}];
 
 
 Attributes[MakeHeader]={HoldFirst};
@@ -115,9 +115,6 @@ MakeHeaderDropdown[title_,style_,refs_]:=If[Length@refs>0,
   ],
   Nothing
 ]
-
-
-AppendTo[$DependencyCollectors["Symbol"],DocumentationHeader];
 
 
 End[]

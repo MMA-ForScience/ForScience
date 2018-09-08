@@ -6,7 +6,7 @@ DocumentationBuilder;
 Begin["`Private`"]
 
 
-AppendTo[$DocumentationTypeData,$DocumentationSections];
+AppendTo[$DocumentationTypeData,$DocumentationSections->{}];
 HoldPattern@AppendTo[$DocumentationSections[type_],sym_]^:=(
   $DocumentationSections[type]=Append[$DocumentationSections[type],sym];
   AppendTo[Options[DocumentationBuilder],Options[sym]];
@@ -55,7 +55,7 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
           ]/@$DocumentedObjects),
           Row@{ProgressIndicator[prog,{0,Length@$DocumentedObjects}]," ",curObj}
         ],
-        {DocumenationCacheGet,"Uncached"}
+        {DocumentationCacheGet,"Uncached"}
       ],
       {}
     ]>0},
@@ -84,7 +84,7 @@ With[
         CopyFile[cachedFile,docFile],
         NotebookOpen[cachedFile]
       ],
-      Sow[Hold[sym,type],{DocumenationCacheGet,"Uncached"}];
+      Sow[Hold[sym,type],{DocumentationCacheGet,"Uncached"}];
       With[
         {
           title=DocumentationTitle[sym]

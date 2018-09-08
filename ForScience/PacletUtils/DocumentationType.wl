@@ -6,16 +6,16 @@ DocumentationTitle;
 Begin["`Private`"]
 
 
-$DocumentationTypeData={};
-HoldPattern@AppendTo[$DocumentationTypeData,data_]^:=(
-  data[_]={};
-  $DocumentationTypeData=Append[$DocumentationTypeData,data]
+$DocumentationTypeData=<||>;
+$DocumentationTypeData/:HoldPattern@AppendTo[$DocumentationTypeData,data_->def_]:=(
+  data[_]=def;
+  $DocumentationTypeData=Append[$DocumentationTypeData,data->def]
 )
 
 
 $DocumentationTypes=<||>;
 $DocumentationTypes/:HoldPattern@AppendTo[$DocumentationTypes,spec:(type_->_)]:=(
-  (#[type]={})&/@$DocumentationTypeData;
+  KeyValueMap[(#[type]=#2)&,$DocumentationTypeData];
   $DocumentationTypes=Append[$DocumentationTypes,spec]
 )
 
