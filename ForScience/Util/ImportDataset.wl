@@ -27,7 +27,14 @@ ImportDataset[
      Shortest[RepeatedNull[dirrule_RuleDelayed,1]]
   ],1],
   o:$IDOptionsPattern
-]:=iImportDataset[files,DefTo[r,x__:>x],CondDef[am][dk,"data"],InvCondDef[dm][dirrule,x__:>x],CondDef[dirrule]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
+]:=iImportDataset[
+  OptionValue["SortingFunction"]@files,
+  DefTo[r,x__:>x],
+  CondDef[am][dk,"data"],
+  InvCondDef[dm][dirrule,x__:>x],
+  CondDef[dirrule]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],
+  o
+]
 ImportDataset[
   PatternSequence[
     (r:({_,pat_,_}:>_)),
@@ -41,7 +48,14 @@ ImportDataset[
      Shortest[(dirrule:(dir_:>_))|RepeatedNull[dir_,1]]
   ],
   o:$IDOptionsPattern
-]:=iImportDataset[FileNames[pat,dir],DefTo[r,x__:>x],CondDef[am][dk,"data"],CondDef[dm][dirrule,x__:>x],CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],o]
+]:=iImportDataset[
+  OptionValue["SortingFunction"]@FileNames[pat,dir],
+  DefTo[r,x__:>x],
+  CondDef[am][dk,"data"],
+  CondDef[dm][dirrule,x__:>x],
+  CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],
+  o
+]
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
 
 idImporter[OptionsPattern[]][file_]:=CachedImport[
@@ -147,7 +161,7 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort};
 Options[iImportDataset]=Options[ImportDataset];
 Options[idImporter]=Options[ImportDataset];
 
@@ -158,7 +172,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.45.2"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.1"];
 
 
 Details[ImportDataset]={
@@ -168,6 +182,7 @@ Details[ImportDataset]={
   "The following options can be given:",
   TableForm@{
     {"\"Importer\"",Import,"The function to call for importing"},
+    {"\"SortingFunction\"",NaturalSort,"The function to sort the file names with"},
     {"\"GroupFolders\"",Automatic,"Whether to group the data by folders"},
     {"\"TransformFullPath\"",False,"Whether to use the full relative file path as starting point for replacement rules. If [*False*], only the file name is used"},
     {"\"FullFolderProgress\"",False,"Whether to include timing information in the progress bar for the directories"},
@@ -233,6 +248,16 @@ Examples[ImportDataset,"Options","\"Importer\""]={
   {
     "Import using a custom importer:",
     ExampleInput[ImportDataset["test*.tsv","test1","Importer"->Import@*Echo]]
+  }
+};
+Examples[ImportDataset,"Options","\"SortingFunction\""]={
+  {
+    "By default, files are sorted using [*NaturalSort*]:",
+    ExampleInput[ImportDataset["test*.tsv","test1"]]
+  },
+  {
+    "Specify a custom sorting function:",
+    ExampleInput[ImportDataset["test*.tsv","test1","SortingFunction"->ReverseSort]]
   }
 };
 Examples[ImportDataset,"Options","\"GroupFolders\""]={
