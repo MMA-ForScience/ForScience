@@ -245,6 +245,18 @@ InjectTracking[func_]:=Function[
 ]
 
 
+InjectTracking[func_,All]:=Function[
+  Null,
+  SetCurrent[HoldForm@{##}];
+  With[
+    {ret=func@##},
+    Step[];
+    ret
+  ],
+  {HoldAll}
+]
+
+
 Attributes[ProgressReportTransform]={HoldFirst};
 
 
@@ -286,16 +298,16 @@ ProgressReportTransform[
 ]:=
 With[
   {pFunc=InjectTracking@func},
-ProgressReport[
-  m[
+  ProgressReport[
+    m[
       pFunc,
-    list,
-    InvCondDef[am][level]
-  ],
-  Length@Level[list,level,Hold],
-  o,
-  "Parallel"->m===ParallelMap
-]
+      list,
+      InvCondDef[am][level]
+    ],
+    Length@Level[list,level,Hold],
+    o,
+    "Parallel"->m===ParallelMap
+  ]
 ]
 ProgressReportTransform[
   (m:Map|MapIndexed)[func_,ass_Association,{1}],
@@ -327,24 +339,24 @@ ProgressReportTransform[
 ]:=
 With[
   {pFunc=InjectTracking@func},
-ProgressReport[
-  MapAt[
+  ProgressReport[
+    MapAt[
       pFunc,
-    list,
-    pos
-  ],
+      list,
+      pos
+    ],
     Count[
       MapAt[
         MapAtCounter,
         Hold@@list,
         pos
-  ],
+      ],
       MapAtCounter,
       All,
       Heads->True
     ],
-  o
-]
+    o
+  ]
 ]
 
 
@@ -410,7 +422,7 @@ Module[
     (n:Except[_List])|{n_}:>With[
       {s={Unique@"ProgressVariable",n}},
       s/;True
-      ],
+    ],
     {1}
   ];
   trackedSpec=List@@@Evaluate/@VarSpec@@@trackedSpec;
@@ -429,6 +441,89 @@ Module[
     "Parallel"->t===ParallelTable
   ]
 ]
+
+
+ProgressReportTransform[
+  (a:Array|ParallelArray)[func_,nSpec_,rSpec_|PatternSequence[],h_|PatternSequence[]],
+  o:OptionsPattern[ProgressReport]
+]:=
+With[
+  {
+    pFunc=InjectTracking[func,All],
+    pNSpec=nSpec
+  },
+  ProgressReport[
+    a[
+      pFunc,
+      pNSpec,
+      rSpec,
+      h
+    ],
+    Times@@pNSpec,
+    o,
+    "Parallel"->a===ParallelArray
+  ]
+]
+
+
+ProgressReportTransform[
+  (nest:Nest|NestList)[func_,expr_,n_],
+  o:OptionsPattern[ProgressReport]
+]:=
+With[
+  {
+    pFunc=InjectTracking@func,
+    pN=#&@n
+  },
+  ProgressReport[
+    nest[
+      pFunc,
+      expr,
+      pN
+    ],
+    pN,
+    o
+  ]
+]
+
+
+ProgressReportTransform[
+  (fold:Fold|FoldList)[func_,x_|PatternSequence[],expr_]|
+   fp:(fold:FoldPair|FoldPairList)[func_,x_|PatternSequence[],expr_,g_|PatternSequence[]]|
+   (fold:Fold|FoldList)[func_][expr_],
+  o:OptionsPattern[ProgressReport]
+]:=
+Let[
+  {
+    eFunc=func
+    pFunc=InjectTracking@eFunc,
+    pExpr=expr,
+    n=Length@Hold[x]+Length[pExpr]-1
+  },
+  If[
+    TrueQ[n>Length@{fp}], (* check if expression will evaluate: either n>0 or (n>-1 and not FoldPair* ) *)
+    ProgressReport[
+      fold[
+        pFunc,
+        x,
+        pExpr,
+        g
+      ],
+      n,
+      o
+    ],
+    fold[
+      eFunc,
+      x,
+      pExpr,
+      g
+    ]
+  ]
+]
+ProgressReportTransform[op:(fold:Fold|FoldList)[_],o:OptionsPattern[ProgressReport]]:=
+ProgressReportingFunction[fold,op,o]
+
+
 ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
 
 
