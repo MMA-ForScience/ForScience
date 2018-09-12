@@ -233,6 +233,18 @@ SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
 
 
+InjectTracking[func_]:=Function[
+  Null,
+  SetCurrent[HoldForm@#];
+  With[
+    {ret=func@##},
+    Step[];
+    ret
+  ],
+  {HoldAll}
+]
+
+
 Attributes[ProgressReportTransform]={HoldFirst};
 
 
@@ -272,22 +284,18 @@ ProgressReportTransform[
   Evaluated,
   o:OptionsPattern[ProgressReport]
 ]:=
+With[
+  {pFunc=InjectTracking@func},
 ProgressReport[
   m[
-    (
-      SetCurrent[HoldForm@#];
-      With[
-        {ret=func@Unevaluated@##},
-        Step[];
-        ret
-      ]
-    )&,
+      pFunc,
     list,
     InvCondDef[am][level]
   ],
   Length@Level[list,level,Hold],
   o,
   "Parallel"->m===ParallelMap
+]
 ]
 ProgressReportTransform[
   (m:Map|MapIndexed)[func_,ass_Association,{1}],
@@ -296,37 +304,50 @@ ProgressReportTransform[
 ]:=
 ProgressReport[
   MapIndexed[
-    SetCurrent[#&@@First@#2&];
-    With[{ret=If[m===MapIndexed,func@Unevaluated@##,func@Unevaluated@#]},Step[];ret]&,
+    Function[
+      Null,
+      SetCurrent[Extract[#2,{1,1},HoldForm]];
+      With[
+        {ret=If[m===MapIndexed,func@##,func@@#]},
+        Step[];
+        ret
+      ],
+      {HoldAll}
+    ]&,
     ass
   ],
   Length@ass,
   o
 ]
+
+
 ProgressReportTransform[
   MapAt[func_,list_,pos_]|MapAt[func_,pos_][list_],
   o:OptionsPattern[ProgressReport]
 ]:=
+With[
+  {pFunc=InjectTracking@func},
 ProgressReport[
   MapAt[
-    (
-      SetCurrent[HoldForm@#];
-      With[
-        {ret=func@Unevaluated@#},
-        Step[];
-        ret
-      ]
-    )&,
+      pFunc,
     list,
     pos
   ],
-  Module[
-    {i=0},
-    MapAt[++i&,list,pos];
-    i
+    Count[
+      MapAt[
+        MapAtCounter,
+        Hold@@list,
+        pos
   ],
+      MapAtCounter,
+      All,
+      Heads->True
+    ],
   o
 ]
+]
+
+
 ProgressReportTransform[q:Query[__],o:OptionsPattern[ProgressReport]]:=
 With[
   {
@@ -346,27 +367,62 @@ With[
   {nq=Normal@q},
   ProgressReportTransform[q[expr],o]
 ]
+
+
+Attributes[VarSpec]={HoldFirst};
+
+
+Attributes[NumericSpecQ]={HoldFirst};
+
+
+NumericSpecQ[expr_]:=NumericQ@Unevaluated@expr
+
+
+Attributes[NumericIteratorSpecQ]={HoldFirst};
+
+
+NumericIteratorSpecQ[expr_]:=MatchQ[
+  Unevaluated@expr,
+  _?NumericSpecQ|
+   {_?NumericSpecQ}|
+   {_,Repeated[_?NumericSpecQ,{1,2}]}|
+   {_,{___?NumericSpecQ}}
+]
+
+
 ProgressReportTransform[
-  (t:Table|ParallelTable)[expr_,spec:({Optional@_Symbol,_,_.,_.}|_)..],
+  (t:Table|ParallelTable)[expr_,spec___],
   o:OptionsPattern[ProgressReport]
 ]:=
-Let[
+Module[
   {
-    pSpec=Replace[Hold@spec,n:Except[_List]:>{n},{1}]/.
-     {s_Symbol:Automatic,r__}:>{s,r}/.
-      Automatic:>With[
-        {var=Unique@"ProgressVariable"},
-        var/;True
-      ],
-    symbols=List@@(First/@pSpec)
+    hSpec=Hold[spec],
+    normArgs,
+    trackedSpec,
+    symbols
   },
+  normArgs=Max[
+    LengthWhile[hSpec,NumericIteratorSpecQ],
+    1
+  ];
+  trackedSpec=Replace[
+    hSpec[[;;normArgs]],
+    (n:Except[_List])|{n_}:>With[
+      {s={Unique@"ProgressVariable",n}},
+      s/;True
+      ],
+    {1}
+  ];
+  trackedSpec=List@@@Evaluate/@VarSpec@@@trackedSpec;
+  symbols==trackedSpec[[All,1]];
   ProgressReport[
-    t@@(Hold[SetCurrent@symbols;Step@expr,##]&@@pSpec),
+    {trackedSpec,hSpec[[normArgs+1;;]]}/.
+     {Hold[tr__],Hold[rem___]}:>t[SetCurrent@@symbols;Step@Table[expr,rem],tr],
     Times@@(
-      pSpec/.
+      trackedSpec/.
        {
-         {_Symbol,l_List}:>Length@l,
-         {_Symbol:None,s__}:>Length@Range@s
+         {_,l_List}:>Length@l,
+         {_,s__}:>Length@Range@s
        }
     ),
     o,
