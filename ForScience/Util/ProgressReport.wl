@@ -34,13 +34,13 @@ Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 
-Options[ProgressReport]={"Resolution"->20,Timing->True,"Parallel"->False};
+Options[ProgressReport]={"Resolution"->Automatic,Timing->True,"Parallel"->False};
 
 
 ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for supported types.";
 
 
-ProgressReport[expr_,len_Integer,o:OptionsPattern[]]:=
+ProgressReport[expr_,len:(_Integer|Indeterminate),o:OptionsPattern[]]:=
 If[OptionValue[Timing],
   iTimedProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]],
   iProgressReport[expr,len,FilterRules[{o,Options[ProgressReport]},_]]
@@ -55,7 +55,7 @@ Attributes[iTimedProgressReport]={HoldFirst};
 Options[iTimedProgressReport]=Options[ProgressReport];
 
 
-iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
+iTimedProgressReport[expr_,len_,OptionsPattern[]]:=Module[
   {
     i,
     start,
@@ -65,17 +65,24 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     times=<||>,
     durations=<|0->0|>,
     totals=<||>,
-    prevProg=0
+    prevProg=0,
+    knownLen=len=!=Indeterminate,
+    progTemp,
+    res
   },
+  res=OptionValue["Resolution"]/.
+   Automatic:>If[knownLen,Scaled[1/20],5]/.
+    {Scaled[r_]:>1/r*If[knownLen,1/len,1],r_:>1/r};
   pExpr=HoldComplete[expr]/.
   {
     SetCurrent:>ISetCurrent[cur],
     SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
-    Step->IStep[i,Evaluate[OptionValue["Resolution"]/len],time,times]
+    Step->IStep[i,res,time,times]
   };
   If[OptionValue["Parallel"],SetSharedVariable[i,times,time,cur]];
   i=0;
   cur=None;
+  progTemp=StringTemplate[If[knownLen,"``/``","``"]];
   Return@Monitor[
     time=start=AbsoluteTime[];
     ReleaseHold@pExpr,
@@ -89,18 +96,18 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
           },
           If[prog>prevProg,
             AppendTo[durations,prog->pdur];
-            AppendTo[totals,prog->len*durations[[-1]]/prog];
-            If[prevProg==0,PrependTo[totals,0->totals[[1]]]];
+            AppendTo[totals,prog->If[knownLen,len/prog,1]*durations[[-1]]];
+            If[prevProg==0,PrependTo[totals,0->If[knownLen,totals[[1]],0]]];
             prevProg=prog;
           ];
           Grid[
             {
               If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
-              {"Progess:",StringForm["``/``",i,len]},
+              {"Progess:",progTemp[i,len]},
               {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
               {"Time per Step:",If[i==0,"NA",PRPrettyTime[dur/i]]},
-              {"Est. time remaining:",If[i==0,"NA",PRPrettyTime[(len-i)*dur/i]]},
-              {"Est. total time:",If[i==0,"NA",PRPrettyTime[len*dur/i]]}
+              If[knownLen,{"Est. time remaining:",If[i==0,"NA",PRPrettyTime[(len-i)*dur/i]]},Nothing],
+              If[knownLen,{"Est. total time:",If[i==0,"NA",PRPrettyTime[len*dur/i]]},Nothing]
             },
             Alignment->{{Left,Right}},
             ItemSize->{{10,13},{1.5,1.5,1.5,1.5,1.5,1.5}}
@@ -137,8 +144,8 @@ iTimedProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
               Axes->None,
               PlotRangePadding->0,
               ImageSize->300,
-              PlotRange->{{0,len},{0,max}},
-              GridLines->{len*{0.2,0.4,0.6,0.8},Automatic},
+              PlotRange->{{0,If[knownLen,len,prevProg+1/res]},{0,max}},
+              GridLines->If[knownLen,{len*{0.2,0.4,0.6,0.8},Automatic},Automatic],
               GridLinesStyle->Directive[White,Opacity@0.75],
               Method->{"GridLinesInFront"->True},
               Background->GrayLevel@0.9,
@@ -158,11 +165,13 @@ Attributes[iProgressReport]={HoldFirst};
 Options[iProgressReport]=Options[ProgressReport];
 
 
-iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
+iProgressReport[expr_,len_,OptionsPattern[]]:=Module[
   {
     i,
     pExpr,
-    cur
+    cur,
+    knownLen=len=!=Indeterminate,
+    progTemp
   },
   pExpr=HoldComplete[expr]/.
   {
@@ -170,9 +179,10 @@ iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
     SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
     Step->IStep[i]
   };
-  SetSharedVariable[i,cur];
+  If[OptionValue["Parallel"],SetSharedVariable[i,cur]];
   i=0;
   cur=None;
+  progTemp=StringTemplate[If[knownLen,"``/``","``"]];
   Return@Monitor[
     ReleaseHold@pExpr,
     Dynamic[
@@ -180,13 +190,16 @@ iProgressReport[expr_,len_Integer,OptionsPattern[]]:=Module[
         Grid[
           {
             If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
-            {"Progess:",StringForm["``/``",i,len]}
+            {"Progess:",progTemp[i,len]}
           },
           Alignment->{{Left,Right}},
           ItemSize->{{10,13},{1.5,1.5}}
         ],
         Spacer@10,
-        ProgressIndicator[i,{0,len},ImageSize->300]
+        If[knownLen,
+          ProgressIndicator[i,{0,len},ImageSize->300],
+          ProgressIndicator[i/5,Indeterminate,ImageSize->300]
+        ]
       },
       TrackedSymbols:>{i,cur}
     ]
