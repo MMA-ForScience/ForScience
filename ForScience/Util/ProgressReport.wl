@@ -439,7 +439,7 @@ Module[
     {1}
   ];
   trackedSpec=List@@@Evaluate/@VarSpec@@@trackedSpec;
-  symbols==trackedSpec[[All,1]];
+  symbols=trackedSpec[[All,1]];
   ProgressReport[
     {trackedSpec,hSpec[[normArgs+1;;]]}/.
      {Hold[tr__],Hold[rem___]}:>t[SetCurrent@@symbols;Step@Table[expr,rem],tr],
