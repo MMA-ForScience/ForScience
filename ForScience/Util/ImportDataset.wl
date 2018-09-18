@@ -37,7 +37,7 @@ ImportDataset[
 ]
 ImportDataset[
   PatternSequence[
-    (r:({_,pat_,_}:>_)),
+    (r:({dirpat_,pat_,_}:>_)),
     Shortest[RepeatedNull[dir:Except[_RuleDelayed],1]]
   ]|
    dm:PatternSequence[
@@ -49,7 +49,7 @@ ImportDataset[
   ],
   o:$IDOptionsPattern
 ]:=iImportDataset[
-  OptionValue["SortingFunction"]@FileNames[pat,dir],
+  OptionValue["SortingFunction"]@FileNames[pat,DefTo[dir,dirpat]],
   DefTo[r,x__:>x],
   CondDef[am][dk,"data"],
   CondDef[dm][dirrule,x__:>x],
@@ -172,7 +172,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.1"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.6"];
 
 
 Details[ImportDataset]={
@@ -238,6 +238,10 @@ Examples[ImportDataset,"Basic examples"]={
   {
     "Also handle the directory using a pattern:",
     ExampleInput["ImportDataset[{dir__,\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}\[RuleDelayed]<|\"dir\"\[Rule]dir,\"i\"\[Rule]i,\"j\"\[Rule]j,\"content\"\[Rule]first+second|>,\"test*\"]"]
+  },
+  {
+    "For [*ImportDataset[{dir,f,data}\[RuleDelayed]item]*], ```dir``` is used as directory specification:",
+    ExampleInput["ImportDataset[{dir:(__~~\"2\"),\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}\[RuleDelayed]<|\"dir\"\[Rule]dir,\"i\"\[Rule]i,\"j\"\[Rule]j,\"content\"\[Rule]first+second|>]"]
   }
 };
 Examples[ImportDataset,"Options","\"Importer\""]={
