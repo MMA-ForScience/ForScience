@@ -390,7 +390,7 @@ With[
 ProgressReportTransform[(q:Query[__])[expr_],o:OptionsPattern[ProgressReport]]:=
 With[
   {nq=Normal@q},
-  ProgressReportTransform[q[expr],o]
+  ProgressReportTransform[nq[expr],o]
 ]
 
 
