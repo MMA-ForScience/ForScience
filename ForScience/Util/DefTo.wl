@@ -6,8 +6,11 @@ DefTo::usage=FormatUsage@"DefTo[arg_1,arg_2,\[Ellipsis]] returns ```arg_1```. Us
 Begin["`Private`"]
 
 
+SyntaxInformation[DefTo]={"ArgumentsPattern"->{_,__}};
+
+
 DefTo[v_,___]:=v
-SyntaxInformation[DefTo]={"ArgumentsPattern"->{__}};
+DefTo[]:=Sequence[]
 
 
 End[]
