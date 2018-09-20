@@ -270,7 +270,37 @@ InjectTracking[func_,All]:=Function[
 ]
 
 
+Attributes[HandleParallelize]={HoldFirst};
+
+
+HandleParallelize[expr_,n_,o:OptionsPattern[ProgressReportTransform]]:=
+With[
+  {
+    pOpts=OptionValue@Parallelize,
+    opts=FilterRules[{o},Options@ProgressReport]
+  },
+  If[pOpts===False,
+    ProgressReport[expr,n,opts],
+    ProgressReport[Parallelize[expr,pOpts],n,"Parallel"->True,opts]
+  ]
+]
+
+
 Attributes[ProgressReportTransform]={HoldFirst};
+
+
+Options[ProgressReportTransform]=Options[ProgressReport]~Join~{Parallelize->False};
+
+
+ProgressReportTransform[Parallelize[expr_,po:OptionsPattern[]],o:OptionsPattern[]]:=
+ProgressReportTransform[expr,Parallelize->{po},o]
+
+
+ProgressReportTransform[
+  ParallelMap[f_,list_,level_|PatternSequence[],Longest[po:OptionsPattern[]]],
+  o:OptionsPattern[]
+]:=
+ProgressReportTransform[Map[f,list,level],Parallelize->{po,Options@ParallelMap},o]
 
 
 ProgressReportTransform[
@@ -284,10 +314,10 @@ With[
   ProgressReportTransform[Map[func,list,newLevel],o]
 ]
 ProgressReportTransform[
-  (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]]|
-   HoldPattern[(m:Map|ParallelMap|AssociationMap|MapIndexed)[func_,#,level:RepeatedNull[_,1]]&[list_]]|
-   (m:Map|ParallelMap|AssociationMap|MapIndexed)[func_][list_],
-  o:OptionsPattern[ProgressReport]
+  (m:Map|AssociationMap|MapIndexed)[func_,list_,level:RepeatedNull[_,1]]|
+   HoldPattern[(m:Map|AssociationMap|MapIndexed)[func_,#,level:RepeatedNull[_,1]]&[list_]]|
+   (m:Map|AssociationMap|MapIndexed)[func_][list_],
+  o:OptionsPattern[]
 ]/;m=!=AssociationMap||Length@{level}===0:=
 With[
   {elist=list},
@@ -298,36 +328,38 @@ With[
   ]
 ]
 ProgressReportTransform[
-  op:(m:Map|ParallelMap|AssociationMap|MapIndexed)[_]|
-   ((m:Map|ParallelMap|AssociationMap|MapIndexed)[_,#,level:RepeatedNull[_,1]]&)|
+  op:(m:Map|AssociationMap|MapIndexed)[_]|
+   ((m:Map|AssociationMap|MapIndexed)[_,#,level:RepeatedNull[_,1]]&)|
    (m:MapAt)[_,_],
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]/;m=!=AssociationMap||Length@{level}===0:=
 ProgressReportingFunction[m,op,o]
 ProgressReportTransform[
-  (m:Map|ParallelMap|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],
+  (m:Map|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],
   Evaluated,
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]:=
 With[
-  {pFunc=InjectTracking@func},
-  ProgressReport[
+  {
+    pFunc=InjectTracking@func,
+    pLevel=InvCondDef[am][level]
+  },
+  HandleParallelize[
     m[
       pFunc,
       list,
-      InvCondDef[am][level]
+      pLevel
     ],
     Length@Level[list,level,Hold],
-    o,
-    "Parallel"->m===ParallelMap
+    o
   ]
 ]
 ProgressReportTransform[
   (m:Map|MapIndexed)[func_,ass_Association,{1}],
   Evaluated,
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]:=
-ProgressReport[
+HandleParallelize[
   MapIndexed[
     Function[
       Null,
@@ -348,11 +380,11 @@ ProgressReport[
 
 ProgressReportTransform[
   MapAt[func_,list_,pos_]|MapAt[func_,pos_][list_],
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]:=
 With[
   {pFunc=InjectTracking@func},
-  ProgressReport[
+  HandleParallelize[
     MapAt[
       pFunc,
       list,
@@ -373,7 +405,7 @@ With[
 ]
 
 
-ProgressReportTransform[q:Query[__],o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[q:Query[__],o:OptionsPattern[]]:=
 With[
   {
     op=Check[
@@ -387,7 +419,7 @@ With[
      ProgressReportingFunction[Query,args]
   )/;op=!=$Failed
 ]
-ProgressReportTransform[(q:Query[__])[expr_],o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[(q:Query[__])[expr_],o:OptionsPattern[]]:=
 With[
   {nq=Normal@q},
   ProgressReportTransform[nq[expr],o]
@@ -415,9 +447,13 @@ NumericIteratorSpecQ[expr_]:=MatchQ[
 ]
 
 
+ProgressReportTransform[ParallelTable[expr_,spec___,Longest[po:OptionsPattern[]]],o:OptionsPattern[]]:=
+ProgressReportTransform[Table[expr,spec],Parallelize->{po,Options@ParallelTable},o]
+
+
 ProgressReportTransform[
-  (t:Table|ParallelTable)[expr_,spec___],
-  o:OptionsPattern[ProgressReport]
+  Table[expr_,spec___],
+  o:OptionsPattern[]
 ]:=
 Module[
   {
@@ -440,9 +476,9 @@ Module[
   ];
   trackedSpec=List@@@Evaluate/@VarSpec@@@trackedSpec;
   symbols=trackedSpec[[All,1]];
-  ProgressReport[
+  HandleParallelize[
     {trackedSpec,hSpec[[normArgs+1;;]]}/.
-     {Hold[tr__],Hold[rem___]}:>t[SetCurrent@@symbols;Step@Table[expr,rem],tr],
+     {Hold[tr__],Hold[rem___]}:>Table[SetCurrent@@symbols;Step@Table[expr,rem],tr],
     Times@@(
       trackedSpec/.
        {
@@ -450,45 +486,47 @@ Module[
          {_,s__}:>Length@Range@s
        }
     ),
-    o,
-    "Parallel"->t===ParallelTable
+    o
   ]
 ]
 
 
+ProgressReportTransform[ParallelArray[expr_,spec___,Longest[po:OptionsPattern[]]],o:OptionsPattern[]]:=
+ProgressReportTransform[Array[expr,spec],Parallelize->{po,Options@ParallelArray},o]
+
+
 ProgressReportTransform[
-  (a:Array|ParallelArray)[func_,nSpec_,rSpec_|PatternSequence[],h_|PatternSequence[]],
-  o:OptionsPattern[ProgressReport]
+  Array[func_,nSpec_,rSpec_|PatternSequence[],h_|PatternSequence[]],
+  o:OptionsPattern[]
 ]:=
 With[
   {
     pFunc=InjectTracking[func,All],
     pNSpec=nSpec
   },
-  ProgressReport[
-    a[
+  HandleParallelize[
+    Array[
       pFunc,
       pNSpec,
       rSpec,
       h
     ],
     Times@@pNSpec,
-    o,
-    "Parallel"->a===ParallelArray
+    o
   ]
 ]
 
 
 ProgressReportTransform[
   (nest:Nest|NestList)[func_,expr_,n_],
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]:=
 With[
   {
     pFunc=InjectTracking@func,
     pN=#&@n
   },
-  ProgressReport[
+  HandleParallelize[
     nest[
       pFunc,
       expr,
@@ -504,7 +542,7 @@ ProgressReportTransform[
   (fold:Fold|FoldList)[func_,x_|PatternSequence[],expr_]|
    fp:(fold:FoldPair|FoldPairList)[func_,x_|PatternSequence[],expr_,g_|PatternSequence[]]|
    (fold:Fold|FoldList)[func_][expr_],
-  o:OptionsPattern[ProgressReport]
+  o:OptionsPattern[]
 ]:=
 Let[
   {
@@ -515,7 +553,7 @@ Let[
   },
   If[
     TrueQ[n>Length@{fp}], (* check if expression will evaluate: either n>0 or (n>-1 and not FoldPair* ) *)
-    ProgressReport[
+    HandleParallelize[
       fold[
         pFunc,
         x,
@@ -525,7 +563,7 @@ Let[
       n,
       o
     ],
-    fold[
+    If[OptionValue@Parallelize=!=False,Parallelize,#&]@fold[
       eFunc,
       x,
       pExpr,
@@ -533,14 +571,14 @@ Let[
     ]
   ]
 ]
-ProgressReportTransform[op:(fold:Fold|FoldList)[_],o:OptionsPattern[ProgressReport]]:=
+ProgressReportTransform[op:(fold:Fold|FoldList)[_],o:OptionsPattern[]]:=
 ProgressReportingFunction[fold,op,o]
 
 
 ProgressReportTransform[expr_,OptionsPattern[]]:=(Message[ProgressReport::injectFailed,HoldForm@expr];expr)
 
 
-ProgressReportingFunction[_,op_,o:OptionsPattern[ProgressReport]][expr_]:=ProgressReportTransform[op[expr],o]
+ProgressReportingFunction[_,op_,o:OptionsPattern[]][expr_]:=ProgressReportTransform[op[expr],o]
 
 
 MakeBoxes[f:ProgressReportingFunction[type_,__],frm_]^:=BoxForm`ArrangeSummaryBox[
