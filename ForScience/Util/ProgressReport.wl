@@ -365,7 +365,7 @@ HandleParallelize[
       Null,
       SetCurrent[Extract[#2,{1,1},HoldForm]];
       With[
-        {ret=If[m===MapIndexed,func@##,func@@#]},
+        {ret=If[m===MapIndexed,func@##,func@#]},
         Step[];
         ret
       ],
