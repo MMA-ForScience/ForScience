@@ -14,8 +14,15 @@ ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies th
 Begin["`Private`"]
 
 
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort};
+
+
+SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
+
+
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
+
 
 ImportDataset[
   files_List,
@@ -56,15 +63,16 @@ ImportDataset[
   CondDef[dir]["GroupFolders"->(OptionValue["GroupFolders"]/.Automatic->True)],
   o
 ]
-SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
 
-idImporter[OptionsPattern[]][file_]:=CachedImport[
+
+idImporter[OptionsPattern[ImportDataset]][file_]:=CachedImport[
   file,
   OptionValue["Importer"],
   "CacheImports"->OptionValue["CacheImports"]
 ]
 
-iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[TrueQ@OptionValue["GroupFolders"],
+
+iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[ImportDataset]]:=If[TrueQ@OptionValue["GroupFolders"],
   KeyMap[First[StringCases[#,dirrule],#]&]@
    ProgressReport[
    pProc@
@@ -75,7 +83,8 @@ iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[]]:=If[TrueQ@
   ProgressReport[mf[func,files]]
 ]
 
-iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[]]:=
+
+iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[ImportDataset]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@Apply[Join]@Values@iImportDataset[
@@ -110,7 +119,9 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[]]:=
+
+
+iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -137,7 +148,9 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[]]:=
+
+
+iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -149,7 +162,9 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-iImportDataset[files_,r_,dirrule_,o:OptionsPattern[]]:=
+
+
+iImportDataset[files_,r_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
   {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
   Dataset@iImportDataset[
@@ -161,9 +176,6 @@ With[
     FilterRules[{o,Options[ImportDataset]},_]
   ]
 ]
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort};
-Options[iImportDataset]=Options[ImportDataset];
-Options[idImporter]=Options[ImportDataset];
 
 
 End[]
