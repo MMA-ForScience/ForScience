@@ -3,11 +3,18 @@
 Begin["`Private`"]
 
 
-Options[GromosImport]={"PositionParser"->Automatic};
+Options[GromosImport]={"PositionParser"->Automatic,"Blocks"->All};
 Options[ParseGromosBlock]=Options[GromosImport];
 Options[iParseGromosBlock]=Options[GromosImport];
 
-ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]
+(*ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=t->iParseGromosBlock[t,str,o]*)
+ParseGromosBlock[o:OptionsPattern[]][t_,str_,"END"]:=With[
+  {blocks=OptionValue@"Blocks"},
+  If[blocks===All||MemberQ[blocks,t],
+    t->iParseGromosBlock[t,str,o],
+    Nothing
+  ]
+]
 iParseGromosBlock["TITLE",title_,o:OptionsPattern[]]:=title
 iParseGromosBlock["POSITION"|"VELOCITY"|"SHAKEFAILPOSITION"|"SHAKEFAILPREVPOSITION",str_,o:OptionsPattern[]]:=Module[{hold},
   With[
