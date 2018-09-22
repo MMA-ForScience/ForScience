@@ -6,7 +6,7 @@ ProgressReportTransform::usage=FormatUsage@"'''ProgressReportTransform''' handle
 ProgressReportingFunction::usage=FormatUsage@"ProgressReportingFunction is the head of the operator form of a expression transformed by ProgressReportTransform.";
 Step::usage=FormatUsage@"'''Step''' is used inside '''ProgressReport''' to indicate a step has been finished. '''Step''' passes through any argument passed to it. A typical use would be e.g. '''Step@*proc''' where '''proc''' is the function doing the actual work.";
 SetCurrent::usage=FormatUsage@"SetCurrent[curVal] sets the currently processed item (displayed by '''ProgressReport''') to the specified value.";
-SetCurrentBy::usage=FormatUsage@"SetCurrentBy[curFunc] sets the currently processed item (displayed by '''ProgressReport''') by applying ```curFunc``` to its argument (the argument is also returned). A typical use would be e.g. '''Step@*proc@*SetCurrentrent[```curFunc```]'''.
+SetCurrentBy::usage=FormatUsage@"SetCurrentBy[curFunc] sets the currently processed item (displayed by '''ProgressReport''') by applying ```curFunc``` to its argument (the argument is also returned). A typical use would be e.g. '''Step@*proc@*SetCurrentBy[```curFunc```]'''.
 SetCurrentBy[] defaults ```curFunc``` to the identity function.";
 
 
