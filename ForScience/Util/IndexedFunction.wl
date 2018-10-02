@@ -6,8 +6,10 @@ IndexedFunction::usage=FormatUsage@"IndexedFunction[expr,id] works like [*Functi
 Begin["`Private`"]
 
 
-Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"func_", "&"}], "id_"]] \[DoubleLongLeftRightArrow]ParsedBoxWrapper[RowBox[{"IndexedFunction", "[", RowBox[{"func_", ",", "id_"}], "]"}]]]
-AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]]
+If[$FrontEnd=!=Null,
+  Notation[ParsedBoxWrapper[SubscriptBox[RowBox[{"func_", "&"}], "id_"]] \[DoubleLongLeftRightArrow]ParsedBoxWrapper[RowBox[{"IndexedFunction", "[", RowBox[{"func_", ",", "id_"}], "]"}]]];
+  AddInputAlias["cf"->ParsedBoxWrapper[SubscriptBox["&", "\[Placeholder]"]]];
+]
 funcData[IndexedFunction,id_]:={{Subscript[Slot[i__:1], id]:>i,Subscript[SlotSequence[i__:1], id]:>i},{Subscript[#, id]&@*Slot,Subscript[#, id]&@*SlotSequence}};
 func:IndexedFunction[_,_][___]:=ProcFunction[func]
 Attributes[IndexedFunction]={HoldFirst};

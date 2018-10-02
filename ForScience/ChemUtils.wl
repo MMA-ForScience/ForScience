@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 Block[{Notation`AutoLoadNotationPalette=False},
-  BeginPackage["ForScience`ChemUtils`",{"Notation`","ForScience`Util`","ForScience`PacletUtils`"}]
+  BeginPackage["ForScience`ChemUtils`",{If[$FrontEnd=!=Null,"Notation`",Nothing],"ForScience`Util`","ForScience`PacletUtils`"}]
 ]
 
 

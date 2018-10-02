@@ -251,7 +251,9 @@ ISetCurrentBy[cur_Symbol,curFunc_][expr___]:=(cur=curFunc@expr;Unevaluated@expr)
 SyntaxInformation[SetCurrentBy]={"ArgumentsPattern"->{_.}};
 
 
-DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
+If[$KernelID==0,
+  DistributeDefinitions[IStep,ISetCurrent,ISetCurrentBy];
+]
 
 
 InjectTracking[func_]:=Function[

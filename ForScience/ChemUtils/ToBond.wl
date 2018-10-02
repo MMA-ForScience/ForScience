@@ -10,12 +10,14 @@ Begin["`Private`"]
 Attributes[Bond]={Orderless};
 SyntaxInformation[Bond]:={"ArgumentsPattern"->{_,_,_.}};
 
-Notation[ParsedBoxWrapper[RowBox[{"a_", "<->", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "1", "]"}]]]
-Notation[ParsedBoxWrapper[RowBox[{"a_", "\[DoubleLongLeftRightArrow]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "2", "]"}]]]
-Notation[ParsedBoxWrapper[RowBox[{"a_", "\[Congruent]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "3", "]"}]]]
-AddInputAlias["sb"->ParsedBoxWrapper["<->"]]
-AddInputAlias["db"->ParsedBoxWrapper["\[DoubleLongLeftRightArrow]"]]
-AddInputAlias["tb"->ParsedBoxWrapper["\[Congruent]"]]
+If[$FrontEnd=!=Null,
+  Notation[ParsedBoxWrapper[RowBox[{"a_", "<->", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "1", "]"}]]];
+  Notation[ParsedBoxWrapper[RowBox[{"a_", "\[DoubleLongLeftRightArrow]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "2", "]"}]]];
+  Notation[ParsedBoxWrapper[RowBox[{"a_", "\[Congruent]", "b_"}]]\[DoubleLongLeftArrow]ParsedBoxWrapper[RowBox[{RowBox[{"Bond", "[", RowBox[{"a_", ",", "b_"}], "]"}], "[", "3", "]"}]]];
+  AddInputAlias["sb"->ParsedBoxWrapper["<->"]];
+  AddInputAlias["db"->ParsedBoxWrapper["\[DoubleLongLeftRightArrow]"]];
+  AddInputAlias["tb"->ParsedBoxWrapper["\[Congruent]"]];
+]
 ToBond[a_<->b_]:=Bond[a,b][1]
 ToBond[a_\[DoubleLongLeftRightArrow]b_]:=Bond[a,b][2]
 ToBond[a_\[Congruent]b_]:=Bond[a,b][3]
