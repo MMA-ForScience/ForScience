@@ -69,6 +69,8 @@ SetupImportCache[]:=(
     Clear@$ImportCache;
     SetupImportCache[];
   ];
+  SetSharedFunction[$ImportCache]^:=SetSharedFunction[$ImportCache,CacheLookup];
+  UnsetShared[$ImportCache]^:=UnsetShared[$ImportCache,CacheLookup];
   CacheLookup[file_,path_,importer_]:=Hold@ImportTask[file,path,importer]
 )
 
