@@ -254,7 +254,7 @@ SyntaxInformation[Step]={"ArgumentsPattern"->{_.}};
 Attributes[ISetCurrent]={HoldFirst};
 
 
-ISetCurrent[cur_Symbol][curVal_]:=(cur=curVal)
+ISetCurrent[cur_Symbol][curVals__]:=(cur=Row[{curVals}, ","])
 
 
 SyntaxInformation[SetCurrent]={"ArgumentsPattern"->{_}};
