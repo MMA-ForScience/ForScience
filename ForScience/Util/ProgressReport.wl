@@ -34,7 +34,7 @@ Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 
-Options[ProgressReport]={"Resolution"->Automatic,Timing->True,Parallelize->Automatic};
+Options[ProgressReport]={"Resolution"->Automatic,Timing->True,Parallelize->Automatic,Label->None};
 
 
 ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for supported types.";
@@ -79,7 +79,8 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
     prevProg=0,
     knownLen=len=!=Indeterminate,
     progTemp,
-    res
+    res,
+    label
   },
   res=OptionValue["Resolution"]/.
    Automatic:>If[knownLen,Scaled[1/20],5]/.
@@ -94,6 +95,13 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
   i=0;
   cur=None;
   progTemp=StringTemplate[If[knownLen,"``/``","``"]];
+  label=Replace[
+    OptionValue[Label],
+    {
+      None->Nothing,
+      lbl_:>{Style[lbl,Bold],SpanFromLeft}
+    }
+  ];
   Return@Monitor[
     time=start=AbsoluteTime[];
     ReleaseHold@pExpr,
@@ -113,6 +121,7 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
           ];
           Grid[
             {
+              label,
               If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
               {"Progess:",progTemp[i,len]},
               {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
@@ -179,7 +188,8 @@ iProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
     pExpr,
     cur,
     knownLen=len=!=Indeterminate,
-    progTemp
+    progTemp,
+    label
   },
   pExpr=expr/.
   {
@@ -191,12 +201,20 @@ iProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
   i=0;
   cur=None;
   progTemp=StringTemplate[If[knownLen,"``/``","``"]];
+  label=Replace[
+    OptionValue[Label],
+    {
+      None->Nothing,
+      lbl_:>{Style[lbl,Bold],SpanFromLeft}
+    }
+  ];
   Return@Monitor[
     ReleaseHold@pExpr,
     Dynamic[
       Panel@Row@{
         Grid[
           {
+            label,
             If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
             {"Progess:",progTemp[i,len]}
           },
