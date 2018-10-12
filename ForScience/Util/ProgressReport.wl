@@ -216,7 +216,7 @@ iProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
           {
             label,
             If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
-            {"Progess:",progTemp[i,len]}
+            {"Progress:",progTemp[i,len]}
           },
           Alignment->{{Left,Right}},
           ItemSize->{{10,13},{1.5,1.5}}
