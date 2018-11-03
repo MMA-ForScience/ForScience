@@ -20,11 +20,11 @@ Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformF
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
 
 
+Parallelize[ImportDataset[args___],opts___]^:=ImportDataset[args,Parallelize->{opts}]
+
+
 (*matches only options that do not start with RuleDelayed, to ensure unique meaning*)
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
-
-
-Parallelize[ImportDataset[args___]]^:=ImportDataset[args,Parallelize->True]
 
 
 ImportDataset[
@@ -205,7 +205,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.24"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.25"];
 
 
 Details[ImportDataset]={
@@ -223,10 +223,11 @@ Details[ImportDataset]={
     {Parallelize,False,"Whether to distribute the file import to parallel kernels"}
   },
   "The \"Importer\" option supports the same specification formats as [*CachedImport*].",
-  "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicity directory/list of directories is specified.",
+  "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicit directory/list of directories is specified.",
   "With the default setting [*\"TransformFullPath\"->Automatic*], the full path is transformed if the data are not grouped by folders, otherwise only the filename is transformed.",
   "With [*Parallelize->True*], cache lookups are done on the main kernel, and actual importing is done on parallel kernels (see [*CachedImport*] for more information).",
-  "[*Parallelize[[*ImportDataset*][\[Ellipsis]]]*] is equivalent to specifiying [*Parallelize->True*]",
+  "The option [*Parallelize*] can be set to [*False*], [*True*] or a list of [*Parallelize*] options."
+  "[*Parallelize[[*ImportDataset*][\[Ellipsis]],opts\[Ellipsis]]]*] is equivalent to specifying [*Parallelize->{opts}*]",
   "In the replacement rules specified, patterns for file and directory names should string expressions."
 };
 
@@ -355,11 +356,11 @@ Examples[ImportDataset,"Options","\"GroupFolders\""]={
     ExampleInput[ImportDataset["test*/test*.tsv"]]
   },
   {
-    "Specifiy that data should always be grouped by directory:",
+    "Specify that data should always be grouped by directory:",
     ExampleInput[ImportDataset["test*/test*.tsv","GroupFolders"->True]]
   },
   {
-    "Specifiy that data should never be grouped by directory:",
+    "Specify that data should never be grouped by directory:",
     ExampleInput[ImportDataset["test*.tsv","test*","GroupFolders"->False]]
   }
 };
