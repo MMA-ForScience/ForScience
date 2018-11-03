@@ -31,7 +31,7 @@ ImportTask[wrapper_,file_,path_,importer_]:=Hold[
 
 MakeBoxes[task:ImportTask[new:Import|PatternSequence[],_,file_,path_,importer_],fmt_]^:=BoxForm`ArrangeSummaryBox[
   ImportTask,
-  task,
+  Unevaluated@task,
   BoxForm`GenericIcon[InputStream],
   {
     BoxForm`SummaryItem[{"Type: ",If[Length@{new}>0,"Import","Cache lookup"]}],
