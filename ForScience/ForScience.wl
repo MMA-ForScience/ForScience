@@ -17,6 +17,7 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed&&($VersionNumber==11.2||$VersionNu
 ]
 End[];
 
+
 Begin["Graphics`PolarPlotDump`"];
 If[!TrueQ@ForScience`Private`$PolarPlotsFixed2&&($VersionNumber==11.2||$VersionNumber==11.3),
 (* fix for ListPolarPlot[{},PolarAxes\[Rule]True] *)
@@ -34,6 +35,18 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=11.3,
   expr:HoldPattern[allPos=_]:>(expr;maxRadius=layoutData@"RadialAxesRadius");
  ]
 End[];
+
+
+Begin["Parallel`Evaluate`Private`"]
+If[!TrueQ@ForScience`Private`$ParallelMapIndexedFixed&&(11.1<=$VersionNumber<=11.3),
+(* fix for Parallelize[MapIndexed[...,<|...|>]] supplying wrong second argument to function *)
+  ForScience`Private`$ParallelMapIndexedFixed=True;
+  Unprotect@MapIndexed;
+  HoldPattern[tryCombine[MapIndexed[f_,str_Association],opts___]]^:=
+    ParallelCombine[MapIndexed[f],str,opts];
+  Protect@MapIndexed;
+]
+End[]
 
 
 EndPackage[]
