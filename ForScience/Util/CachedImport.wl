@@ -14,27 +14,27 @@ Begin["`Private`CachedImport`"]
 EnsureUnmodified[file_,path_,importer_,ts_,sz_]:=If[
   FileDate[path]===ts&&FileByteCount[path]===sz,
   Hold@ImportTask[$ImportCache,file,path,importer],
-  Hold@ImportTask[file,path,importer]
+  Hold@ImportTask[Import,UpdateCache,file,path,importer]
 ]
 
 
-ImportTask[file_,path_,importer_]:=With[
+ImportTask[Import,wrapper_,file_,path_,importer_]:=With[
   {result=importer@file},
-  Hold@UpdateCache[file,path,importer,result]
+  Hold@wrapper[file,path,importer,result]
 ]
 
 
-ImportTask[$ImportCache,file_,path_,importer_]:=Hold[
-  $ImportCache[file,path,importer]
+ImportTask[wrapper_,file_,path_,importer_]:=Hold[
+  wrapper[file,path,importer]
 ]
 
 
-MakeBoxes[task:ImportTask[cached:$ImportCache|PatternSequence[],file_,path_,importer_],fmt_]^:=BoxForm`ArrangeSummaryBox[
+MakeBoxes[task:ImportTask[new:Import|PatternSequence[],_,file_,path_,importer_],fmt_]^:=BoxForm`ArrangeSummaryBox[
   ImportTask,
   task,
   BoxForm`GenericIcon[InputStream],
   {
-    BoxForm`SummaryItem[{"Type: ",If[Length@{cached}>0,"Cache lookup","Import"]}],
+    BoxForm`SummaryItem[{"Type: ",If[Length@{new}>0,"Import","Cache lookup"]}],
     BoxForm`SummaryItem[{"Filename: ",FileNameTake@file}]
   },
   {
@@ -71,7 +71,7 @@ SetupImportCache[]:=(
   ];
   SetSharedFunction[$ImportCache]^:=SetSharedFunction[$ImportCache,CacheLookup];
   UnsetShared[$ImportCache]^:=UnsetShared[$ImportCache,CacheLookup];
-  CacheLookup[file_,path_,importer_]:=Hold@ImportTask[file,path,importer]
+  CacheLookup[file_,path_,importer_]:=Hold@ImportTask[Import,UpdateCache,file,path,importer]
 )
 
 
