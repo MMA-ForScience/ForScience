@@ -344,6 +344,28 @@ ProgressReportTransform[
 ]/;m=!=AssociationMap||Length@{level}===0:=
 ProgressReportingFunction[m,op,o]
 ProgressReportTransform[
+  (m:Map|MapIndexed)[func_,ass_Association,{1}|PatternSequence[]],
+  Evaluated,
+  o:OptionsPattern[ProgressReport]
+]:=
+ProgressReport[
+  MapIndexed[
+    Function[
+      Null,
+      SetCurrent[Extract[#2,{1,1},HoldForm]];
+      With[
+        {ret=If[m===MapIndexed,func@##,func@#]},
+        Step[];
+        ret
+      ],
+      {HoldAll}
+    ],
+    ass
+  ],
+  Length@ass,
+  o
+]
+ProgressReportTransform[
   (m:Map|(am:AssociationMap)|MapIndexed)[func_,list_,level_:{1}],
   Evaluated,
   o:OptionsPattern[ProgressReport]
@@ -362,28 +384,6 @@ With[
     Length@Level[list,level,Hold],
     o
   ]
-]
-ProgressReportTransform[
-  (m:Map|MapIndexed)[func_,ass_Association,{1}],
-  Evaluated,
-  o:OptionsPattern[ProgressReport]
-]:=
-ProgressReport[
-  MapIndexed[
-    Function[
-      Null,
-      SetCurrent[Extract[#2,{1,1},HoldForm]];
-      With[
-        {ret=If[m===MapIndexed,func@##,func@#]},
-        Step[];
-        ret
-      ],
-      {HoldAll}
-    ]&,
-    ass
-  ],
-  Length@ass,
-  o
 ]
 
 
