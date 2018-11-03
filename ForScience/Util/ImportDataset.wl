@@ -14,7 +14,7 @@ ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies th
 Begin["`Private`"]
 
 
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->False,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->Automatic,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort,Parallelize->False};
 
 
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
@@ -65,54 +65,74 @@ ImportDataset[
 ]
 
 
-idImporter[OptionsPattern[ImportDataset]][file_]:=CachedImport[
-  file,
-  OptionValue["Importer"],
-  "CacheImports"->OptionValue["CacheImports"]
+iImportDataset[pProc_,files_List,dirrule_,o:OptionsPattern[ImportDataset]]:=
+Let[
+  {
+    importer=CachedImport[
+      #,
+      OptionValue["Importer"],
+      "CacheImports"->OptionValue["CacheImports"],
+      "DeferImports"->True
+    ]&,
+    listImporter=pProc@
+     Map[ReleaseHold]@
+      ProgressReport[
+        Map[ReleaseHold,#],
+        Parallelize->OptionValue[Parallelize]/.True->Full,
+        Label->"Importing files"
+      ]&@
+       ProgressReport[
+         AssociationMap[importer,#],
+         Timing->False,
+         Label->"Preparing import"
+       ]&
+  },
+  If[TrueQ@OptionValue["GroupFolders"],
+    KeyMap[First[StringCases[#,dirrule],#]&]@
+    ProgressReport[
+      Map[
+        listImporter,
+        GroupBy[files,FileNameDrop[#,0]&@*DirectoryName]
+      ],
+      Timing->OptionValue["FullFolderProgress"]
+    ],
+    listImporter@files
+  ]
 ]
 
 
-iImportDataset[pProc_,mf_,func_,files_List,dirrule_,OptionsPattern[ImportDataset]]:=If[TrueQ@OptionValue["GroupFolders"],
-  KeyMap[First[StringCases[#,dirrule],#]&]@
-   ProgressReport[
-   pProc@
-     ProgressReport[mf[func,#]]&/@
-      GroupBy[files,FileNameDrop[#,0]&@*DirectoryName],
-     Timing->OptionValue["FullFolderProgress"]
-  ],
-  ProgressReport[mf[func,files]]
-]
+GetPathTransformer[OptionsPattern[ImportDataset]]:=If[OptionValue["TransformFullPath"]/.Automatic->!TrueQ@OptionValue["GroupFolders"],#&,FileNameTake]
 
 
 iImportDataset[files_List,{dirp_,fp_,datp_}:>r_,o:OptionsPattern[ImportDataset]]:=
 With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
-  Dataset@Apply[Join]@Values@iImportDataset[
-    Identity,
-    Map,
-    First[
-      StringCases[
-        pTrans@#,
-        fp:>First[
-          StringCases[
-            FileNameDrop[DirectoryName@#,0],
-            dirp:>First[
-              Cases[
-                idImporter[o]@#,
-                datp:>r,
-                {0},
-                1
+  {pTrans=GetPathTransformer[o]},
+  Dataset@Apply[Join]@iImportDataset[
+    KeyValueMap[
+      First[
+        StringCases[
+          pTrans@#,
+          fp:>First[
+            StringCases[
+              FileNameDrop[DirectoryName@#,0],
+              dirp:>First[
+                Cases[
+                  #2,
+                  datp:>r,
+                  {0},
+                  1
+                ],
+                <||>
               ],
-              <||>
+              1
             ],
-            1
+            <||>
           ],
-          <||>
+          1
         ],
-        1
-      ],
-      <||>
-    ]&,
+        <||>
+      ]&
+    ],
     files,
     x__:>x,
     "GroupFolders"->True,
@@ -123,26 +143,26 @@ With[
 
 iImportDataset[files_List,{fp_,dp_}:>r_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  {pTrans=GetPathTransformer[o]},
   Dataset@iImportDataset[
-    Identity,
-    Map,
-    First[
-      StringCases[
-        pTrans@#,
-        fp:>First[
-          Cases[
-            idImporter[o]@#,
-            dp:>r,
-            {0},
-            1
+    KeyValueMap[
+      First[
+        StringCases[
+          pTrans@#,
+          fp:>First[
+            Cases[
+              #2,
+              dp:>r,
+              {0},
+              1
+            ],
+            <||>
           ],
-          <||>
+          1
         ],
-        1
-      ],
-      <||>
-    ]&,
+        <||>
+      ]&
+    ],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
@@ -152,11 +172,11 @@ With[
 
 iImportDataset[files_,r:(_:>_Association),datakey_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  {pTrans=GetPathTransformer[o]},
   Dataset@iImportDataset[
-    Identity,
-    Map,
-    Append[First[StringCases[pTrans@#,r],<||>],datakey->idImporter[o]@#]&,
+    KeyValueMap[
+      Append[First[StringCases[pTrans@#,r],<||>],datakey->#2]&
+    ],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
@@ -166,11 +186,9 @@ With[
 
 iImportDataset[files_,r_,dirrule_,o:OptionsPattern[ImportDataset]]:=
 With[
-  {pTrans=If[OptionValue["TransformFullPath"],#&,FileNameTake]},
+  {pTrans=GetPathTransformer[o]},
   Dataset@iImportDataset[
     KeyMap[First[StringCases[pTrans@#,r],#]&],
-    AssociationMap,
-    idImporter[o],
     files,
     dirrule,
     FilterRules[{o,Options[ImportDataset]},_]
@@ -184,7 +202,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.6"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.23"];
 
 
 Details[ImportDataset]={
@@ -196,12 +214,15 @@ Details[ImportDataset]={
     {"\"Importer\"",Import,"The function to call for importing"},
     {"\"SortingFunction\"",NaturalSort,"The function to sort the file names with"},
     {"\"GroupFolders\"",Automatic,"Whether to group the data by folders"},
-    {"\"TransformFullPath\"",False,"Whether to use the full relative file path as starting point for replacement rules. If [*False*], only the file name is used"},
+    {"\"TransformFullPath\"",Automatic,"Whether to use the full relative file path as starting point for replacement rules."},
     {"\"FullFolderProgress\"",False,"Whether to include timing information in the progress bar for the directories"},
-    {"\"CacheImports\"",True,"Whether to use the importer cache of [*CachedImport*]"}
+    {"\"CacheImports\"",True,"Whether to use the importer cache of [*CachedImport*]"},
+    {Parallelize,False,"Whether to distribute the file import to parallel kernels"}
   },
   "The \"Importer\" option supports the same specification formats as [*CachedImport*].",
   "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicity directory/list of directories is specified.",
+  "With the default setting [*\"TransformFullPath\"->Automatic*], the full path is transformed if the data are not grouped by folders, otherwise only the filename is transformed.",
+  "With [*Parallelize->True*], cache lookups are done on the main kernel, and actual importing is done on parallel kernels (see [*CachedImport*] for more information).",
   "In the replacement rules specified, patterns for file and directory names should string expressions."
 };
 
@@ -241,19 +262,65 @@ Examples[ImportDataset,"Basic examples"]={
   },
   {
     "Extract parts of the file names into keys of an association:",
-    ExampleInput["ImportDataset[\"test\"~~i_~~\"_\"~~j_~~\".tsv\"\[RuleDelayed]<|\"i\"\[Rule]i,\"j\"\[Rule]j|>,\"content\",\"test*\"]"]
+    ExampleInput[
+      "ImportDataset[
+        \"test\"~~i_~~\"_\"~~j_~~\".tsv\"\[RuleDelayed]<|
+          \"i\"\[Rule]i,\"j\"\[Rule]j
+        |>,
+        \"content\",
+        \"test*\"
+      ]"
+    ]
   },
   {
     "Handle the data using a pattern instead:",
-    ExampleInput["ImportDataset[{\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}\[RuleDelayed]<|\"i\"\[Rule]i,\"j\"\[Rule]j,\"content\"\[Rule]first+second|>,\"test*\"]"]
+    ExampleInput[
+      "ImportDataset[
+        {
+          \"test\"~~i_~~\"_\"~~j_~~\".tsv\",
+          {first_,second_}
+        }\[RuleDelayed]<|
+          \"i\"\[Rule]i,
+          \"j\"\[Rule]j,
+          \"content\"\[Rule]first+second
+        |>,
+        \"test*\"
+      ]"
+    ]
   },
   {
     "Also handle the directory using a pattern:",
-    ExampleInput["ImportDataset[{dir__,\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}\[RuleDelayed]<|\"dir\"\[Rule]dir,\"i\"\[Rule]i,\"j\"\[Rule]j,\"content\"\[Rule]first+second|>,\"test*\"]"]
+    ExampleInput[
+      "ImportDataset[
+        {
+          dir__,
+          \"test\"~~i_~~\"_\"~~j_~~\".tsv\",
+          {first_,second_}
+        }\[RuleDelayed]<|
+          \"dir\"\[Rule]dir,
+          \"i\"\[Rule]i,\"j\"\[Rule]j,
+          \"content\"\[Rule]first+second
+        |>,
+        \"test*\"
+      ]"
+    ]
   },
   {
     "For [*ImportDataset[{dir,f,data}\[RuleDelayed]item]*], ```dir``` is used as directory specification:",
-    ExampleInput["ImportDataset[{dir:(__~~\"2\"),\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}\[RuleDelayed]<|\"dir\"\[Rule]dir,\"i\"\[Rule]i,\"j\"\[Rule]j,\"content\"\[Rule]first+second|>]"]
+    ExampleInput[
+      "ImportDataset[
+        {
+          dir:(__~~\"2\"),
+          \"test\"~~i_~~\"_\"~~j_~~\".tsv\",
+          {first_,second_}
+        }\[RuleDelayed]<|
+          \"dir\"\[Rule]dir,
+          \"i\"\[Rule]i,
+          \"j\"\[Rule]j,
+          \"content\"\[Rule]first+second
+        |>
+      ]"
+    ]
   }
 };
 Examples[ImportDataset,"Options","\"Importer\""]={
@@ -294,44 +361,132 @@ Examples[ImportDataset,"Options","\"GroupFolders\""]={
 };
 Examples[ImportDataset,"Options","\"TransformFullPath\""]={
   {
-    "By default, only the file name is passed to the file name replacement rule:",
-    ExampleInput[ImportDataset["test"~~i__~~".tsv":>i,"test*"]]
+    "The default setting, [*\"TransformFullPath\"->Automatic*], passes the full path to the filename rule if the data are not grouped:",
+    ExampleInput[ImportDataset[name__~~".tsv":>name,"test*","GroupFolders"->False]],
+    "Here, only the filename is passed to the rule",
+    ExampleInput[ImportDataset[name__~~".tsv":>name,"test*","GroupFolders"->True]]
   },
   {
-    "Specify that the full path should be passed:",
-    ExampleInput[ImportDataset["test"~~i__~~".tsv":>i,"test*","TransformFullPath"->True]]
+    "Specify that the full path should always be transformed:",
+    ExampleInput[
+      "ImportDataset[
+        name__~~\".tsv\":>name,
+        \"test*\",
+        \"GroupFolders\"->True,
+        \"TransformFullPath\"->True
+      ]"
+    ]
+  },
+  {
+    "Specify that only the file name should be transformed:",
+    ExampleInput[
+      "ImportDataset[
+        name__~~\".tsv\":>name,
+        \"test*\",
+        \"GroupFolders\"->False,
+        \"TransformFullPath\"->False
+      ]"
+    ]
   }
 };
 Examples[ImportDataset,"Options","\"FullFolderProgress\""]={
   {
     "By default, the progress bar for the directories has no timing information (execute to see):",
-    ExampleInput[ImportDataset["test*.tsv","test2","Importer"->((Pause@0.5;Import@#)&),"CacheImports"->False]]
+    ExampleInput[
+      "ImportDataset[
+        \"test*.tsv\",
+        \"test2\",
+        \"Importer\"->((Pause@0.5;Import@#)&),
+        \"CacheImports\"->False
+      ]"
+    ]
   },
   {
     "Enable timing information for the directories (execute to see):",
-    ExampleInput[ImportDataset["test*.tsv","test2","Importer"->((Pause@0.5;Import@#)&),"CacheImports"->False,"FullFolderProgress"->True]]
+    ExampleInput[
+      "ImportDataset[
+        \"test*.tsv\",
+        \"test2\",
+        \"Importer\"->((Pause@0.5;Import@#)&),
+        \"CacheImports\"->False,
+        \"FullFolderProgress\"->True
+      ]"
+    ]
   }
 };
 Examples[ImportDataset,"Options","\"CacheImports\""]={
   {
     "By default, importing uses the cache functionality of [*CachedImport*]:",
-    ExampleInput[ImportDataset["test*_1.tsv","test*","Importer"->((Pause@0.5;Import@#)&)]],
+    ExampleInput[
+      "ImportDataset[
+        \"test*_1.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@1;Import@#)&)
+      ]//AbsoluteTiming"
+    ],
     "Executing the same line again is much faster:",
-    ExampleInput[ImportDataset["test*_1.tsv","test*","Importer"->((Pause@0.5;Import@#)&)]]
+    ExampleInput[
+      "ImportDataset[
+        \"test*_1.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@1;Import@#)&)
+      ]//AbsoluteTiming"
+    ]
   },
   {
     "Explicitly disable the caching:",
-    ExampleInput[ImportDataset["test*_1.tsv","test*","Importer"->((Pause@0.5;Import@#)&),"CacheImports"->False]]
+    ExampleInput[
+      "ImportDataset[
+        \"test*_1.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@1;Import@#)&),
+        \"CacheImports\"->False
+      ]//AbsoluteTiming"
+    ]
+  }
+};
+Examples[ImportDataset,"Options","Parallelize"]={
+  {
+    "If the import performance is limited by the CPU and not the file system, parallelization of the import might improve the performance:",
+    ExampleInput[
+      "ImportDataset[
+        \"test*_*.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@0.75;Import@#)&)
+      ]//AbsoluteTiming"
+    ]
+  },
+  {
+    "Turn on parallelization:",
+    ExampleInput[
+      "ImportDataset[
+        \"test*_*.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@0.76;Import@#)&),
+        Parallelize->True
+      ]//AbsoluteTiming"
+    ]
   }
 };
 Examples[ImportDataset,"Properties & Relations"]={
   {
     "Complex value extraction rules can be easily built using [*ToAssociationRule*]:",
-    ExampleInput[ImportDataset[ToAssociationRule["test"~~i_~~"_"~~j_~~".tsv"],"data","test*"]]
+    ExampleInput[
+      "ImportDataset[
+        ToAssociationRule[\"test\"~~i_~~\"_\"~~j_~~\".tsv\"],
+        \"data\",
+        \"test*\"
+      ]"
+    ]
   },
   {
     "Also extract parts from data and directory name this way:",
-    ExampleInput[ImportDataset[ToAssociationRule[{dir__,"test"~~i_~~"_"~~j_~~".tsv",{first_,second_}}],"test*"]],
+    ExampleInput[
+      "ImportDataset[
+        ToAssociationRule[{dir__,\"test\"~~i_~~\"_\"~~j_~~\".tsv\",{first_,second_}}],
+        \"test*\"
+      ]"
+    ],
     CleanExampleDirectory
   }
 };
