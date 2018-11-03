@@ -24,6 +24,9 @@ SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}
 $IDOptionsPattern=OptionsPattern[]?(Not@*MatchQ[PatternSequence[_:>_,___]]);
 
 
+Parallelize[ImportDataset[args___]]^:=ImportDataset[args,Parallelize->True]
+
+
 ImportDataset[
   files_List,
   (dm:(r:({_,pat_,_}:>_)))|
@@ -202,7 +205,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.23"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.24"];
 
 
 Details[ImportDataset]={
@@ -223,6 +226,7 @@ Details[ImportDataset]={
   "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicity directory/list of directories is specified.",
   "With the default setting [*\"TransformFullPath\"->Automatic*], the full path is transformed if the data are not grouped by folders, otherwise only the filename is transformed.",
   "With [*Parallelize->True*], cache lookups are done on the main kernel, and actual importing is done on parallel kernels (see [*CachedImport*] for more information).",
+  "[*Parallelize[[*ImportDataset*][\[Ellipsis]]]*] is equivalent to specifiying [*Parallelize->True*]",
   "In the replacement rules specified, patterns for file and directory names should string expressions."
 };
 
@@ -464,6 +468,16 @@ Examples[ImportDataset,"Options","Parallelize"]={
         \"test*\",
         \"Importer\"->((Pause@0.76;Import@#)&),
         Parallelize->True
+      ]//AbsoluteTiming"
+    ]
+  },
+  {
+    "Turn on parallelization by wrapping the [*ImportDataset*] call in [*Parallelize*]:",
+    ExampleInput[
+      "Parallelize@ImportDataset[
+        \"test*_*.tsv\",
+        \"test*\",
+        \"Importer\"->((Pause@0.77;Import@#)&)
       ]//AbsoluteTiming"
     ]
   }
