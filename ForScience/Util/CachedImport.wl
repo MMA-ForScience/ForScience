@@ -12,7 +12,7 @@ Begin["`Private`CachedImport`"]
 
 
 EnsureUnmodified[file_,path_,importer_,ts_,sz_]:=If[
-  FileDate[path]===ts&&FileByteCount[path]===sz,
+  Quiet[FileDate[path]===ts&&FileByteCount[path]===sz],
   Hold@ImportTask[$ImportCache,file,path,importer],
   Hold@ImportTask[Import,UpdateCache,file,path,importer]
 ]
