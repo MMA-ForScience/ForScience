@@ -46,10 +46,10 @@ Module[
     parallel,
     pExpr
   },
-  parallel=OptionValue[Parallelize]/.{
+  parallel=Replace[OptionValue[Parallelize],{
     Full->{},
     Automatic->MatchQ[Unevaluated@expr,_Parallelize]
-  };
+  }];
   pExpr=If[ListQ@parallel,
     HoldComplete[Parallelize[expr,parallel]],
     HoldComplete[expr]
