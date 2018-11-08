@@ -14,7 +14,7 @@ ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies th
 Begin["`Private`"]
 
 
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->Automatic,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort,Parallelize->False};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->Automatic,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort,Parallelize->False,AbsoluteFileName->True};
 
 
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
@@ -77,6 +77,7 @@ Let[
       "CacheImports"->OptionValue["CacheImports"],
       "DeferImports"->True
     ]&,
+    pathProc=If[OptionValue@AbsoluteFileName,AbsoluteFileName,#&],
     listImporter=pProc@
      Map[ReleaseHold]@
       ProgressReport[
@@ -85,7 +86,7 @@ Let[
         Label->"Importing files"
       ]&@
        ProgressReport[
-         AssociationMap[importer,#],
+         AssociationMap[importer@*pathProc,#],
          Timing->False,
          Label->"Preparing import"
        ]&
@@ -205,7 +206,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.25"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.27"];
 
 
 Details[ImportDataset]={
@@ -220,7 +221,8 @@ Details[ImportDataset]={
     {"\"TransformFullPath\"",Automatic,"Whether to use the full relative file path as starting point for replacement rules."},
     {"\"FullFolderProgress\"",False,"Whether to include timing information in the progress bar for the directories"},
     {"\"CacheImports\"",True,"Whether to use the importer cache of [*CachedImport*]"},
-    {Parallelize,False,"Whether to distribute the file import to parallel kernels"}
+    {Parallelize,False,"Whether to distribute the file import to parallel kernels"},
+    {AbsoluteFileName,True,"Whether to pass absolute filenames to the importer"}
   },
   "The \"Importer\" option supports the same specification formats as [*CachedImport*].",
   "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicit directory/list of directories is specified.",
@@ -480,6 +482,29 @@ Examples[ImportDataset,"Options","Parallelize"]={
         \"test*\",
         \"Importer\"->((Pause@0.77;Import@#)&)
       ]//AbsoluteTiming"
+    ]
+  }
+};
+Examples[ImportDataset,"Options","AbsoluteFileName"]={
+  {
+    "With the default setting [*AbsoluteFileName->True*], absolute file names are passed to the importer]:",
+    ExampleInput[
+      "ImportDataset[
+        \"test*_*.tsv\",
+        \"test*\",
+        \"Importer\"->(FileNameTake[#,-3]&)
+      ]"
+    ]
+  },
+  {
+    "Pass relative file paths to the importer:",
+    ExampleInput[
+      "ImportDataset[
+        \"test*_*.tsv\",
+        \"test*\",
+        \"Importer\"->(#&),
+        AbsoluteFileName->False
+      ]"
     ]
   }
 };
