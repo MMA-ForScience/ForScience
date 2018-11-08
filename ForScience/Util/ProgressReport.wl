@@ -441,7 +441,7 @@ Attributes[VarSpec]={HoldFirst};
 Attributes[NumericSpecQ]={HoldFirst};
 
 
-NumericSpecQ[expr_]:=NumericQ@Unevaluated@expr
+NumericSpecQ[expr_]:=System`Dump`HeldNumericQ@expr
 
 
 Attributes[NumericIteratorSpecQ]={HoldFirst};
