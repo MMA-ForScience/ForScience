@@ -34,7 +34,7 @@ Attributes[ProgressReport]={HoldFirst};
 SyntaxInformation[ProgressReport]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
 
 
-Options[ProgressReport]={"Resolution"->Automatic,Timing->True,Parallelize->Automatic,Label->None};
+Options[ProgressReport]={"Resolution"->Automatic,Timing->True,Parallelize->Automatic,Label->None,"CurrentDisplayFunction"->Full};
 
 
 ProgressReport::injectFailed="Could not automatically inject tracking functions into ``. See ProgressReportTransform for supported types.";
@@ -65,6 +65,29 @@ ProgressReport[expr_,0,OptionsPattern[]]:=expr
 ProgressReport[expr_,o:OptionsPattern[]]:=ProgressReportTransform[expr,o]
 
 
+CreateLabel[None]:=Nothing
+CreateLabel[label_]:={Style[label,Bold],SpanFromLeft}
+
+
+CreateCurrentDisplayFunction[Full]:=Tooltip[FixedShort[#,20],#]&
+CreateCurrentDisplayFunction[Automatic]:=FixedShort[#,20]&
+CreateCurrentDisplayFunction[None]:=Null
+CreateCurrentDisplayFunction[func_]:=Tooltip[FixedShort[#,20],#]&@*func
+CreateCurrentDisplayFunction[{func_}]:=FixedShort[func@#,20]&
+CreateCurrentDisplayFunction[{func_,toolfunc_}]:=Tooltip[FixedShort[func@#,20],toolfunc@#]&
+CreateCurrentDisplayFunction[{func_,Full}]:=Tooltip[FixedShort[func@#,20],#]&
+
+
+CreateSetCurrentReplacement[cur_,_]:={
+  SetCurrent->ISetCurrent[cur],
+  SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc]
+}
+CreateSetCurrentReplacement[_,None]:={
+  SetCurrent->Null,
+  SetCurrentBy[_:Null]->(##&)
+}
+
+
 Attributes[iTimedProgressReport]={HoldFirst};
 
 
@@ -82,30 +105,22 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
     knownLen=len=!=Indeterminate,
     progTemp,
     res,
-    label
+    label=CreateLabel@OptionValue@Label,
+    curDisp=CreateCurrentDisplayFunction@OptionValue@"CurrentDisplayFunction"
   },
   res=OptionValue["Resolution"]/.
    Automatic:>If[knownLen,Scaled[1/20],5]/.
     {Scaled[r_]:>1/r*If[knownLen,1/len,1],r_:>1/r};
-  pExpr=expr/.With[
-    {res=res},
-    {
-      SetCurrent:>ISetCurrent[cur],
-      SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
+  pExpr=expr/.
+   CreateSetCurrentReplacement[cur,OptionValue@"CurrentDisplayFunction"]/.
+    With[
+      {res=res},
       Step->IStep[i,res,time,times]
-    }
-  ];
+    ];
   If[OptionValue[Parallelize],SetSharedVariable[i,times,time,cur]];
   i=0;
   cur=None;
   progTemp=StringTemplate[If[knownLen,"``/``","``"]];
-  label=Replace[
-    OptionValue[Label],
-    {
-      None->Nothing,
-      lbl_:>{Style[lbl,Bold],SpanFromLeft}
-    }
-  ];
   Return@Monitor[
     time=start=AbsoluteTime[];
     ReleaseHold@pExpr,
@@ -126,7 +141,7 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
           Grid[
             {
               label,
-              If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
+              If[cur=!=None,{"Current item:",curDisp@cur},Nothing],
               {"Progress:",progTemp[i,len]},
               {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
               {"Time per Step:",If[i==0,"NA",PRPrettyTime[dur/i]]},
@@ -193,25 +208,16 @@ iProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
     cur,
     knownLen=len=!=Indeterminate,
     progTemp,
-    label
+    label=CreateLabel@OptionValue@Label,
+    curDisp=CreateCurrentDisplayFunction@OptionValue@"CurrentDisplayFunction"
   },
   pExpr=expr/.
-  {
-    SetCurrent:>ISetCurrent[cur],
-    SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
-    Step->IStep[i]
-  };
+   CreateSetCurrentReplacement[cur,OptionValue@"CurrentDisplayFunction"]/.
+    Step->IStep[i];
   If[OptionValue[Parallelize],SetSharedVariable[i,cur]];
   i=0;
   cur=None;
   progTemp=StringTemplate[If[knownLen,"``/``","``"]];
-  label=Replace[
-    OptionValue[Label],
-    {
-      None->Nothing,
-      lbl_:>{Style[lbl,Bold],SpanFromLeft}
-    }
-  ];
   Return@Monitor[
     ReleaseHold@pExpr,
     Dynamic[
@@ -219,7 +225,7 @@ iProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
         Grid[
           {
             label,
-            If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
+            If[cur=!=None,{"Current item:",curDisp@cur},Nothing],
             {"Progress:",progTemp[i,len]}
           },
           Alignment->{{Left,Right}},
