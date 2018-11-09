@@ -97,7 +97,7 @@ CachedImport[file_,importer:Except[_Rule]:Import,OptionsPattern[]]:=With[
   If[OptionValue["DeferImports"],#,ReleaseHold@ReleaseHold@#]&[
     If[OptionValue["CacheImports"]&&path=!=$Failed,
       CacheLookup[file,path,importer],
-      Hold@Hold@importer@file
+      Hold@ImportTask[Import,#4&,file,path,importer]
     ]
   ]
 ]
