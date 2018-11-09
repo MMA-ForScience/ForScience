@@ -85,12 +85,14 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
   res=OptionValue["Resolution"]/.
    Automatic:>If[knownLen,Scaled[1/20],5]/.
     {Scaled[r_]:>1/r*If[knownLen,1/len,1],r_:>1/r};
-  pExpr=expr/.
-  {
-    SetCurrent:>ISetCurrent[cur],
-    SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
-    Step->IStep[i,res,time,times]
-  };
+  pExpr=expr/.With[
+    {res=res},
+    {
+      SetCurrent:>ISetCurrent[cur],
+      SetCurrentBy[curFunc_:(#&)]:>ISetCurrentBy[cur,curFunc],
+      Step->IStep[i,res,time,times]
+    }
+  ];
   If[OptionValue[Parallelize],SetSharedVariable[i,times,time,cur]];
   i=0;
   cur=None;
@@ -123,7 +125,7 @@ iTimedProgressReport[expr_,len_,OptionsPattern[ProgressReport]]:=Module[
             {
               label,
               If[cur=!=None,{"Current item:",Tooltip[FixedShort[cur,20],cur]},Nothing],
-              {"Progess:",progTemp[i,len]},
+              {"Progress:",progTemp[i,len]},
               {"Time elapsed:",If[i==0,"NA",PRPrettyTime@dur]},
               {"Time per Step:",If[i==0,"NA",PRPrettyTime[dur/i]]},
               If[knownLen,{"Est. time remaining:",If[i==0,"NA",PRPrettyTime[(len-i)*dur/i]]},Nothing],
