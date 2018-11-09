@@ -44,7 +44,8 @@ ProgressReport[expr_,len:(_Integer|Indeterminate),o:OptionsPattern[]]:=
 Module[
   {
     parallel,
-    pExpr
+    pExpr,
+    parallelOpt
   },
   parallel=Replace[OptionValue[Parallelize],{
     Full->{},
@@ -54,9 +55,10 @@ Module[
     HoldComplete[Parallelize[expr,parallel]],
     HoldComplete[expr]
   ];
+  parallelOpt=Parallelize->parallel=!=False;
   If[OptionValue[Timing],
-    iTimedProgressReport[pExpr,len,Parallelize->parallel=!=False,o],
-    iProgressReport[pExpr,len,o]
+    iTimedProgressReport[pExpr,len,parallelOpt,o],
+    iProgressReport[pExpr,len,parallelOpt,o]
   ]
 ]
 ProgressReport[expr_,0,OptionsPattern[]]:=expr
