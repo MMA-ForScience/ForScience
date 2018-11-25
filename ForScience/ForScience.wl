@@ -49,6 +49,22 @@ If[!TrueQ@ForScience`Private`$ParallelMapIndexedFixed&&(11.1<=$VersionNumber<=11
 End[]
 
 
+Begin["Internal`"]
+If[!TrueQ@ForScience`Private`$RelativePacletFindFileFixed&&($VersionNumber<11.2),
+(* support for <<`file` style imports in MMA 11.1 (i.e. relative to current context) *)
+  ForScience`Private`$RelativePacletFindFileFixed=True;
+  Unprotect@PacletFindFile;
+  DownValues[PacletFindFile]=DownValues[PacletFindFile]/.
+   HoldPattern[Which[cases__]]:>Which[
+     StringMatchQ[PacletManager`Manager`Private`ctxtOrFile,"`*`"],
+     PacletManager`Package`contextToFileName[Null,StringDrop[$Context,-1]<>PacletManager`Manager`Private`ctxtOrFile],
+     cases
+   ];
+  Protect@PacletFindFile;
+]
+End[]
+
+
 EndPackage[]
 
 
