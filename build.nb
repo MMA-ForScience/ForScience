@@ -55,11 +55,15 @@ Notebook[{
 
 	Cell["Install", "Subsubsection"],
 
+	Cell[BoxData[RowBox[{"UnloadPacletDocumentation", "[", "\"ForScience\"", "]"}]], "Input"],
+
 	Cell[BoxData[RowBox[{RowBox[{"PacletUninstall", "/@", RowBox[{"PacletFind", "[", "\"ForScience\"", "]"}]}], ";"}]], "Input"],
 
-	Cell[BoxData[RowBox[{"Last", "@", RowBox[{"Sort", "@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}]}]], "Input"],
+	Cell[BoxData[RowBox[{"paclet", "=", "Last", "@", RowBox[{"Sort", "@", RowBox[{"FileNames", "[", "\"*.paclet\"", "]"}]}]}]], "Input"],
 
-	Cell[BoxData[RowBox[{"PacletInstall", "[", "paclet", "]"}]], "Input"]
+	Cell[BoxData[RowBox[{"PacletInstall", "[", "paclet", "]"}]], "Input"],
+
+	Cell[BoxData[RowBox[{"LoadPacletDocumentation", "[", "\"ForScience\"", "]"}]], "Input"]
 
 	}, Open  ]],
 	

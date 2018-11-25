@@ -27,8 +27,10 @@ UpdateForScience[OptionsPattern[]]:=Let[
       SPrintF["Found version ````, current version is ``.",version,If[preRel," (pre-release)",""],curVer],
       Button[
         "Download & Install",
+        UnloadPacletDocumentation["ForScience"];
         PacletUninstall/@PacletFind["ForScience"];
         PacletInstall[URLDownload[#["browser_download_url"],FileNameJoin@{$TemporaryDirectory,#name}]]&@file;
+        LoadPacletDocumentation["ForScience"];
         Print@If[
           PacletFind["ForScience"][[1]]["Version"]===version,
           "Successfully updated",
