@@ -82,7 +82,7 @@ With[
       If[automated,
         Quiet@CreateDirectory[DirectoryName@docFile];
         CopyFile[cachedFile,docFile],
-        NotebookOpen[cachedFile]
+        NotebookPut@Import[cachedFile]
       ],
       Sow[Hold[sym,type],{DocumentationCacheGet,"Uncached"}];
       With[
