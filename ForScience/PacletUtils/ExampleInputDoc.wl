@@ -6,7 +6,7 @@ Usage[ExampleInput]="ExampleInput[expr_1,\[Ellipsis]] represents an input cell f
 BuildAction[
 
 
-DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.63.6"];
+DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.75.2"];
 
 
 Details[ExampleInput]={
@@ -19,17 +19,30 @@ Details[ExampleInput]={
     {"```expr```","An arbitrary expression to be inserted as-is"},
     {"\"```str```\"","A string form of the expression to be inserted"}
   },
-  "Specifiying an input as string allows to enter multiline inputs that are formatted as such.",
+  "Specifying an input as string allows entering multiline inputs that are formatted as such.",
   "Spaces at the beginning of lines in string inputs are removed in favor of [*\\[IndentingNewline]*]",
   "[*ExampleInput*] accepts the following options:",
   TableForm@{
     {InitializationCell,Automatic,"Whether the input cell should be an initialization cell"},
-    {Visible,True,"Whether the input cell should be visible in the final notebook"}
+    {Visible,True,"Whether the input cell should be visible in the final notebook"},
+    {"\"Multiline\"",Automatic,"How long input lines should be handled"}
   },
-  "The default setting [*InitializationCell->Automatic*] detects example inputs of the form [*ExampleInput*][[*Needs*][\[Ellipsis]]] and automatically marks them as initializaiton cell.",
+  "The default setting [*InitializationCell->Automatic*] detects example inputs of the form [*ExampleInput*][[*Needs*][\[Ellipsis]]] and automatically marks them as initialization cell.",
   "The option [*Visible*] can be used to execute cleanup code in an example that should not be included in the final notebook.",
-  "If [*Visible*] is [*False*], the input cell is completely invisible, meaning the [*$Line*] number, [*In*] and [*Out*] are reset properly.",
-  "[*ExampleInput*] has attribute [*HoldAll*]."
+  "With the setting [*Visible->False*], the input cell is completely invisible, meaning the [*$Line*] number, [*In*] and [*Out*] are reset properly.",
+  "The option \"Multiline\" can take the following values:",
+  TableForm@{
+    {Automatic,"Wrap lines that are too wide"},
+    {"{[*Automatic*],```n```}","Wrap lines that are wider than ```n``` characters"},
+    {"```pattern```","Wrap lines after everything that matches ```pattern```"},
+    {"{```wrapAfter```,```wrapBefore```}","Wrap lines after everything that matches ```wrapAfter``` and before everything that matches ```wrapBefore```"},
+    {Full,"Wrap lines after any opening brackets and commas, and before any closing brackets"}
+  },
+  "The default setting \"Multiline\"->[*Automatic*] wraps lines after approximately 30 characters.",
+  "Patterns specified for line wrapping are only matched against elements of [*RowBox*] expressions.",
+  "The setting \"Multiline\"->[*Full*] is equivalent to specifying {\",\"|\";\"|\"(\"|\"[\"|\"\[LeftAssociation]\"|\"{\",\"}\"|\"\[RightAssociation]\"|\"]\"|\")\"}",
+  Hyperlink["The contents of [*ExampleInput*] expressions are typeset as they will appear in the generated documentation page.","Typesetting"],
+  "[*ExampleInput*] has attribute [*  HoldAll*]."
 };
 
 
@@ -73,22 +86,50 @@ Examples[ExampleInput,"Basic examples"]={
     ExampleInput[NotebookClose[%];,Visible->False]
   },
   {
-    "Use strings to specify multiline inputs:",
+    "Long lines are automatically wrapped:",
     ExampleInput[
       "Examples[test,\"Basic examples\"]={
         {
-          \"Multple input lines:\",
+          \"Wrapping of long, complex inputs:\",
           ExampleInput[
-            \"Plot[
-               x^2,
-               {x,0,1}
-            ]\"
+            Table[<|\"even\"->Select[#,EvenQ],\"odd\"->Select[#,OddQ]|>&@Range[i,j,3],{i,1,10},{j,1,10}]
           ]
         }
       };",
       DocumentationBuilder[test]
     ],
     ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    Labeled["Preview how an expression is formatted without generating a full documentation page:","Typesetting"],
+    ExampleInput[
+      "input=ExampleInput[Plot[{1,1+x,1+x+x^2,(3+x)/(x+2x^2+3x^3),Sqrt[1+x^2-3(x-2)]},{x,-3,5},PlotRange->{-2,All},Frame->True,FrameLabel->{\"x Axis\",\"y Axis\"},ImageSize->300]]",
+      "Multiline"->False
+    ]
+  },
+  {
+    "Compare with the generated input cell:",
+    ExampleInput[
+      "Examples[test,\"Basic examples\"]={
+        {
+          \"A long input line:\",
+          input
+        }
+      };",
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Use strings to gain full control over typesetting of the input:",
+    ExampleInput[
+      "ExampleInput[
+        \"Plot[
+            x^2,
+            {x,0,1}
+        ]\"
+      ]"
+    ]
   }
 };
 
@@ -184,6 +225,54 @@ Examples[ExampleInput,"Options","Visible"]={
 };
 
 
+Examples[ExampleInput,"Options","\"Multiline\""]={
+  {
+    "With the default setting \"Multiline\"->[*Automatic*], expressions are automatically wrapped if they are longer than approximately 30 characters:",
+    ExampleInput[
+      "ExampleInput[
+        Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]]
+      ]"
+    ]
+  },
+  {
+    "Break only after 40 characters:",
+    ExampleInput[
+      "ExampleInput[
+        Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]],
+        \"Multiline\"->{Automatic,40}
+      ]"
+    ]
+  },
+  {
+    "Break after every comma:",
+    ExampleInput[
+      "ExampleInput[
+        Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]],
+        \"Multiline\"->\",\"
+      ]"
+    ]
+  },
+  {
+    "Break after/before opening/closing brackets:",
+    ExampleInput[
+      "ExampleInput[
+        Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]],
+        \"Multiline\"->{\"[\",\"]\"}
+      ]"
+    ]
+  },
+  {
+    "Break at every single comma and bracket:",
+    ExampleInput[
+      "ExampleInput[
+        Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]],
+        \"Multiline\"->Full
+      ]"
+    ]
+  }
+};
+
+
 Examples[ExampleInput,"Properties & Relations"]={
   {
     "[*ExampleInput*] expressions can be used for tutorials in exactly the same way as for symbols:",
@@ -233,40 +322,30 @@ Examples[ExampleInput,"Possible issues"]={
   {
     "Formatting and shorthands are not preserved when using expressions as inputs:",
     ExampleInput[
-      "Examples[test,\"Basic examples\"]={
-        {
-          \"This should be a multiline input:\",
-          ExampleInput[
-            Sort@{
-              c,
-              a,
-              b,
-              d
-            }
-          ]
+      "ExampleInput[
+        Sort@{
+          c,
+          a,
+          b,
+          d
         }
-      };",
-      DocumentationBuilder[test]
+      ]"
     ],
-    ExampleInput[NotebookClose[%];,Visible->False],
     "Specify the input as string to preserve the exact formatting:",
     ExampleInput[
-      "Examples[test,\"Basic examples\"]={
-        {
-          \"String inputs are not rewritten:\",
-          ExampleInput[
-            \"Sort@{
-              c,
-              a,
-              b,
-              d
-            }\"
-          ]
-        }
-      };",
-      DocumentationBuilder[test]
-    ],
-    ExampleInput[NotebookClose[%];,Visible->False]
+      "ExampleInput[
+        \"Sort@{
+          c,
+          a,
+          b,
+          d
+        }\"
+      ]"
+    ]
+  },
+  {
+    "Some settings for the \"Multiline\" option might result in syntactically invalid expressions:",
+    ExampleInput["ExampleInput[\"a\"<>\"b\"<>\"c\",\"Multiline\"->{None,\"<>\"}]"]
   },
   {
     "Outputs of invisible cells are not automatically hidden:",
