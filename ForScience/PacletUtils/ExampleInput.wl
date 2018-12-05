@@ -174,7 +174,7 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
 
 EvaluateAndWrite[nb_,cells_,nbOpts:OptionsPattern[]]:=
 With[
-  {exNb=CreateNotebook[
+  {exNb=NotebookPut[
     Visible->False,
     InitializationCellEvaluation->False,
     nbOpts

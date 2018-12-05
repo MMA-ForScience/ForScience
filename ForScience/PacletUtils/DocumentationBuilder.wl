@@ -23,6 +23,7 @@ Attributes[MakeDocumentationContent]={HoldFirst};
 
 
 DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as DocumentationHeader[`1`] is not set.";
+DocumentationBuilder::failed="Could not create documentation notebook for ``. Reason unknown.";
 
 
 Options[DocumentationBuilder]=Join[{ProgressIndicator->True},Options[DocumentationCachePut]];
@@ -68,6 +69,7 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
   ]
 ]
 
+
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=
 With[
   {
@@ -91,7 +93,7 @@ With[
         },
         With[
           {
-            nb=CreateNotebook[
+            nb=NotebookPut[
               StyleDefinitions->Notebook[{
                 Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
                 Cell[StyleData["Input"],CellContext->Notebook],
@@ -120,27 +122,31 @@ With[
               WindowTitle->title
             ]
           },
-          NotebookWrite[nb,MakeHeader[sym,type]];
-          With[
-            {linkedSymbols=DeleteDuplicates@First[
-              Last@Reap[
-                MakeDocumentationContent[sym,type,nb,opts],
-                Hyperlink
-              ],
-              {}
-            ]},
-            NotebookWrite[nb,MakeFooter[sym,type]];
-            If[automated,
-              Quiet@CreateDirectory[DirectoryName@docFile];
-              Export[
-                docFile,
-                Replace[NotebookGet[nb],(Visible->False):>Sequence[],1],
-                PageWidth->Infinity
-              ];
-              NotebookClose[nb];
-              DocumentationCachePut[sym,type,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
-              SetOptions[nb,Visible->!$BuildActive];
-              nb
+          If[FailureQ@nb,
+            Message[DocumentationBuilder::failed,HoldForm@sym];
+            nb,
+            NotebookWrite[nb,MakeHeader[sym,type]];
+            With[
+              {linkedSymbols=DeleteDuplicates@First[
+                Last@Reap[
+                  MakeDocumentationContent[sym,type,nb,opts],
+                  Hyperlink
+                ],
+                {}
+              ]},
+              NotebookWrite[nb,MakeFooter[sym,type]];
+              If[automated,
+                Quiet@CreateDirectory[DirectoryName@docFile];
+                Export[
+                  docFile,
+                  Replace[NotebookGet[nb],(Visible->False):>Sequence[],1],
+                  PageWidth->Infinity
+                ];
+                NotebookClose[nb];
+                DocumentationCachePut[sym,type,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
+                SetOptions[nb,Visible->!$BuildActive];
+                nb
+              ]
             ]
           ]
         ]
