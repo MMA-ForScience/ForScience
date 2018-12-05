@@ -10,29 +10,26 @@ Attributes[ExampleInput]={HoldAll};
 Options[ExampleInput]={InitializationCell->Automatic,Visible->True,"Multiline"->Automatic};
 
 
-resetInOut[in_,out_]:=(
-  Unprotect@{In,Out};
-  DownValues@In=oldIn;
-  DownValues@Out=oldOut;
-  Protect@{In,Out};
-  Out[$Line]
-)
+resetInOut[in_,out_,line_]:=With[
+  {prot=Unprotect@{In,Out}},
+  DownValues@In=in;
+  DownValues@Out=out;
+  Protect@prot;
+  $Line=oldLine;
+  Out[$Line];
+]
 
 
 ProcessVisibleOption[ExampleInput[in__,OptionsPattern[]],True]:=ExampleInput[in]
 ProcessVisibleOption[ExampleInput[in__,OptionsPattern[]],False]:=ExampleInput[
-  oldIn=Most@DownValues@In;
-  oldOut=DownValues@Out;
-  oldLine=--$Line;
-  resetInOut[oldIn,oldOut];,
+  resetInOut[
+    oldIn=Most@DownValues@In,
+    oldOut=DownValues@Out,
+    oldLine=$Line-1
+  ];,
   in,
   NotebookDelete@EvaluationCell[];
-  Unprotect@{In,Out};
-  DownValues@In=oldIn;
-  DownValues@Out=oldOut;
-  Protect@{In,Out};
-  $Line=oldLine;
-  resetInOut[oldIn,oldOut];
+  resetInOut[oldIn,oldOut,oldLine];
 ]
 
 
