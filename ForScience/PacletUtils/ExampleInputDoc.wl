@@ -6,7 +6,7 @@ Usage[ExampleInput]="ExampleInput[expr_1,\[Ellipsis]] represents an input cell f
 BuildAction[
 
 
-DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.75.2"];
+DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.76.4"];
 
 
 Details[ExampleInput]={
@@ -38,7 +38,7 @@ Details[ExampleInput]={
     {"{```wrapAfter```,```wrapBefore```}","Wrap lines after everything that matches ```wrapAfter``` and before everything that matches ```wrapBefore```"},
     {Full,"Wrap lines after any opening brackets and commas, and before any closing brackets"}
   },
-  "The default setting \"Multiline\"->[*Automatic*] wraps lines after approximately 30 characters.",
+  "The default setting \"Multiline\"->[*Automatic*] wraps lines after approximately 50 characters.",
   "Patterns specified for line wrapping are only matched against elements of [*RowBox*] expressions.",
   "The setting \"Multiline\"->[*Full*] is equivalent to specifying {\",\"|\";\"|\"(\"|\"[\"|\"\[LeftAssociation]\"|\"{\",\"}\"|\"\[RightAssociation]\"|\"]\"|\")\"}",
   Hyperlink["The contents of [*ExampleInput*] expressions are typeset as they will appear in the generated documentation page.","Typesetting"],
@@ -227,7 +227,7 @@ Examples[ExampleInput,"Options","Visible"]={
 
 Examples[ExampleInput,"Options","\"Multiline\""]={
   {
-    "With the default setting \"Multiline\"->[*Automatic*], expressions are automatically wrapped if they are longer than approximately 30 characters:",
+    "With the default setting \"Multiline\"->[*Automatic*], expressions are automatically wrapped if they are longer than approximately 50 characters:",
     ExampleInput[
       "ExampleInput[
         Select[If[#<10,PrimeQ[#-1],PrimeQ[#+1]]&][Table[i+3j,{i,1,10},{j,2,5+i}]]

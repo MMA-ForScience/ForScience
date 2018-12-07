@@ -60,7 +60,7 @@ WrapBoxes[boxes_,OptionsPattern[ExampleInput]]:=Switch[
     {
       limit=OptionValue["Multiline"]/.{
         {Automatic,n_}:>n,
-        Automatic->30
+        Automatic->50
       }
     },
     Replace[
