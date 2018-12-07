@@ -28,6 +28,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`UsageSection`;
 <<`DeclareMetadataHandler`;
 <<`DeclareSectionAccessor`;
+<<`DocumentationOptions`;
 <<`Abstract`;
 <<`GuideSections`;
 <<`TutorialSections`;
@@ -57,6 +58,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`BuildActionDoc`;
 <<`DocumentationBuilderDoc`;
 <<`DocumentationHeaderDoc`;
+<<`DocumentationOptionsDoc`;
 <<`GuideDoc`;
 <<`TutorialDoc`;
 <<`TutorialSectionsDoc`;

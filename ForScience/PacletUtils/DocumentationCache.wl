@@ -15,7 +15,7 @@ CacheFile[sym_]:=StringReplace[Context@sym<>DocumentationTitle[sym],"`"->"_"]
 Attributes[CreateCacheID]={HoldFirst};
 
 
-CreateCacheID[sym_,type_]:=AssociationMap[#@sym&,Sort@$DependencyCollectors[type]]
+CreateCacheID[sym_,type_]:=AssociationMap[#@Unevaluated@sym&,Sort@$DependencyCollectors[type]]
 
 
 DocumentationCachePut::noDir="The specified cache directory `` is not a directory.";
