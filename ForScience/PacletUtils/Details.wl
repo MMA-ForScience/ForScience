@@ -9,6 +9,9 @@ Begin["`Private`"]
 Attributes[Details]={HoldFirst};
 
 
+DocumentationOptions[Details]={Open->False};
+
+
 Details::noList="Cannot set details of `` to ``, only lists are allowed.";
 
 
@@ -115,56 +118,65 @@ QUzrGEgX03LssDosBl1MUQf7haXD8BJ6c/TW
 DetailsSummaryOverlay[img_,opac_]:=Overlay[{Graphics[{Opacity@opac,RGBColor[0,2/3,1],Rectangle[{-360,-40},{360,40}]},ImageSize->{720,80},PlotRangePadding->None,ImagePadding->None],img},Alignment->{-0.85,Center}]
 SummaryOverlay=DetailsSummaryOverlay[$MagnifierGlass,0];
 SummaryOverlayHover=DetailsSummaryOverlay[$MagnifierGlassHover,0.06];
-SummaryThumbnail[nb_,sum_]:=With[
+SummaryThumbnail[nb_,sum_]:=
+With[
   {
-    thumbs=Block[
+    fullThumb=Block[
       {EvaluationNotebook},
       EvaluationNotebook[]=nb;
-      Take[
+      ImageResize[Rasterize[Notebook[sum,WindowSize->785],ImageFormattingWidth->740],170]
+    ]
+  },
+  With[
+    {
+      thumbs=Take[
         Flatten@ImagePartition[
           ImagePad[
-            ImageResize[Rasterize[Notebook[sum,WindowSize->785],ImageFormattingWidth->740],170],
+            fullThumb,
             {{0,0},{69,0}},
             White
           ],
           {170,70}
         ],
         UpTo@4
-      ]
-    ],
-    sOH=SummaryOverlayHover,
-    sO=SummaryOverlay
-  },
-  Cell[
-    BoxData@TagBox[
-      ButtonBox[
-        StyleBox[
-          DynamicBox@ToBoxes@Overlay[
-            {
-              Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
-              If[CurrentValue["MouseOver"],sOH,sO]
-            },
-            Alignment->{Left,Center}
-          ],
-          Background->White
-        ],
-        Appearance->None,ButtonFunction:>(CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}]=Open),
-        Evaluator->"System"
       ],
-      MouseAppearanceTag["LinkHand"]
-    ],
-    "NotesThumbnails",
-    CellOpen->Dynamic[
-      FEPrivate`Switch[
-        CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}],
-        True,
-        False,
-        Open,
-        False,
-        _,
-        True
+      sOH=SummaryOverlayHover,
+      sO=SummaryOverlay
+    },
+    {
+      Last@ImageDimensions@fullThumb,
+      Cell[
+        BoxData@TagBox[
+          ButtonBox[
+            StyleBox[
+              DynamicBox@ToBoxes@Overlay[
+                {
+                  Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
+                  If[CurrentValue["MouseOver"],sOH,sO]
+                },
+                Alignment->{Left,Center}
+              ],
+              Background->White
+            ],
+            Appearance->None,ButtonFunction:>(CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}]=Open),
+            Evaluator->"System"
+          ],
+          MouseAppearanceTag["LinkHand"]
+        ],
+        "NotesThumbnails",
+        CellOpen->Dynamic[
+          FEPrivate`Switch[
+            CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}],
+            True,
+            False,
+            Open,
+            False,
+            _,
+            True
+          ]
+        ]
       ]
-    ]
+    }
   ]
 ]
 
@@ -194,36 +206,41 @@ Attributes[MakeDetailsSection]={HoldFirst};
 
 
 MakeDetailsSection[sym_,nb_,OptionsPattern[]]:=
-  If[OptionValue@Details&&Length@Details@sym>0,
+If[OptionValue@Details&&Length@Details@sym>0,
+  With[
+    {
+      notes=Switch[#,
+        _String,
+        Cell[ParseToDocEntry@#,"Notes"],
+        Hyperlink[_String,_],
+        ExampleLinkedCell@#,
+        _TableForm,
+        FormatTable@#,
+        _,
+        SpecToCell[#,"Notes"]
+      ]&/@Details[sym]
+    },
     With[
-      {
-        notes=Switch[#,
-          _String,
-          Cell[ParseToDocEntry@#,"Notes"],
-          Hyperlink[_String,_],
-          ExampleLinkedCell@#,
-          _TableForm,
-          FormatTable@#,
-          _,
-          SpecToCell[#,"Notes"]
-        ]&/@Details[sym]
-      },
+      {thumbData=SummaryThumbnail[nb,notes]},
       NotebookWrite[
         nb,
         CreateDocumentationOpener[
           nb,
           {Cell["Details and Options","NotesFrameText"]},
           "NotesSection",
-          notes
+          notes,
+          DocumentationOptionValue[Details[sym],Open]/.Automatic->First@thumbData<33
         ]
       ];
-      NotebookWrite[nb,SummaryThumbnail[nb,notes]];
+      NotebookWrite[nb,Last@thumbData];
     ]
   ]
+]
 
 
 AppendTo[$DocumentationSections["Symbol"],MakeDetailsSection];
 AppendTo[$DependencyCollectors["Symbol"],Details];
+AppendTo[$DependencyCollectors["Symbol"],FullDocumentationOptionValues@Details];
 
 
 End[]

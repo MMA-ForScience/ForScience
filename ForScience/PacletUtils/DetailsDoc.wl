@@ -6,7 +6,7 @@ Usage[Details]="[*[*Details[sym]*]'''={```note```_1,\[Ellipsis]}'''*] sets the c
 BuildAction[
 
 
-DocumentationHeader[Details]=FSHeader["0.57.0","0.70.8"];
+DocumentationHeader[Details]=FSHeader["0.57.0","0.76.3"];
 
 
 Details[Details]={
@@ -31,7 +31,12 @@ Details[Details]={
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specified [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}    
-  }
+  },
+  "The following [*DocumentationOptions*] can be given:",
+  TableForm@{
+    {Open,False,"Whether the details section should be open by default"}
+  },
+  "If the setting [*Open->Automatic*] is specified, the details section will be open if it is approximately as big as the thumbnail."
 };
 
 
@@ -97,6 +102,64 @@ Examples[Details,"Basic examples"]={
 };
 
 
+Examples[Details,"DocumentationOptions","Open"]={
+  {
+    "With the default [*DocumentationOptions*] setting [*Open->False*], the \"Details and Options\" section is generated in a closed state:",
+    ExampleInput[
+      "Details[test]={
+        \"This section is closed by default.\"
+      };",
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Setting [*Open->Automatic*] will open the section if it is very short:",
+    ExampleInput[
+      "Details[test]={
+        \"This section is open by default, because it is short.\"
+      };",
+      SetDocumentationOptions[Details[test],Open->Automatic];,
+      DocumentationBuilder[test],
+      "Multiline"->False
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "With [*Open->Automatic*] the \"Details and Options\" section will still be closed if it is bigger than the thumbnail would be:",
+    ExampleInput[
+      "Details[test]={
+        \"This section has many lines.\",
+        \"This is the second one.\",
+        \"And this the third.\",
+        \"4th.\",
+        \"Since it is so long, it will be closed by default.\"
+      };",
+      SetDocumentationOptions[Details[test],Open->Automatic];,
+      DocumentationBuilder[test],
+      "Multiline"->False
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Specifying [*Open->True*] forces the section to be open by default, no matter the length:",
+    ExampleInput[
+      "Details[test]={
+        \"This section has many lines.\",
+        \"This is the second one.\",
+        \"And this the third.\",
+        \"4th.\",
+        \"This section is open by default, even though it is long.\"
+      };",
+      SetDocumentationOptions[Details[test],Open->True];,
+      DocumentationBuilder[test],
+      "Multiline"->False
+    ],
+    ExampleInput[NotebookClose[%];SetDocumentationOptions[Details[test],Open->Default];,Visible->False]
+  }
+};
+
+
 Examples[Details,"Properties & Relations"]={
   {
   "Generation of the \"Details and Options\" section can be disabled using the option [*Details->False*]:",
@@ -127,7 +190,7 @@ Examples[Details,"Properties & Relations"]={
 };
 
 
-SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso,Tutorials,Guides};
+SeeAlso[Details]={DocumentationBuilder,Usage,Examples,SeeAlso,Tutorials,Guides,DocumentationOptions};
 
 
 Guides[Details]={$GuideCreatingDocPages};

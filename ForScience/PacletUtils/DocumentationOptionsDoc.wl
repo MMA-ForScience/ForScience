@@ -21,14 +21,58 @@ Details[DocumentationOptions]={
   "The forms [*DocumentationOptions[sym,part]*] and [*DocumentationOptions*][```part```[```sym```]] are fully equivalent.",
   "The [*SetOptions*] analogue for [*DocumentationOptions*] is [*SetDocumentationOptions*].",
   "[*DocumentationOptions[part]*] can be used to set the default options for the specified part for all symbols.",
+  "Documentation parts that have [*DocumentationOptions*] include [*Details*].",
   "If an option is not set in [*DocumentationOptions*][```part```[```sym```]], the default option value is taken from [*DocumentationOptions[part]*].",
   "Options with value [*Default*] are automatically removed from [*DocumentationOptions*][```part```[```sym```]].",
   "Only options present in [*DocumentationOptions[part]*] can be set in [*DocumentationOptions*][```part```[```sym```]].",
+  "The value for [*DocumentationOptions*][```part```[```sym```]] is stored as an upvalue of ```sym```.",
+  "The value for [*DocumentationOptions[part]*] is stored as an upvalue of ```part```.",
   "[*DocumentationOptions*] has attribute [*HoldFirst*]."
 };
 
 
-SeeAlso[DocumentationOptions]={SetDocumentationOptions,DocumentationBuilder};
+Examples[DocumentationOptions,"Basic examples"]={
+  {
+    "Load the ForScience package:",
+    ExampleInput[Needs["ForScience`PacletUtils`"]],
+    "See what options are available for a given part of the documentation pages:",
+    ExampleInput[DocumentationOptions[Details]]
+  },
+  {
+    "Override the settings with new ones:",
+    ExampleInput[prevDetailsDocOptions=DocumentationOptions[Details];,Visible->False],
+    ExampleInput[DocumentationOptions[Details]={Open->Automatic};],
+    ExampleInput[DocumentationOptions[Details]=prevDetailsDocOptions;,Visible->False]
+  },
+  {
+    "Specify a different setting only for a specific symbol:",
+    ExampleInput[DocumentationOptions[Details[specialSymbol]]={Open->True};],
+    "Verify that the new value is set:",
+    ExampleInput[DocumentationOptions[Details[specialSymbol]]],
+    "The settings are attached to ```specialSymbol``` as upvalues:",
+    ExampleInput["Definition[specialSymbol]"]
+  }
+};
+
+
+Examples[DocumentationOptions,"Properties & Relations"]={
+  {
+    "Use [*SetDocumentationOptions*] to change individual option values:",
+    ExampleInput[
+      SetDocumentationOptions[Details[test],Open->False];,
+      Visible->False
+    ],
+    ExampleInput[
+      DocumentationOptions[Details[test]]
+    ],
+    ExampleInput[
+      SetDocumentationOptions[Details[test],Open->True]
+    ]
+  }
+};
+
+
+SeeAlso[DocumentationOptions]={SetDocumentationOptions,DocumentationBuilder,Details};
 
 
 Guides[DocumentationOptions]={$GuideCreatingDocPages};
@@ -48,6 +92,39 @@ Details[SetDocumentationOptions]={
   "Setting an option value to [*Default*] effectively removes the option from [*DocumentationOptions*][```part```[```sym```]], causing the default value to be used again.",
   "Only options present in [*DocumentationOptions[part]*] can be set by [*SetDocumentationOptions*][```part```[```sym```],```opt```_1\[Rule]```val```_1,\[Ellipsis]].",
   "[*SetDocumentationOptions*] has attribute [*HoldFirst*]."
+};
+
+
+Examples[SetDocumentationOptions,"Basic examples"]={
+  {
+    "Load the ForScience package:",
+    ExampleInput[Needs["ForScience`PacletUtils`"]],
+    "Override the default setting for [*Open*] in the [*DocumentationOptions*] of [*Details*]:",
+    ExampleInput[prevDetailsDocOptions=DocumentationOptions[Details];,Visible->False],
+    ExampleInput[SetDocumentationOptions[Details,Open->Automatic]],
+    ExampleInput[DocumentationOptions[Details]=prevDetailsDocOptions;,Visible->False]
+  },
+  {
+    "Specify a different value for a specific symbol:",
+    ExampleInput[SetDocumentationOptions[Details[specialSymbol],Open->True];],
+    "Verify that the new value is set:",
+    ExampleInput[DocumentationOptions[Details[specialSymbol]]]
+  },
+  {
+    "The option value can be removed again by setting it to [*Default*]:",
+    ExampleInput[SetDocumentationOptions[Details[specialSymbol],Open->Default];],
+    "The entry is now fully removed from the symbols [*DocumentationOptions*]:",
+    ExampleInput[DocumentationOptions[Details[specialSymbol]]]
+  }
+};
+
+
+Examples[SetDocumentationOptions,"Properties & Relations"]={
+  {
+    "The list of options returned by [*SetDocumentationOptions[\[Ellipsis],opt_1->val_1,\[Ellipsis]]*] is the new value of [*DocumentationOptions[\[Ellipsis]]*]:",
+    ExampleInput[SetDocumentationOptions[Details[specialSymbol],Open->False]],
+    ExampleInput[DocumentationOptions[Details[specialSymbol]]]
+  }
 };
 
 
