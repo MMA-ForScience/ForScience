@@ -56,13 +56,13 @@ Attributes[SetDocumentationOptions]={HoldFirst};
 
 
 SetDocumentationOptions[part_[sym_Symbol],opts:optionPattern]:=SetDocumentationOptions[sym,part,opts]
+SetDocumentationOptions[part_,opts:optionPattern]:=(
+  DocumentationOptions[part]=FilterInvalidOptions[part,{opts}]~Join~DocumentationOptions[part]
+)
 SetDocumentationOptions[sym_Symbol,part_,opts:optionPattern]:=(
   DocumentationOptions[sym,part]={opts}~Join~DeleteDuplicatesBy[First][
     Cases[{opts},_[_,Default]]~Join~DocumentationOptions[sym,part]
   ]
-)
-SetDocumentationOptions[part_,opts:optionPattern]:=(
-  DocumentationOptions[part]=FilterInvalidOptions[part,{opts}]~Join~DocumentationOptions[part]
 )
 
 
