@@ -105,7 +105,7 @@ DocumentationOpener[{heading__},type_,index_]:=With[
 ]
 
 
-AddOpenerTag[nb_,type_]:=Module[
+AddOpenerTag[nb_,type_,open_]:=Module[
   {cur,openers,typeOpeners,tag},
   cur=<|TaggingRules/.Options[nb,TaggingRules]|>;
   openers=<|cur["Openers"]|>;
@@ -118,7 +118,7 @@ AddOpenerTag[nb_,type_]:=Module[
         openers,
         type->Normal@Append[
           typeOpeners,
-          (tag=ToString[Max[{-1},Map[FromDigits]@Keys@typeOpeners]+1])->False
+          (tag=ToString[Max[{-1},Map[FromDigits]@Keys@typeOpeners]+1])->open
         ]
       ]
     ]
@@ -127,10 +127,11 @@ AddOpenerTag[nb_,type_]:=Module[
 ]
 
 
-CreateDocumentationOpener[nb_,heading_,type_,{content___}]:=
-  With[
-    {index=AddOpenerTag[nb,type]},
-    Cell@CellGroupData[{
+CreateDocumentationOpener[nb_,heading_,type_,{content___},open_:False]:=
+With[
+  {index=AddOpenerTag[nb,type,open]},
+  Cell@CellGroupData[
+    {
       DocumentationOpener[heading,type,index],
       content
     },
