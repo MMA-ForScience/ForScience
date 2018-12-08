@@ -170,19 +170,28 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
 
 
 EvaluateAndWrite[nb_,cells_,nbOpts:OptionsPattern[]]:=
-With[
-  {exNb=NotebookPut[
-    Visible->False,
-    InitializationCellEvaluation->False,
-    nbOpts
-  ]},
-  NotebookWrite[exNb,cells,All];
-  (* NotebookEvaluate leaks $Context/$ContextPath when called from a cell with CellContext *)
-  Block[{$Context=$Context,$ContextPath=$ContextPath},
-    NotebookEvaluate[exNb,InsertResults->True]
-  ];
-  NotebookWrite[nb,First@NotebookGet@exNb];
-  NotebookClose[exNb];
+(* NotebookEvaluate leaks $Context/$ContextPath/$Line when called from a cell with CellContext 
+   Global`Private`SavedContextInfo is also messed up due to excessive context switching back to Global`.
+   This leads to $Context in cells without CellContext to be broken as well.
+   The Block is wrapped around the NotebookClose statement as well, as that seems to be the final blow to Global`Private`SavedContextInfo *)
+Block[
+  {
+    $Context=$Context,
+    $ContextPath=$ContextPath,
+    $Line,
+    Global`Private`SavedContextInfo
+  },
+  With[
+    {exNb=NotebookPut[
+      Visible->False,
+      InitializationCellEvaluation->False,
+      nbOpts
+    ]},
+    NotebookWrite[exNb,cells,All];
+    NotebookEvaluate[exNb,InsertResults->True];
+    NotebookWrite[nb,First@NotebookGet@exNb];
+    NotebookClose[exNb];
+  ]
 ]
 
 
