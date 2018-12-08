@@ -144,8 +144,11 @@ With[
                 ];
                 NotebookClose[nb];
                 DocumentationCachePut[sym,type,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
-                SetOptions[nb,Visible->!$BuildActive];
-                nb
+                With[
+                  {retNb=NotebookGet@nb},
+                  NotebookClose[nb];
+                  NotebookPut@Replace[retNb,(Visible->False)->(Visible->!$BuildActive),1]
+                ]
               ]
             ]
           ]
