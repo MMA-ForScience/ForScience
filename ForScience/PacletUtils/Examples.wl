@@ -30,25 +30,39 @@ ExampleCount[ex_List]:=Length@ex
 Attributes[ExamplesSection]={HoldFirst};
 
 
+DocumentationOptions[Examples]={Open->Automatic};
+
+
 $ExampleLevels={"PrimaryExamplesSection","ExampleSection","ExampleSubsection"};
 
 
-ExamplesSection[sec_Association,nb_,lev_]:=
-  KeyValueMap[
+Attributes[ExamplesSection]={HoldFirst};
+
+
+ExamplesSection[sym_,sec_Association,nb_,lev_,path_]:=
+  MapIndexed[
     With[
-      {type=$ExampleLevels[[Min[lev,Length@$ExampleLevels]]]},
+      {
+        type=$ExampleLevels[[Min[lev,Length@$ExampleLevels]]],
+        newPath=Append[path,First@#2]
+      },
       Insert[type,{1,1,1,-2}]@
       MapAt[
         BoxData@InterpretationBox[Cell[#],$Line=0;]&,{1,1,1,1}
       ]@CreateDocumentationOpener[
         nb,
-        ExampleHeader[#,ExampleCount[#2]],
+        ExampleHeader[First@#,ExampleCount[Last@#]],
         type,
-        ExamplesSection[#2,nb,lev+1]
+        ExamplesSection[sym,Last@#,nb,lev+1,newPath],
+        DocumentationOptionValue[Examples[sym],Open]/.{
+          All->True,
+          None->False,
+          Automatic:>MatchQ[newPath,{1..}]
+        }
       ]
     ]&
-  ]@sec
-ExamplesSection[sec_List,_,_]:=
+  ]@Normal@sec
+ExamplesSection[_,sec_List,_,_,_]:=
   Join@@Riffle[
     Map[
       Switch[#,
@@ -67,7 +81,7 @@ ExamplesSection[sec_List,_,_]:=
     {{Cell[BoxData[InterpretationBox[Cell["\t","ExampleDelimiter"],$Line=0;]],"ExampleDelimiter"]}},
     {2,-2,2}
   ]
-ExamplesSection[sym_Symbol,nb_]:=ExamplesSection[<|"Examples"->Examples[sym]|>,nb,1]
+ExamplesSection[sym_Symbol,nb_]:=ExamplesSection[sym,<|"Examples"->Examples[sym]|>,nb,1,{1}]
 
 
 Options[MakeExampleSection]={Examples->True};
@@ -88,6 +102,7 @@ MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
 
 AppendTo[$DocumentationSections["Symbol"],MakeExampleSection];
 AppendTo[$DependencyCollectors["Symbol"],Examples];
+AppendTo[$DependencyCollectors["Symbol"],FullDocumentationOptionValues@Examples];
 
 
 End[]

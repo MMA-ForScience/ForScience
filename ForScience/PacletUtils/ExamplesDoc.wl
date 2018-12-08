@@ -10,7 +10,7 @@ Examples[sym,\[Ellipsis]] returns the assigned list of examples/example subsecti
 BuildAction[
 
 
-DocumentationHeader[Examples]=FSHeader["0.58.0","0.70.8"];
+DocumentationHeader[Examples]=FSHeader["0.58.0","0.76.7"];
 
 
 Details[Examples]={
@@ -31,7 +31,12 @@ Details[Examples]={
   "[*Examples[sym]*] is always an association with string keys, representing the section titles.",
   "The entries of [*Examples[sym]*] are themselves either associations representing (sub)subsections or lists of examples.",
   "Subsections/lists of examples can be accessed and set using [*Examples[sym,sec,subsec,\[Ellipsis]]*].",
-  "Sections can be removed via [*Examples[sym,sec,subsec,\[Ellipsis]]*]'''=.'''."
+  "Sections can be removed via [*Examples[sym,sec,subsec,\[Ellipsis]]*]'''=.'''.",
+  "The following [*DocumentationOptions*] can be given:",
+  TableForm@{
+    {Open,Automatic,"Specify which example sections should be generated in a open state"}
+  },
+  "With the default setting [*Open->Automatic*], the first example section is opened by default. Other possible settings are [*None*] and [*All*]."
 };
 
 
@@ -169,6 +174,35 @@ Examples[Examples,"Scope"]={
 };
 
 
+Examples[Examples,"DocumentationOptions","Open"]={
+  {
+    "With the default setting [*Open->Automatic*], the first example section is open by default:",
+    ExampleInput[
+      Examples[test,"Basic examples"]={{"Example 1.1"},{"Example 1.2"}};,
+      Examples[test,"Scope"]={{"Example 2.1"}};,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Generate all example sections in an open state:",
+    ExampleInput[
+      SetDocumentationOptions[Examples[test],Open->All];,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Generate all example sections in closed state:",
+    ExampleInput[
+      SetDocumentationOptions[Examples[test],Open->None];,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  }
+};
+
+
 Examples[Examples,"Properties & Relations"]={
   {
   "Generation of the \"Examples\" section can be disabled using the option [*Examples->False*]:",
@@ -235,7 +269,7 @@ Examples[Examples,"Possible issues"]={
 };
 
 
-SeeAlso[Examples]={DocumentationBuilder,ExampleInput,Usage,Details,SeeAlso};
+SeeAlso[Examples]={DocumentationBuilder,ExampleInput,Usage,Details,SeeAlso,DocumentationOptions};
 
 
 Guides[Examples]={$GuideCreatingDocPages};

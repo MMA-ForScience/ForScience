@@ -21,7 +21,7 @@ Details[DocumentationOptions]={
   "The forms [*DocumentationOptions[sym,part]*] and [*DocumentationOptions*][```part```[```sym```]] are fully equivalent.",
   "The [*SetOptions*] analogue for [*DocumentationOptions*] is [*SetDocumentationOptions*].",
   "[*DocumentationOptions[part]*] can be used to set the default options for the specified part for all symbols.",
-  "Documentation parts that have [*DocumentationOptions*] include [*Details*].",
+  "Documentation parts that have [*DocumentationOptions*] include [*Details*] and [*Examples*].",
   "If an option is not set in [*DocumentationOptions*][```part```[```sym```]], the default option value is taken from [*DocumentationOptions[part]*].",
   "Options with value [*Default*] are automatically removed from [*DocumentationOptions*][```part```[```sym```]].",
   "Only options present in [*DocumentationOptions[part]*] can be set in [*DocumentationOptions*][```part```[```sym```]].",
@@ -72,7 +72,7 @@ Examples[DocumentationOptions,"Properties & Relations"]={
 };
 
 
-SeeAlso[DocumentationOptions]={SetDocumentationOptions,DocumentationBuilder,Details};
+SeeAlso[DocumentationOptions]={SetDocumentationOptions,DocumentationBuilder,Details,Examples};
 
 
 Guides[DocumentationOptions]={$GuideCreatingDocPages};
