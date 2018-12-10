@@ -29,6 +29,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`ProgressReport`;
 <<`AddKey`;
 <<`NaturalSort`;
+<<`NaturallyOrdered`;
 <<`CachedImport`;
 <<`ImportDataset`;
 <<`ToAssociationRule`;
