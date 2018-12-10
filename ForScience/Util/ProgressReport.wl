@@ -566,7 +566,7 @@ ProgressReportTransform[
 ]:=
 Let[
   {
-    eFunc=func
+    eFunc=func,
     pFunc=InjectTracking@eFunc,
     pExpr=expr,
     n=Length@Hold[x]+Length[pExpr]-1
