@@ -14,7 +14,7 @@ ImportDataset[\[Ellipsis],{dir,f,data}\[RuleDelayed]item,\[Ellipsis]] applies th
 Begin["`Private`"]
 
 
-Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->Automatic,"FullFolderProgress"->False,"CacheImports"->True,"SortingFunction"->NaturalSort,Parallelize->False,AbsoluteFileName->True};
+Options[ImportDataset]={"Importer"->Import,"GroupFolders"->Automatic,"TransformFullPath"->Automatic,"FullFolderProgress"->False,"CacheImports"->True,"SortByFunction"->NaturallyOrdered,Parallelize->False,AbsoluteFileName->True};
 
 
 SyntaxInformation[ImportDataset]={"ArgumentsPattern"->{_,_.,_.,OptionsPattern[]}};
@@ -38,7 +38,7 @@ ImportDataset[
   ],1],
   o:$IDOptionsPattern
 ]:=iImportDataset[
-  OptionValue["SortingFunction"]@files,
+  files,
   DefTo[r,x__:>x],
   CondDef[am][dk,"data"],
   InvCondDef[dm][dirrule,x__:>x],
@@ -59,7 +59,7 @@ ImportDataset[
   ],
   o:$IDOptionsPattern
 ]:=iImportDataset[
-  OptionValue["SortingFunction"]@FileNames[pat,DefTo[dir,dirpat]],
+  FileNames[pat,DefTo[dir,dirpat]],
   DefTo[r,x__:>x],
   CondDef[am][dk,"data"],
   CondDef[dm][dirrule,x__:>x],
@@ -68,9 +68,27 @@ ImportDataset[
 ]
 
 
+ProcSpecialSortingFunctions=Replace[{None->{1&},Automatic->NaturallyOrdered}]
+
+
+CreateSortingFunction[{dirFunc_,fileFunc_}]:=With[
+  {
+    pDirFunc=ProcSpecialSortingFunctions@dirFunc,
+    pFileFunc=ProcSpecialSortingFunctions@fileFunc
+  },
+  Join@@
+   SortBy[pFileFunc@*FileNameTake]/@
+    KeySortBy[pDirFunc]@
+     GroupBy[#,DirectoryName]&
+]
+CreateSortingFunction[{fileFunc_}]:=CreateSortingFunction[{None,fileFunc}]
+CreateSortingFunction[func_]:=SortBy[ProcSpecialSortingFunctions@func]
+
+
 iImportDataset[pProc_,files_List,dirrule_,o:OptionsPattern[ImportDataset]]:=
 Let[
   {
+    sFiles=CreateSortingFunction[OptionValue["SortByFunction"]]@files,
     importer=CachedImport[
       #,
       OptionValue["Importer"],
@@ -96,11 +114,11 @@ Let[
     ProgressReport[
       Map[
         listImporter,
-        GroupBy[files,FileNameDrop[#,0]&@*DirectoryName]
+        GroupBy[sFiles,FileNameDrop[#,0]&@*DirectoryName]
       ],
       Timing->OptionValue["FullFolderProgress"]
     ],
-    listImporter@files
+    listImporter@sFiles
   ]
 ]
 
@@ -206,7 +224,7 @@ End[]
 BuildAction[
 
 
-DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.74.27"];
+DocumentationHeader[ImportDataset]=FSHeader["0.19.0","0.77.1"];
 
 
 Details[ImportDataset]={
@@ -216,7 +234,7 @@ Details[ImportDataset]={
   "The following options can be given:",
   TableForm@{
     {"\"Importer\"",Import,"The function to call for importing"},
-    {"\"SortingFunction\"",NaturalSort,"The function to sort the file names with"},
+    {"\"SortByFunction\"",NaturallyOrdered,"The function to sort the file names with"},
     {"\"GroupFolders\"",Automatic,"Whether to group the data by folders"},
     {"\"TransformFullPath\"",Automatic,"Whether to use the full relative file path as starting point for replacement rules."},
     {"\"FullFolderProgress\"",False,"Whether to include timing information in the progress bar for the directories"},
@@ -225,10 +243,18 @@ Details[ImportDataset]={
     {AbsoluteFileName,True,"Whether to pass absolute filenames to the importer"}
   },
   "The \"Importer\" option supports the same specification formats as [*CachedImport*].",
+  "The option \"SortByFunction\" is effectively used to specify the second argument of [*SortBy*].",
+  "The following specifications are supported for \"SortByFunction\":",
+  TableForm@{
+    {"```func```","A function to be applied to the full file names (including directory)"},
+    {"{```dirFunc```,```fileFunc```}","Two functions to apply to the directory and file name part respectively"}
+  },
+  "Specifying [*None*] for one of the sorting functions causes the order to be left untouched.",
+  "For \"SortByFunction\", {```func```} is equivalent to {[*None*],```func```}.",
   "With the default setting [*\"GroupFolders\"->Automatic*], data are grouped by folders whenever an explicit directory/list of directories is specified.",
   "With the default setting [*\"TransformFullPath\"->Automatic*], the full path is transformed if the data are not grouped by folders, otherwise only the filename is transformed.",
   "With [*Parallelize->True*], cache lookups are done on the main kernel, and actual importing is done on parallel kernels (see [*CachedImport*] for more information).",
-  "The option [*Parallelize*] can be set to [*False*], [*True*] or a list of [*Parallelize*] options."
+  "The option [*Parallelize*] can be set to [*False*], [*True*] or a list of [*Parallelize*] options.",
   "[*Parallelize[[*ImportDataset*][\[Ellipsis]],opts\[Ellipsis]]]*] is equivalent to specifying [*Parallelize->{opts}*]",
   "In the replacement rules specified, patterns for file and directory names should string expressions."
 };
@@ -258,7 +284,11 @@ Examples[ImportDataset,"Basic examples"]={
   {
     "Extract the numbers from the file name:",
     ExampleInput[ImportDataset["test"~~i_~~"_"~~j_~~".tsv":>{i,j},"test*"]]
-  },
+  }
+};
+
+
+Examples[ImportDataset,"Scope"]={
   {
     "Extract the number from the directory name:",
     ExampleInput[ImportDataset["test*.tsv","test"~~i_:>i]]
@@ -330,6 +360,8 @@ Examples[ImportDataset,"Basic examples"]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Options","\"Importer\""]={
   {
     "Import using the default importer:",
@@ -340,16 +372,28 @@ Examples[ImportDataset,"Options","\"Importer\""]={
     ExampleInput[ImportDataset["test*.tsv","test1","Importer"->Import@*Echo]]
   }
 };
-Examples[ImportDataset,"Options","\"SortingFunction\""]={
+
+
+Examples[ImportDataset,"Options","\"SortByFunction\""]={
   {
-    "By default, files are sorted using [*NaturalSort*]:",
+    "By default, files are sorted using [*NaturallyOrdered*]:",
     ExampleInput[ImportDataset["test*.tsv","test1"]]
   },
   {
-    "Specify a custom sorting function:",
-    ExampleInput[ImportDataset["test*.tsv","test1","SortingFunction"->ReverseSort]]
+    "Specify a custom ranking function:",
+    ExampleInput[ImportDataset["test*.tsv","test1","SortByFunction"->(StringCount[#,"1"]&)]]
+  },
+  {
+    "Sort file and directory names separately:",
+    ExampleInput[ImportDataset["test*.tsv","test1","SortByFunction"->{NaturallyOrdered,StringCount[#,"1"]&}]]
+  },
+  {
+    "Keep the files in the provided order:",
+    ExampleInput[ImportDataset[{"test2/test2_1.tsv","test1/test1_2.tsv"},"SortByFunction"->None]]
   }
 };
+
+
 Examples[ImportDataset,"Options","\"GroupFolders\""]={
   {
     "The default setting, [*\"GroupFolders\"->Automatic*], groups folders only if they are explicitly specified:",
@@ -366,6 +410,8 @@ Examples[ImportDataset,"Options","\"GroupFolders\""]={
     ExampleInput[ImportDataset["test*.tsv","test*","GroupFolders"->False]]
   }
 };
+
+
 Examples[ImportDataset,"Options","\"TransformFullPath\""]={
   {
     "The default setting, [*\"TransformFullPath\"->Automatic*], passes the full path to the filename rule if the data are not grouped:",
@@ -396,6 +442,8 @@ Examples[ImportDataset,"Options","\"TransformFullPath\""]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Options","\"FullFolderProgress\""]={
   {
     "By default, the progress bar for the directories has no timing information (execute to see):",
@@ -421,6 +469,8 @@ Examples[ImportDataset,"Options","\"FullFolderProgress\""]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Options","\"CacheImports\""]={
   {
     "By default, importing uses the cache functionality of [*CachedImport*]:",
@@ -452,6 +502,8 @@ Examples[ImportDataset,"Options","\"CacheImports\""]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Options","Parallelize"]={
   {
     "If the import performance is limited by the CPU and not the file system, parallelization of the import might improve the performance:",
@@ -485,6 +537,8 @@ Examples[ImportDataset,"Options","Parallelize"]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Options","AbsoluteFileName"]={
   {
     "With the default setting [*AbsoluteFileName->True*], absolute file names are passed to the importer]:",
@@ -508,6 +562,8 @@ Examples[ImportDataset,"Options","AbsoluteFileName"]={
     ]
   }
 };
+
+
 Examples[ImportDataset,"Properties & Relations"]={
   {
     "Complex value extraction rules can be easily built using [*ToAssociationRule*]:",
