@@ -65,6 +65,29 @@ If[!TrueQ@ForScience`Private`$RelativePacletFindFileFixed&&($VersionNumber<11.2)
 End[]
 
 
+Begin["Charting`"]
+If[!TrueQ@ForScience`Private`$SimplePaddingFixed&&($VersionNumber<=11.3),
+(* Fix for 0 tick label not having same number of decimal places as other labels in Charting`ScaledTicks *)
+  ForScience`Private`$SimplePaddingFixed=True;
+  (* 
+    Put any zeroes from the list of zeros to the list of medium numbers
+    This causes zeros to be printed with the same number of decimal places as those numbers 
+    simplePadding is patched below to properly handle zeros
+    Since simplePadding["Medium",{0.},...] returns {0}, this doesn't break the case where there are no medium numbers
+  *)
+  Unprotect@SimplePadding;
+  DownValues[SimplePadding]=DownValues[SimplePadding]/.{
+    HoldPattern[z:`CommonDump`zero=_]:>(z={}),
+    HoldPattern[m:`CommonDump`medium=Select[l_,c_&]]:>(m=Select[l,c||PossibleZeroQ@#&])
+  };
+  Protect@SimplePadding;
+  (* Chop 0. to 0 in MantissaExponent calls in simplePadding["Medium",...] to prevent errors/broken formatting *)
+  DownValues[`CommonDump`simplePadding]=DownValues[`CommonDump`simplePadding]/.
+   HoldPattern[MantissaExponent[l_,10]]:>MantissaExponent[Chop@l,10];
+]
+End[]
+
+
 EndPackage[]
 
 
