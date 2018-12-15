@@ -9,6 +9,9 @@ TransformedTicks[spec,scaling] uses the scaling functions specified by ```scalin
 Begin["`Private`"]
 
 
+labelProc=If[$VersionNumber<11.2,Replace[n_NumberForm:>ToString@n],#&];
+
+
 TransformedTicks[s_?NumericQ,scaling_|PatternSequence[]][limits__]:=TransformedTicks[{s #&,#/s&},scaling][limits]
 TransformedTicks[{func_,ifunc_},scaling_:{Identity,Identity}][limits__]:=Let[
   {
@@ -17,7 +20,7 @@ TransformedTicks[{func_,ifunc_},scaling_:{Identity,Identity}][limits__]:=Let[
   },
   Replace[
     Charting`ScaledTicks[scaling]@@rLimits,
-    {x_,lbl_,rest__}:>{ifunc[x/.Thread[rLimits->tLimits]],lbl,rest},
+    {x_,lbl_,rest__}:>{ifunc[x/.Thread[rLimits->tLimits]],labelProc@lbl,rest},
     1
   ]
 ]
