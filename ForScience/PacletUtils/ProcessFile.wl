@@ -11,7 +11,13 @@ SyntaxInformation[ProcessFile]={"ArgumentsPattern"->{_.,{__}}};
 
 
 $ProcessedFile="";
+
+
 ProcessFile::msgs="Messages were generated during processing of '``'.";
+
+
+$ProcessFileContext="ProcessFile`";
+
 
 ProcessFile[_,{}]:=Null
 ProcessFile[{in_,in_},{}]:=Null
@@ -23,24 +29,52 @@ ProcessFile[{in_,out_},processors_List]:=Block[
     Adapted from https://mathematica.stackexchange.com/a/124670/36508*)
   {
     $ProcessedFile=AbsoluteFileName@in,
-    $Context="ProcessFile`",
-    $ContextPath={"ProcessFile`","System`"}
-  }, 
+    $Context=$ProcessFileContext,
+    $ContextPath={$ProcessFileContext,"System`"}
+  },
   Check[
     Quiet[
-      Export[
-        out,
-        (RightComposition@@processors)[
-          Import[in,{"Package","HeldExpressions"}]
-        ],
-        {"Package","HeldExpressions"},
-        PageWidth->Infinity
-      ],
+      With[
+        {
+          res=(RightComposition@@processors)[
+            Import[in,{"Package","HeldExpressions"}]
+          ]
+        },
+        Export[
+          out,
+          StringReplace[
+            ExportString[
+              res,
+              {"Package","HeldExpressions"},
+              PageWidth->Infinity
+            ],
+            (*
+              Collect all symbols in subcontexts of $ProcessFileContext (these were specified as `subcontext`symbol) 
+              Use the resulting list to post-process the string content of the file to ensure the symbols are specified using relative contexts again
+            *)
+            DeleteDuplicates@Cases[
+              res,
+              s:Except[HoldPattern@Symbol[___],_Symbol]/;
+               StringStartsQ[$ProcessFileContext~~_]@Context@s:>
+                Hold@s,
+              All
+            ]/.Hold[s_]:>With[
+              {
+                name=ToString@Unevaluated@s
+              },
+              name->StringDrop[name,StringLength@$ProcessFileContext-1]
+            ]
+          ],
+          "String"
+        ]
+      ]
+      ,
       {General::shdw}
     ],
     Message[ProcessFile::msgs,in]
   ];
   Quiet@Remove["ProcessFile`*"];
+  Quiet@Remove["ProcessFile`*`*"];
 ]
 
 
