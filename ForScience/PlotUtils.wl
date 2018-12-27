@@ -8,6 +8,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`SetupForSciencePlotTheme`
 <<`VectorMarker`;
 <<`TransformedTicks`;
+<<`CombinePlots`;
 
 
 EndPackage[]
