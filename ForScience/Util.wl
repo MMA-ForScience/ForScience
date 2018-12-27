@@ -43,6 +43,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`SkipCommentsStream`;
 <<`PartLookup`;
 <<`SimpleTOC`;
+<<`ApplyStructure`;
 
 
 EndPackage[]
