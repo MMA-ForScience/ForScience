@@ -9,6 +9,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`VectorMarker`;
 <<`TransformedTicks`;
 <<`CombinePlots`;
+<<`GraphicsInformation`;
 
 
 EndPackage[]
