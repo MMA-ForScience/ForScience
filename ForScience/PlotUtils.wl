@@ -12,6 +12,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`CombinePlots`;
 <<`GraphicsInformation`;
 <<`TwoYPlot`;
+<<`PlotGrid`;
 
 
 EndPackage[]
