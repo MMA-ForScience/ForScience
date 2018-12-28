@@ -39,6 +39,9 @@ InstrumentGraphics[gr:{__Graphics}]:=
 GraphicsObj=_Graphics|_Legended;
 
 
+$NullMarker;
+
+
 GraphicsInformation[gr:{GraphicsObj..}]:=
   Query[Transpose][
     <|
@@ -58,12 +61,18 @@ GraphicsInformation[gr:{GraphicsObj..}]:=
         ]
      |>
   ]
-GraphicsInformation[gr:GraphicsObj]:=
+GraphicsInformation[gr:GraphicsObj|Null]:=
   First/@GraphicsInformation[{gr}]
 GraphicsInformation[gr_List]:=
   With[
-    {flat=Flatten@gr},
-    ApplyStructure[gr]/@
+    {
+      flat=DeleteCases[Null]@Flatten@gr,
+      struct=gr/.{Null->$NullMarker[],List->List,Except[_List]->0}
+    },
+    (
+      ApplyStructure[#,struct,List|$NullMarker]/.
+        $NullMarker[]->Null
+    )&/@
       GraphicsInformation[flat]/;
         MatchQ[flat,{GraphicsObj..}]
   ]
