@@ -10,6 +10,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`TransformedTicks`;
 <<`CombinePlots`;
 <<`GraphicsInformation`;
+<<`TwoYPlot`;
 
 
 EndPackage[]
