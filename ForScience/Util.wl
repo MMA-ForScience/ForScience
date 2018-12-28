@@ -44,6 +44,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`PartLookup`;
 <<`SimpleTOC`;
 <<`ApplyStructure`;
+<<`ListLookup`;
 
 
 EndPackage[]
