@@ -3,9 +3,10 @@
 BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util`"}]
 
 
-<<`Jet`
-<<`NiceRadialTicks`
-<<`SetupForSciencePlotTheme`
+<<`InternalUtils`;
+<<`Jet`;
+<<`NiceRadialTicks`;
+<<`SetupForSciencePlotTheme`;
 <<`VectorMarker`;
 <<`TransformedTicks`;
 <<`CombinePlots`;

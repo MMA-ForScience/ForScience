@@ -10,10 +10,6 @@ GraphicsInformation[{{g_1,\[Ellipsis]},\[Ellipsis]}] returns an association wher
 Begin["`Private`"]
 
 
-ExtractGraphics[gr_Graphics]:=gr
-ExtractGraphics[Legended[expr_,__]]:=expr
-
-
 ToNotebook[gr_]:=
   Notebook[
     {
