@@ -32,12 +32,44 @@ ClipFrameLabels[graph_,sides_List]:=
   ]
 
 
-PlotGrid[l_?MatrixQ,o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Automatic]]]:=
+ProcessSymbolicPos[pos_List]:=
+  Replace[
+    pos,
+    {Center->0.5,Except[_?NumericQ]->2},
+    1
+  ]
+ProcessSymbolicPos[pos_]:=
+  ProcessSymbolicPos@{pos,pos}
+
+
+LegendInsideQ[
+  Placed[
+    _,
+    (pos:Center|{Center,Center})|
+      Scaled[pos_]|
+      {
+        Scaled[pos_]|
+          pos:Center|{Center,Center},
+        _List|_Scaled|_ImageScaled
+      },
+    ___
+  ]
+]:=
+  AllTrue[Between@{0,1}]@ProcessSymbolicPos@pos
+LegendInsideQ[_]:=False
+
+
+PlotGrid[
+  l_?(MatrixQ[#,ValidGraphicsQ@#||#===Null&]&),
+  o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Automatic]]
+]:=
   Module[
     {
       nx,ny,
       padding,
-      gi=GraphicsInformation[l]
+      gi=GraphicsInformation[l],
+      grid,
+      legends
     },
     padding=Apply[
       Max[
@@ -58,7 +90,7 @@ PlotGrid[l_?MatrixQ,o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Autom
       {2}
     ];
     {ny,nx}=Dimensions@l;
-    Graphics[
+    {grid,legends}=Reap@Graphics[
       Inset[
         Graphics[
           Table[
@@ -66,7 +98,13 @@ PlotGrid[l_?MatrixQ,o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Autom
               Inset[
                 Show[
                   ClipFrameLabels[
-                    l[[i,j]],
+                      ApplyToWrapped[
+                        (Sow@#2;#)&,
+                        l[[i,j]],
+                        _Graphics,
+                        Legended[_,Except@_?LegendInsideQ],
+                        Method->Function
+                      ],
                     Keys@Select[
                       ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
                         <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
@@ -105,7 +143,8 @@ PlotGrid[l_?MatrixQ,o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Autom
       FrameLabel->OptionValue[FrameLabel],
       o,
       AspectRatio->Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
-    ]
+    ];
+    (RightComposition@@Flatten@legends)@grid
   ]
 
 

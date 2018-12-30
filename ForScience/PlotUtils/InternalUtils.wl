@@ -8,6 +8,11 @@ ExtractGraphics[gr_Graphics]:=gr
 ExtractGraphics[Legended[expr_,__]]:=expr
 
 
+ValidGraphicsQ[Legended[expr_,__]]:=ValidGraphicsQ[expr]
+ValidGraphicsQ[_Graphics]:=True
+ValidGraphicsQ[_]:=False
+
+
 NormalizeGraphicsOpt[FrameLabel][b_]:={{None,None},{b,None}}
 NormalizeGraphicsOpt[FrameLabel][{b_,l_,t_:None,r_:None,___}]:={{l,r},{b,t}}
 NormalizeGraphicsOpt[FrameLabel][s:{{_,_},{_,_}}]:=s
