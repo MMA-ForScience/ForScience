@@ -132,15 +132,15 @@ PlotGrid[
         Scaled[{1,1}]
       ],
       Frame->True,
-      FrameTicks->None,FrameStyle->(
-        OptionValue[FrameStyle]/.
-          Automatic->Directive[
-            OptionValue[Graphics,Options@FirstCase[l,_Graphics,{},All],FrameStyle]/.
-              c_?ColorQ:>(FontColor->c),
-            White
-          ]
-      ),
-      FrameLabel->OptionValue[FrameLabel],
+      FrameTicks->None,
+      FrameStyle->Replace[
+        OptionValue[FrameStyle],
+        Automatic->Directive[
+          OptionValue[Graphics,Options@FirstCase[l,_Graphics,{},All],FrameStyle]/.
+            c_?ColorQ:>(FontColor->c),
+          White
+        ]
+      ],
       o,
       AspectRatio->Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
     ];
