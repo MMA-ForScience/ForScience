@@ -59,9 +59,39 @@ LegendInsideQ[
 LegendInsideQ[_]:=False
 
 
+ExpandSeqSpec[{start___,cycle:{__},end___},n_]:=
+  With[
+    {rem=Max[n-Length@{start},0]},
+    Join[
+      Take[{start},UpTo@n],
+      PadRight[{},Max[rem-Length@{end},0],cycle],
+      Take[{end},-Min[Length@{end},rem]]
+    ]
+  ]
+ExpandSeqSpec[{start___,{},end___},n_]:=
+  ExpandSeqSpec[{start,{Automatic},end},n]
+ExpandSeqSpec[{start___},n_]:=
+  ExpandSeqSpec[{start,{}},n]
+ExpandSeqSpec[spec_,n_]:=
+  ExpandSeqSpec[{{spec}},n]
+ExpandSeqSpec[{spec_,rules:{__Rule}},n_]:=
+  ReplacePart[ExpandSeqSpec[spec,n],rules]
+ExpandSeqSpec[rules:{__Rule},n_]:=
+  ExpandSeqSpec[{{},rules},n]
+
+
+Expand2DSpec[{wspec_:{},hspec_:{},___},{m_,n_}]:=
+  {ExpandSeqSpec[wspec,m],ExpandSeqSpec[hspec,n]}
+Expand2DSpec[spec_,{m_,n_}]:=
+  Expand2DSpec[{spec,spec},{m,n}]
+
+
+Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic};
+
+
 PlotGrid[
   l_?(MatrixQ[#,ValidGraphicsQ@#||#===Null&]&),
-  o:OptionsPattern[Prepend[Options[Graphics],FrameStyle->Automatic]]
+  o:OptionsPattern[Join[Options[PlotGrid],Options[Graphics]]]
 ]:=
   Module[
     {
@@ -69,7 +99,11 @@ PlotGrid[
       padding,
       gi=GraphicsInformation[l],
       grid,
-      legends
+      legends,
+      sizes,
+      rangeSizes,
+      imageSizes,
+      positions
     },
     padding=Apply[
       Max[
@@ -90,6 +124,53 @@ PlotGrid[
       {2}
     ];
     {ny,nx}=Dimensions@l;
+    sizes=Expand2DSpec[OptionValue[ItemSize],{nx,ny}];
+    rangeSizes=Mean/@(
+      MapAt[
+        Transpose,
+        2
+      ]@Transpose[
+        Apply[
+          Abs@*Subtract,
+          gi[PlotRange],
+          {3}
+        ],
+        {2,3,1}
+      ]/.
+        Null->Nothing
+    );
+    imageSizes=Mean/@(
+      MapAt[
+        Transpose,
+        2
+      ]@Transpose[
+        gi[ImageSize],
+        {2,3,1}
+      ]/.
+        Null->Nothing
+    );
+    sizes=MapThread[
+      Replace[
+        #,
+        {
+          Scaled[s_]:>s #3,
+          ImageScaled[s_]:>s #4,
+          Automatic->1,
+          Scaled->#3,
+          ImageScaled->#4,
+          s_:>s/#2
+        }
+      ]&,
+      {
+        sizes,
+        Total@Select[#,NumericQ]&/@sizes+0 sizes,
+        Normalize[#,Total]&/@rangeSizes,
+        Normalize[#,Total]&/@imageSizes
+      },
+      2
+    ];
+    sizes=Normalize[#,Total]&/@sizes;
+    positions=FoldList[Plus,0,Most@#]&/@MapAt[Reverse,2]@sizes;
     {grid,legends}=Reap@Graphics[
       Inset[
         Graphics[
@@ -114,16 +195,16 @@ PlotGrid[
                   ImagePadding->padding,
                   AspectRatio->Full
                 ],
-                {j-1,ny-i},
+                {positions[[1,j]],positions[[2,1+ny-i]]},
                 Scaled[{0,0}],
-                Offset[Total/@padding,Scaled[1/{nx,ny}]]
+                Offset[Total/@padding,Scaled@{sizes[[1,j]],sizes[[2,i]]}]
               ],
               Nothing
             ],
             {i,ny},
             {j,nx}
           ],
-          PlotRange->{{0,nx},{0,ny}},
+          PlotRange->{{0,1},{0,1}},
           ImagePadding->padding,
           AspectRatio->Full
         ],
