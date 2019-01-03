@@ -155,7 +155,7 @@ PlotGrid[
         {
           Scaled[s_]:>s #3,
           ImageScaled[s_]:>s #4,
-          Automatic->1,
+          Automatic->1/#2,
           Scaled->#3,
           ImageScaled->#4,
           s_:>s/#2
@@ -163,7 +163,7 @@ PlotGrid[
       ]&,
       {
         sizes,
-        Total@Select[#,NumericQ]&/@sizes+0 sizes,
+        Total@Replace[#,{_[s_]:>s,Automatic->1},1]&/@sizes+0 sizes,
         Normalize[#,Total]&/@rangeSizes,
         Normalize[#,Total]&/@imageSizes
       },
