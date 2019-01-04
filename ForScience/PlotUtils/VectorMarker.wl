@@ -134,6 +134,7 @@ VectorMarker[
   Automatic
 ]
 VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_,Automatic,_]:=Inset[g,pos]
+VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_]:=Inset[g,pos]
 
 
 (* Typesetting of marker-type graphics expression (contains "invalid option" VectorMarker) *)
