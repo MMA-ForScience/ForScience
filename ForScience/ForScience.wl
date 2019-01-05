@@ -88,6 +88,62 @@ If[!TrueQ@ForScience`Private`$SimplePaddingFixed&&($VersionNumber<=11.3),
 End[]
 
 
+Begin["System`PairedBarChartDump`"]
+If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=11.3),
+(* Fix for ChartLabels not respecting LabelStyle setting in PairedBarChart *)
+  PairedBarChart;
+  DownValues@`PairedBarAxis=DownValues@`PairedBarAxis/.
+    {(* fix the way the center labels are generated & extracted *)
+      HoldPattern@Charting`CategoricalAxis[
+        lc:`catLabelcenter,
+        arg2_,
+        opts___
+      ]:>
+        Charting`CategoricalAxis[
+          lc,
+          arg2,
+          (* this generates only the Text[...] primitives but suppressed the lines *)
+          AxesStyle->None,
+          TicksStyle->None,
+          opts
+        ],
+      (* now we can simply transform the Text[...] primitives without extracting them (since extracting loses the Style wrappers, which breaks the styling) *)
+      HoldPattern@Cases[
+        expr_,
+        r:(_Text:>_),
+        Infinity
+      ]:>
+        (expr/.r)
+    };
+]
+End[]
+
+
+Begin["Charting`"]
+If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=11.3),
+  ForScience`Private`$PairedBarChartLabelsFixed=True;
+  Unprotect@`CategoricalAxis;
+  Block[
+    {`AxisDump`defaultlabelstylefn},
+    SetAttributes[`AxisDump`defaultlabelstylefn,HoldAllComplete];
+    DownValues@`CategoricalAxis=DownValues@`CategoricalAxis/.
+      {
+        (* this ensures that None is not returned as graphics primitive when ticksstyle/axesstyle is set to None *)
+        f_`AxisDump`defaultlabelstylefn:>
+          With[
+            {
+              res=f/.
+                s:`AxisDump`axesstyle|`AxisDump`ticksstyle:>Replace[s,None->Nothing]
+            },
+            res/;True
+          ]
+      };
+  ]
+  Protect@`CategoricalAxis;
+]
+End[]
+
+
 EndPackage[]
 
 
