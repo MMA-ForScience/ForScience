@@ -3,6 +3,7 @@
 BuildPaclet;
 $BuildActive;
 $BuiltPaclet;
+$BuildCacheDirectory;
 
 
 Begin["`Private`"]
@@ -11,21 +12,25 @@ Begin["`Private`"]
 If[!TrueQ[$BuildActive],
   $BuildActive=False;
   $BuiltPaclet="";
+  $BuildCacheDirectory="";
 ]
 
 
-Options[BuildPaclet]={"BuildDirectory"->"build/",ProgressIndicator->True};
+Options[BuildPaclet]={"BuildDirectory"->"build/","CacheDirectory"->"cache/",ProgressIndicator->True};
 
 
 SyntaxInformation[BuildPaclet]={"ArgumentsPattern"->{_,_.,OptionsPattern[]}};
+
 
 BuildPaclet::noDir="The specified path `` is not a directory";
 BuildPaclet::cleanFailed="Could not delete build directory ``.";
 BuildPaclet::initFailed="Build initialization failed.";
 
+
 procList={Except[_List]...};
 procLists={procList,procList};
 flatOpts=OptionsPattern[]?(Not@*ListQ);
+
 
 BuildPaclet[dir_,o:flatOpts]:=foo[dir,{},o]
 BuildPaclet[dir_,postProcs:procList,gProcs:(procList|procLists):{},o:flatOpts]:=
@@ -36,27 +41,34 @@ BuildPaclet[dir_,procs:{preProcs:procList,postProcs:procList},gProcs:{gPreProcs:
 With[
   {
     buildDir=OptionValue["BuildDirectory"],
+    cacheDir=OptionValue["CacheDirectory"],
+    absoluteCacheDir=AbsoluteFileName@OptionValue["CacheDirectory"],
     oldBuildActive=$BuildActive,
-    oldBuiltPaclet=$BuiltPaclet
+    oldBuiltPaclet=$BuiltPaclet,
+    oldCacheDirectory=$BuildCacheDirectory
   },
   If[!DirectoryQ[dir],Message[BuildPaclet::noDir,dir];Return@$Failed];
   If[
-    FileExistsQ@FileNameDrop[buildDir,0]&&!DirectoryQ@buildDir,
-    Message[BuildPaclet::noDir,buildDir];
+    FileExistsQ@FileNameDrop[#,0]&&!DirectoryQ@#,
+    Message[BuildPaclet::noDir,#];
     Return@$Failed
-  ];
+  ]&/@{buildDir,cacheDir};
   If[DirectoryQ@buildDir&&Quiet@DeleteDirectory[buildDir,DeleteContents->True]===$Failed,
     Message[BuildPaclet::cleanFailed,buildDir];
     Return@$Failed
   ];
   Check[
     CopyDirectory[dir,buildDir];
-    SetDirectory[buildDir];,
+    If[!FileExistsQ@cacheDir,
+      CreateDirectory[cacheDir]
+    ];
+    SetDirectory[buildDir],
     Message[BuildPaclet::initFailed];
     Return@$Failed
   ];
   $BuildActive=True;
   $BuiltPaclet=KeyMap[ToString,Association@@Get["PacletInfo.m"]]["Name"];
+  $BuildCacheDirectory=absoluteCacheDir;
   If[OptionValue@ProgressIndicator,PrintTemporary@"Running pre-processors..."];
   #[]&/@gPreProcs;
   Module[
@@ -93,6 +105,7 @@ With[
     ResetDirectory[];
     $BuildActive=oldBuildActive;
     $BuiltPaclet=oldBuiltPaclet;
+    $BuildCacheDirectory=oldCacheDirectory;
     PackPaclet[buildDir]
   ]
 ]
