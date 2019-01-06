@@ -90,12 +90,19 @@ With[
                 {trackGet=False},
                 ProcessFile[preProcs]@Sow[#,getTag]
               ]
-            ]&@FindFile@file;
+            ]&@(curFile=FindFile@file);
+            ++prog;
             First@GetMarker[Get@file]
           )/;trackGet&&Length@s<3||s[[-3]]=!=GetMarker
         ];
-        If[OptionValue@ProgressIndicator,PrintTemporary@"Loading paclet files..."];
-        Get[dir<>"`"]
+        If[OptionValue@ProgressIndicator,
+          PrintTemporary@"Loading paclet files...";
+          Monitor[
+            Get[dir<>"`"],
+            Row@{ProgressIndicator[prog,Indeterminate]," ",curFile}
+          ],
+          Get[dir<>"`"]
+        ];
       ],
       getTag
     ];
@@ -103,6 +110,7 @@ With[
     loadedFiles=Select[StringStartsQ[Directory[]]]@loadedFiles;
     If[OptionValue@ProgressIndicator,PrintTemporary@"Processing files..."];
     If[OptionValue@ProgressIndicator,Apply@Monitor,First]@Hold[
+      prog=0;
       (curFile=#;++prog;ProcessFile[postProcs]@#)&/@loadedFiles,
       Row@{ProgressIndicator[prog,{0,Length@loadedFiles}]," ",curFile}
     ];
