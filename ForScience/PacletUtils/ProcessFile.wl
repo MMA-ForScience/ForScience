@@ -34,38 +34,40 @@ ProcessFile[{in_,out_},processors_List]:=Block[
   },
   Check[
     Quiet[
-      With[
+      Module[
         {
-          res=(RightComposition@@processors)[
-            Import[in,{"Package","HeldExpressions"}]
-          ]
+          init=Import[in,{"Package","HeldExpressions"}],
+          res
         },
-        Export[
-          out,
-          StringReplace[
-            ExportString[
-              res,
-              {"Package","HeldExpressions"},
-              PageWidth->Infinity
+        res=(RightComposition@@processors)@init;
+        If[init=!=res,
+          Export[
+            out,
+            StringReplace[
+              ExportString[
+                res,
+                {"Package","HeldExpressions"},
+                PageWidth->Infinity
+              ],
+              (*
+                Collect all symbols in subcontexts of $ProcessFileContext (these were specified as `subcontext`symbol) 
+                Use the resulting list to post-process the string content of the file to ensure the symbols are specified using relative contexts again
+              *)
+              DeleteDuplicates@Cases[
+                res,
+                s:Except[HoldPattern@Symbol[___],_Symbol]/;
+                StringStartsQ[$ProcessFileContext~~_]@Context@s:>
+                  Hold@s,
+                All
+              ]/.Hold[s_]:>With[
+                {
+                  name=ToString@Unevaluated@s
+                },
+                name->StringDrop[name,StringLength@$ProcessFileContext-1]
+              ]
             ],
-            (*
-              Collect all symbols in subcontexts of $ProcessFileContext (these were specified as `subcontext`symbol) 
-              Use the resulting list to post-process the string content of the file to ensure the symbols are specified using relative contexts again
-            *)
-            DeleteDuplicates@Cases[
-              res,
-              s:Except[HoldPattern@Symbol[___],_Symbol]/;
-               StringStartsQ[$ProcessFileContext~~_]@Context@s:>
-                Hold@s,
-              All
-            ]/.Hold[s_]:>With[
-              {
-                name=ToString@Unevaluated@s
-              },
-              name->StringDrop[name,StringLength@$ProcessFileContext-1]
-            ]
-          ],
-          "String"
+            "String"
+          ]
         ]
       ]
       ,

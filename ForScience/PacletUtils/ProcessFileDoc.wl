@@ -9,7 +9,7 @@ Usage[$ProcessedFile]="$ProcessedFile is set to the absolute path of the file cu
 BuildAction[
 
 
-DocumentationHeader[ProcessFile]=FSHeader["0.46.0","0.54.0"];
+DocumentationHeader[ProcessFile]=FSHeader["0.46.0","0.83.15"];
 
 
 Details[ProcessFile]={
@@ -17,7 +17,7 @@ Details[ProcessFile]={
   "The supplied processors are expected to take and return a list of held expressions ({[*HoldComplete[expr_1]*],\[Ellipsis]}).",
   "During the evaluation of [*ProcessFile[in,\[Ellipsis]]*] and [*ProcessFile[{in,out},\[Ellipsis]]*], the variable [*$ProcessedFile*] is set to ```in```.",
   "No symbols are leaked from the processed file, as the file is loaded into a special context.",
-  "If the processors do not change anything, the resulting file should functionally be fully equivalent to the original file.",
+  "If the processors do not change anything, the file is not re-exported",
   "[*ProcessFile*] does not preserve formatting.",
   "Some predefined processors are [*CompatibilityChecker,UsageCompiler*] and [*VariableLeakTracer*]."
 };
