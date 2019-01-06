@@ -27,6 +27,7 @@ $JetData={
 
 If[!TrueQ@$JetRegistered,
   $JetRegistered=True;
+  ColorData;
   AppendTo[
     DataPaclets`ColorDataDump`colorSchemes,
     $JetData
