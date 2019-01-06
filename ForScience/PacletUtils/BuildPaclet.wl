@@ -32,6 +32,9 @@ procLists={procList,procList};
 flatOpts=OptionsPattern[]?(Not@*ListQ);
 
 
+GetMarker;
+
+
 BuildPaclet[dir_,o:flatOpts]:=foo[dir,{},o]
 BuildPaclet[dir_,postProcs:procList,gProcs:(procList|procLists):{},o:flatOpts]:=
  BuildPaclet[dir,{{},postProcs},gProcs,o]
@@ -76,18 +79,21 @@ With[
     (* make sure local version is found, see https://mathematica.stackexchange.com/a/66118/36508*)
     PacletDirectoryAdd["."];
     loadedFiles=First@Last@Reap[
-      Internal`HandlerBlock[
-        {
-          "GetFileEvent",
-          Replace[_[f_,_,First]/;trackGet:>(
-              If[
-                StringStartsQ[#,Directory[]],
-                ProcessFile[preProcs]@#,
-                #
-              ]&@Sow[FindFile@f,getTag]
-            )
-          ]
-        },
+      Internal`InheritedBlock[
+        {Get},
+        Unprotect@Get;
+        Get[file_]:=With[
+          {s=Stack[]},
+          (
+            If[StringStartsQ[#,Directory[]],
+              Block[
+                {trackGet=False},
+                ProcessFile[preProcs]@Sow[#,getTag]
+              ]
+            ]&@FindFile@file;
+            First@GetMarker[Get@file]
+          )/;trackGet&&Length@s<3||s[[-3]]=!=GetMarker
+        ];
         If[OptionValue@ProgressIndicator,PrintTemporary@"Loading paclet files..."];
         Get[dir<>"`"]
       ],
