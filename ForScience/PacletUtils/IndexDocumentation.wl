@@ -10,7 +10,7 @@ Options[IndexDocumentation]=Join[{ProgressIndicator->True},Options[Documentation
 
 IndexDocumentation[dir_,useCached_,OptionsPattern[]]:=With[
   {
-    cacheDirectory=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],"indexes"},
+    cacheDirectory=FileNameJoin@{GetCacheDir@OptionValue["CacheDirectory"],"indexes"},
     indexDirectory=FileNameJoin@{Directory[],dir,"Index"},
     spellDirectory=FileNameJoin@{Directory[],dir,"SpellIndex"},
     searchDirectory=FileNameJoin@{Directory[],dir,DocumentationSearch`Private`$indexName}

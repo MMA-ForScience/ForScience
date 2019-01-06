@@ -49,7 +49,10 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
             DocumentationBuilder[
               sym,
               True,
-              If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+              If[$BuildActive&&OptionValue@"CacheDirectory"=!=Automatic,
+                "CacheDirectory"->"../"<>OptionValue@"CacheDirectory",
+                Unevaluated@Sequence[]
+              ],
               opts
             ],
             {HoldFirst}
@@ -63,7 +66,10 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
     IndexDocumentation[
       $DocumentationBaseDirectory,
       !changed,
-      If[$BuildActive,"CacheDirectory"->"../"<>OptionValue@"CacheDirectory",Unevaluated@Sequence[]],
+      If[$BuildActive&&OptionValue@"CacheDirectory"=!=Automatic,
+        "CacheDirectory"->"../"<>OptionValue@"CacheDirectory",
+        Unevaluated@Sequence[]
+      ]
       FilterRules[{opts},Options@IndexDocumentation]
     ];
   ]

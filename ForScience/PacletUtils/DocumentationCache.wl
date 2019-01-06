@@ -18,18 +18,34 @@ Attributes[CreateCacheID]={HoldFirst};
 CreateCacheID[sym_,type_]:=AssociationMap[#@Unevaluated@sym&,Sort@$DependencyCollectors[type]]
 
 
+GetCacheDir[Automatic]:=
+  FileNameJoin@{
+    If[$BuildActive,
+      $BuildCacheDirectory,
+      OptionValue[BuildPaclet,{},"CacheDirectory"]
+    ],
+    "Documentation"
+  }
+GetCacheDir[dir_]:=
+  FileNameJoin@{
+    Directory[],
+    dir,
+    "Documentation"
+  }
+
+
 DocumentationCachePut::noDir="The specified cache directory `` is not a directory.";
 DocumentationCachePut::noUpdate="Could not update documentation cache entry for ``.";
 
 
-Options[DocumentationCachePut]={"CacheDirectory"->"cache"};
+Options[DocumentationCachePut]={"CacheDirectory"->Automatic};
 
 
 Attributes[DocumentationCachePut]={HoldFirst};
 
 
 DocumentationCachePut[sym_,type_,doc_,links_,OptionsPattern[]]:=With[
-  {cacheDir=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],type}},
+  {cacheDir=FileNameJoin@{GetCacheDir@OptionValue["CacheDirectory"],type}},
   With[
     {cacheFile=FileNameJoin@{cacheDir,CacheFile[sym]}},
     If[!DirectoryQ@cacheDir,
@@ -44,14 +60,14 @@ DocumentationCachePut[sym_,type_,doc_,links_,OptionsPattern[]]:=With[
 ]
 
 
-Options[DocumentationCacheGet]={"CacheDirectory"->"cache"};
+Options[DocumentationCacheGet]={"CacheDirectory"->Automatic};
 
 
 Attributes[DocumentationCacheGet]={HoldFirst};
 
 
 DocumentationCacheGet[sym_,type_,OptionsPattern[]]:=With[
-  {cacheFile=FileNameJoin@{Directory[],OptionValue["CacheDirectory"],type,CacheFile[sym]}},  
+  {cacheFile=FileNameJoin@{GetCacheDir@OptionValue["CacheDirectory"],type,CacheFile[sym]}},  
   If[!FileExistsQ[cacheFile<>".mx"],Return@Null];
   With[
     {

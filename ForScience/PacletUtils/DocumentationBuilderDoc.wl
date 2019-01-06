@@ -8,7 +8,7 @@ DocumentationBuilder[tagged] builds and displays the documentation page of the a
 BuildAction[
 
 
-DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.65.3"];
+DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.83.10"];
 
 
 Details[DocumentationBuilder]={
@@ -21,11 +21,12 @@ Details[DocumentationBuilder]={
   "[*DocumentationBuilder*] can only build documentation pages for symbols/guides with [*DocumentationHeader[sym]*] set.",
   "[*DocumentationBuilder*] accepts the following options:",
   TableForm@{
-    {"\"CacheDirectory\"","\"cache\"","The directory to store cached documentation pages and search indices"},
+    {"\"CacheDirectory\"",Automatic,"The directory to store cached documentation pages and search indices"},
     {Usage,True,"Whether to generate the usage section"},
     {Details,True,"Whether to generate the details section"},
     {Examples,True,"Whether to generate the examples section"}
   },
+  "With the default value \"CacheDirectory\"->[*Automatic*], the setting is taken from [*BuildPaclet*].",
   "Data for reference pages are attached to the symbol/guide/tutorial/overview symbol to be documented (e.g. [*Usage[sym]*]'''=```usage```''').",
   "The following data are used to build symbol reference pages:",
   TableForm@{
