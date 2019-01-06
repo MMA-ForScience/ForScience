@@ -44,6 +44,7 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`CompatibilityChecker`;
 <<`VariableLeakTracer`;
 <<`UsageCompiler`;
+<<`BuildTimeEvaluate`;
 <<`UnloadPacletDocumentation`;
 
 
