@@ -27,7 +27,13 @@ $JetData={
 
 If[!TrueQ@$JetRegistered,
   $JetRegistered=True;
-  ColorData;
+  (* ensure that the ColorData framework is fully loaded.
+     This is done by first forcing ColorDataFunction[] to be typeset
+     (loading ColorData leaves a BoxFormAutoload call in the typesetting of ColorDataFunction which reverts the injection below)
+     Then `colorSchemes and `colorSchemeNames are evaluated *)
+  MakeBoxes@ColorDataFunction[];
+  DataPaclets`ColorDataDump`colorSchemes;
+  DataPaclets`ColorDataDump`colorSchemeNames;
   AppendTo[
     DataPaclets`ColorDataDump`colorSchemes,
     $JetData
