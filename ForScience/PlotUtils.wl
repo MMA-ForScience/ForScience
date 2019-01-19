@@ -4,7 +4,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 
 
 <<`InternalUtils`;
-<<`Jet`;
+<<`ColorFunctions`;
 <<`NiceRadialTicks`;
 <<`SetupForSciencePlotTheme`;
 <<`VectorMarker`;

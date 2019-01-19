@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Jet::usage="Magic colors from http://stackoverflow.com/questions/5753508/custom-colorfunction-colordata-in-arrayplot-and-similar-functions/9321152#9321152.";
+Jet::usage="Jet color scheme";
 <<`SetupForSciencePlotTheme`
 
 
