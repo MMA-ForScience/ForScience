@@ -28,11 +28,15 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed2&&($VersionNumber==11.2||$VersionN
     (l=r/.{\[Infinity],-\[Infinity]}->{0,1});
 ]
 If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=11.3,
-(* fix for inconsistent sizing of ListPolarPlot[...,PolarAxes->True,PlotRange->All] *)
+(* fix for inconsistent sizing of (List)PolarPlot[...,PolarAxes->True,PlotRange->All] *)
   ListPolarPlot@{};
   ForScience`Private`$PolarPlotsFixed3=True;
-  DownValues[listPolarPlot]=DownValues[listPolarPlot]/.
-  expr:HoldPattern[allPos=_]:>(expr;maxRadius=layoutData@"RadialAxesRadius");
+  (
+    DownValues[#]=DownValues[#]/.
+      expr:HoldPattern[allPos=_]:>(
+        expr;maxRadius=Max[maxRadius,layoutData@"RadialAxesRadius"]
+      )
+  )&/@{polarPlot,listPolarPlot};
  ]
 End[];
 
