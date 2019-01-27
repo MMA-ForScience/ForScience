@@ -12,6 +12,7 @@ VectorMarker[{marker_1,\[Ellipsis]}] represents a list of polygon plotmarkers.";
 Begin["`Private`"]
 
 
+GlyphMetrics[Style[s_String]]:=GlyphMetrics[s]
 GlyphMetrics[s:(_String|Style[_String,___])]:=GlyphMetrics[s]=Let[
   {
     graphics=First@ImportString[ExportString[s,"PDF"],"PDF"],
@@ -24,6 +25,14 @@ GlyphMetrics[s:(_String|Style[_String,___])]:=GlyphMetrics[s]=Let[
   },
   <|"plotRange"->plotRange,"primitives"->curves,"filledPrimitives"->filled,"hasHoles"->holes,"centroid"->centroid|>
 ]
+
+
+$DefaultMarkers=Graphics`PlotMarkers[][[All,1]];
+$PreciseMarkers={"+","\[Times]","*","\[CirclePlus]","\[CircleTimes]","\[CircleDot]"};
+
+
+$DefaultGlyphMetrics=BuildTimeEvaluate["DefaultPlotMarkers",AssociationMap[GlyphMetrics]@Join[$DefaultMarkers,$PreciseMarkers]];
+KeyValueMap[(GlyphMetrics[#]=#2)&]@$DefaultGlyphMetrics;
 
 
 PolygonMetrics[n_Integer,th_]:=PolygonMetrics[n,th]=Let[
@@ -47,6 +56,14 @@ $EmptyFilledMapping=<|"\[EmptyCircle]"->"\[FilledCircle]","\[EmptyDiamond]"->"\[
 Options[VectorMarker]={Background->White,"MakeEmpty"->Automatic,Thickness->Inherited,AlignmentPoint->Automatic,JoinForm->{"Miter",20},EdgeForm->Automatic};
 
 
+VectorMarker[Automatic,o:OptionsPattern[]]:=
+  VectorMarker[{Automatic,15},o]
+VectorMarker[{Automatic,s_},o:OptionsPattern[]]:=
+  VectorMarker[{#,s},o]&/@$DefaultMarkers
+VectorMarker["Precise",o:OptionsPattern[]]:=
+  VectorMarker[{"Precise",20},o]
+VectorMarker[{"Precise",s_},o:OptionsPattern[]]:=
+  VectorMarker[{Style[#,Bold],s},o,Background->None]&/@$PreciseMarkers
 VectorMarker[Polygon[n_Integer,th_:0]|{Polygon[n_Integer,th_:0],size_?NumericQ},opts:OptionsPattern[]]:=VectorMarker[PolygonMetrics[n,th],size,opts]
 VectorMarker[(spec:s_String|Style[s_String,styles___])|{spec:s_String|Style[s_String,styles___],size_?NumericQ},opts:OptionsPattern[]]:=If[
   OptionValue["MakeEmpty"]===Automatic&&KeyMemberQ[$EmptyFilledMapping,s],
