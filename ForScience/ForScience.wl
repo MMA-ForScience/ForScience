@@ -178,6 +178,29 @@ If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=11.3),
 End[]
 
 
+Begin["Charting`AxisDump`"]
+If[!TrueQ@ForScience`Private`$CategoricalAxisStylingFixed&&($VersionNumber<=11.3),
+(* fix for axis styling not being applied properly to category axes of plots such as CandlestickChart *)
+  ForScience`Private`$CategoricalAxisStylingFixed=True;
+  Unprotect@Charting`CategoricalAxis;
+  DownValues@Charting`CategoricalAxis=DownValues@Charting`CategoricalAxis/.
+    {
+      s:HoldPattern[axisLabelPrim=_]:>
+        (
+          (* replace top-level lists with directives for the three styles *)
+          {axesstyle,ticksstyle,labelstyle}=Replace[
+            {axesstyle,ticksstyle,labelstyle},
+            sty_List:>Directive@@Flatten@sty,
+            1
+          ];
+          s
+        )
+    };
+  Protect@Charting`CategoricalAxis;
+]
+End[]
+
+
 EndPackage[]
 
 
