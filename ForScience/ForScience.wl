@@ -41,6 +41,36 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=11.3,
 End[];
 
 
+Begin["DrawPolarAxes`DrawPolarAxesDump`"];
+If[!TrueQ@ForScience`Private`$PolarPlotsFixed4&&$VersionNumber<=11.3,
+(* fix for PolarTicks specifications of the form {pos,label,{plen,mlen},style} *)
+  ForScience`Private`$PolarPlotsFixed4=True;
+  (
+    DownValues@#=DownValues@#/.{
+      HoldPattern@Switch[
+        sym_,
+        pre___,
+        case:(first_;m_=p_=l_;rest___),
+        _,
+        {}
+      ]:>
+        Switch[
+          sym,
+          pre,
+          case,
+          {_?NumericQ,_,_List,_},
+          first;
+          {m,p}=l;
+          rest,
+          _,
+          {}
+        ]
+    }
+  )&/@{resolveListRadialTicks,resolveListAngularTicks};
+]
+End[];
+
+
 Begin["Parallel`Evaluate`Private`"]
 If[!TrueQ@ForScience`Private`$ParallelMapIndexedFixed&&(11.1<=$VersionNumber<=11.3),
 (* fix for Parallelize[MapIndexed[...,<|...|>]] supplying wrong second argument to function *)
