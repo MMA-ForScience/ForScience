@@ -6,7 +6,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`InternalUtils`;
 <<`ColorFunctions`;
 <<`NiceRadialTicks`;
-<<`SetupForSciencePlotTheme`;
+<<`ForSciencePlotTheme`;
 <<`VectorMarker`;
 <<`TransformedTicks`;
 <<`CombinePlots`;

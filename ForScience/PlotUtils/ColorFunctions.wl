@@ -2,7 +2,6 @@
 
 Jet::usage="Jet color scheme";
 Parula::usage="Parula color scheme";
-<<`SetupForSciencePlotTheme`
 
 
 Begin["`Private`"]
