@@ -124,7 +124,7 @@ System`PlotThemeDump`resolvePlotTheme[{"FSFrame",opts:OptionsPattern[]},s_/;!Str
       Frame->True,
       FrameTicksStyle->FSSmallFontSize[opts],
       FrameStyle->FSThemeOption["BaseColor",opts],
-      PlotRangePadding->None
+      PlotRangePadding->0
     },
     System`PlotThemeDump`$ComponentWeight
   ]
@@ -209,7 +209,7 @@ System`PlotThemeDump`resolvePlotTheme[{"FSFrame",opts:OptionsPattern[]},"PairedH
       FrameStyle->FSThemeOption["BaseColor",opts],
       FrameTicks->{True,False},
       FrameTicksStyle->FSSmallFontSize[opts],
-      PlotRangePadding->{Automatic,None}
+      PlotRangePadding->{Automatic,0}
     },
     System`PlotThemeDump`$ComponentWeight
   ]
