@@ -48,7 +48,7 @@ TwoYPlot[plt1_,plt2_,OptionsPattern[]]:=
           ft1[[1,1]],
           Evaluate@Replace[
             Replace[
-              ft2[[1,1]]/.Automatic|All->TransformedTicks[1],
+              ft2[[1,1]]/.Automatic|All->CustomTicks[],
               f:Except[_List|False|None]:>f@@Last@pr2
             ],
             {x_,rest___}:>{Rescale[x,Last@pr2,Last@pr1],rest},
