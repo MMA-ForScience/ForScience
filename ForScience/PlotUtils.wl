@@ -8,7 +8,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`NiceRadialTicks`;
 <<`ForSciencePlotTheme`;
 <<`VectorMarker`;
-<<`TransformedTicks`;
+<<`CustomTicks`;
 <<`CombinePlots`;
 <<`GraphicsInformation`;
 <<`TwoYPlot`;
