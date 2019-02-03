@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Jet::usage="Jet color scheme";
+Usage[Jet]="Jet is a color scheme based on the MATLAB color scheme of the same name.";
 Parula::usage="Parula color scheme";
 
 
@@ -129,3 +129,38 @@ Parula=ColorData["Parula"]
 
 
 End[]
+
+
+DocumentationHeader[Jet]=FSHeader["0.0.1","0.83.8"];
+
+
+Details[Jet]={
+  "[*Jet*] is an adaptation of the MATLAB color function with the same name.",
+  "[*Jet*] is a [*ColorDataFunction*] gradient.",
+  "[*Jet*] is equivalent to [*ColorData*][\"Jet\"]."
+};
+
+
+Examples[Jet,"Basic examples"]={
+  {
+    "Load the ForScience package:",
+    ExampleInput[Needs["ForScience`PlotUtils`"]],
+    "[*Jet*] is a [*ColorDataFunction*]:",
+    ExampleInput[Jet]
+  },
+  {
+    "The color scheme can also be accessed via [*ColorData*]:",
+    ExampleInput[ColorData["Jet"]]
+  },
+  {
+    "Use the color scheme as [*ColorFunction*]:",
+    ExampleInput[ContourPlot[Sin[x]Sin[y],{x,-\[Pi],\[Pi]},{y,-\[Pi],\[Pi]},ColorFunction->Jet]]
+  },
+  {
+    "The color scheme can also be specified as string:",
+    ExampleInput[ContourPlot[Sin[x]Sin[y],{x,-\[Pi],\[Pi]},{y,-\[Pi],\[Pi]},ColorFunction->"Jet"]]
+  }
+};
+
+
+SeeAlso[Jet]=Hold[ColorData,Parula,ColorFunction,ColorDataFunction];
