@@ -6,18 +6,8 @@ Usage[CustomTicks]="CustomTicks[opts] is a customizable tick generation function
 Begin["`Private`"]
 
 
-ProcessTransformationFunctions[s_?NumericQ]:=
-  {#*s&,#/s&}
-ProcessTransformationFunctions[funcs:{_,_}]:=
-  funcs
-ProcessTransformationFunctions[None]:=
-  {Identity,Identity}
-ProcessTransformationFunctions[func_]:=
-  {func,InverseFunction[func]}
-
-
-ProcessScalingFunctions[None]:=
-  {Identity,Identity}
+ProcessScalingFunctions[Scaled[s_]]:=
+  {#/s&,#*s&}
 ProcessScalingFunctions[spec_]:=
   Visualization`Utilities`ScalingDump`scaleFn/@
     Visualization`Utilities`ScalingDump`scalingPair@spec
@@ -88,7 +78,6 @@ ProcessTickSpec[OptionsPattern[CustomTicks]][{x_,lbl_,len_,sty_}]:=
 
 Options[CustomTicks]={
   ScalingFunctions->Automatic,
-  TransformationFunctions->None,
   LabelStyle->Automatic,
   TicksStyle->Automatic,
   "TicksLength"->Automatic,
@@ -99,7 +88,6 @@ Options[CustomTicks]={
 prot=Unprotect@Charting`ScaledTicks;
 Charting`ScaledTicks[{"TicksFunction",CustomTicks[opts:OptionsPattern[]]},sc_,"Nice"][_,_,_]:=
   CustomTicks[
-    Delayed,
     ScalingFunctions->Replace[
       OptionValue[CustomTicks,{opts},ScalingFunctions],
       Automatic->sc
@@ -109,45 +97,31 @@ Charting`ScaledTicks[{"TicksFunction",CustomTicks[opts:OptionsPattern[]]},sc_,"N
 Protect/@prot;
 
 
-CustomTicks[del:Delayed|False:False,opts:OptionsPattern[]][limits__]:=Let[
-  {
-    transFuncs=ProcessTransformationFunctions@OptionValue@TransformationFunctions,
-    scaleFuncs=ProcessScalingFunctions@OptionValue@ScalingFunctions,
-    combFuncs=MapThread[
-      Construct,
-      {
-        {Composition,RightComposition},
-        scaleFuncs,
-        transFuncs,
-        If[del===Delayed,Reverse@scaleFuncs,Nothing]
-      }
-    ],
-    tLimits=First[combFuncs]/@{limits},
-    rLimits=Round[tLimits,10.^(Round@Log10[-Subtract@@tLimits]-OptionValue@Precision)]
-  },
-  ProcessTickSpec[opts]/@
-    Replace[
-      MapAt[
-        Last[combFuncs],
-        1
-      ]/@
+CustomTicks[opts:OptionsPattern[]][limits__]:=
+  With[
+    {
+      scaleFuncs=ProcessScalingFunctions@OptionValue@ScalingFunctions,
+      rLimits=Round[{limits},10.^(Round@Log10[-Subtract[limits]]-OptionValue@Precision)]
+    },
+    ProcessTickSpec[opts]/@
+      Replace[
         NormalizeTickSpec/@
           Charting`ScaledTicks[scaleFuncs]@@rLimits,
-      {
-        {_?(Not@*Between[{limits}]),_Spacer,__}:>
-          Nothing,
-        {x_,lbl:Except@_Spacer,rest__}:>{
-          Clip[
-            x,
-            Sort@{limits}
-          ],
-          ToString@lbl,
-          rest
-        }
-      },
-      1
-    ]
-]
+        {
+          {_?(Not@*Between[{limits}]),_Spacer,__}:>
+            Nothing,
+          {x_,lbl:Except@_Spacer,rest__}:>{
+            Clip[
+              x,
+              Sort@{limits}
+            ],
+            ToString@lbl,
+            rest
+          }
+        },
+        1
+      ]
+  ]
 
 
 End[]
