@@ -87,7 +87,7 @@ ProcessTickSpec[OptionsPattern[CustomTicks]][{x_,lbl_,len_,sty_}]:=
 
 
 Options[CustomTicks]={
-  ScalingFunctions->None,
+  ScalingFunctions->Automatic,
   TransformationFunctions->None,
   LabelStyle->Automatic,
   TicksStyle->Automatic,
@@ -96,17 +96,39 @@ Options[CustomTicks]={
 };
 
 
-CustomTicks[opts:OptionsPattern[]][limits__]:=Let[
+prot=Unprotect@Charting`ScaledTicks;
+Charting`ScaledTicks[{"TicksFunction",CustomTicks[opts:OptionsPattern[]]},sc_,"Nice"][_,_,_]:=
+  CustomTicks[
+    Delayed,
+    ScalingFunctions->Replace[
+      OptionValue[CustomTicks,{opts},ScalingFunctions],
+      Automatic->sc
+    ],
+    opts
+  ]
+Protect/@prot;
+
+
+CustomTicks[del:Delayed|False:False,opts:OptionsPattern[]][limits__]:=Let[
   {
     transFuncs=ProcessTransformationFunctions@OptionValue@TransformationFunctions,
     scaleFuncs=ProcessScalingFunctions@OptionValue@ScalingFunctions,
-    tLimits=First[scaleFuncs]/@First[transFuncs]/@{limits},
+    combFuncs=MapThread[
+      Construct,
+      {
+        {Composition,RightComposition},
+        scaleFuncs,
+        transFuncs,
+        If[del===Delayed,Reverse@scaleFuncs,Nothing]
+      }
+    ],
+    tLimits=First[combFuncs]/@{limits},
     rLimits=Round[tLimits,10.^(Round@Log10[-Subtract@@tLimits]-OptionValue@Precision)]
   },
   ProcessTickSpec[opts]/@
     Replace[
       MapAt[
-        Last[transFuncs]@*Last[scaleFuncs],
+        Last[combFuncs],
         1
       ]/@
         NormalizeTickSpec/@
