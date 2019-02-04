@@ -105,14 +105,18 @@ CustomTicks[opts:OptionsPattern[]][limits__]:=Let[
   },
   ProcessTickSpec[opts]/@
     Replace[
-      NormalizeTickSpec/@
-        Charting`ScaledTicks[scaleFuncs]@@rLimits,
+      MapAt[
+        Last[transFuncs]@*Last[scaleFuncs],
+        1
+      ]/@
+        NormalizeTickSpec/@
+          Charting`ScaledTicks[scaleFuncs]@@rLimits,
       {
         {_?(Not@*Between[{limits}]),_Spacer,__}:>
           Nothing,
         {x_,lbl:Except@_Spacer,rest__}:>{
           Clip[
-            Last[transFuncs]@Last[scaleFuncs]@x,
+            x,
             Sort@{limits}
           ],
           ToString@lbl,
