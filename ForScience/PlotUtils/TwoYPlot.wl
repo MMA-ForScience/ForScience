@@ -6,11 +6,48 @@ Usage[TwoYPlot]="TwoYPlot[plot_1,plot_2] combines the two plots into one, puttin
 Begin["`Private`"]
 
 
-
 Options[TwoYPlot]={Method->Automatic};
 
 
 InsertRightYAxis[{{l_,_},bt_},{{r_,_},_}]:={{l,r},bt}
+
+
+Options[ResolveCoordinatesTool]={"CopiedValueFunction"->Identity,"DisplayFunction"->Automatic};
+
+
+ResolveCoordinatesTool[Automatic][_]:=Identity
+ResolveCoordinatesTool[OptionsPattern[]][cvf:"CopiedValueFunction"]:=Replace[OptionValue@cvf,Automatic->Identity]
+ResolveCoordinatesTool[OptionsPattern[]][df:"DisplayFunction"]:=Replace[OptionValue@df,Automatic->OptionValue@"CopiedValueFunction"]
+
+
+(* get CoordinateToolOptions from a Graphics object. Since the setting can be directly inside
+   the Graphics or inside Method, we need to combine both (and handle Automatic settings for both
+   Method, CoordinateToolOptions and DisplayFunction along the way *)
+GetCoordinatesToolOptions[gr_]:=
+  ResolveCoordinatesTool@
+    GraphicsOpt[
+      {
+        FilterRules[
+          Replace[
+            GraphicsOpt[gr,Method],
+            Automatic->{}
+          ],
+          CoordinatesToolOptions
+        ],
+        Options@gr
+      },
+      CoordinatesToolOptions
+    ]
+
+
+ApplyCoordinatesTools[tools_,trans_][{x_,y_}]:=
+  MapThread[
+    Construct,
+    {
+      tools,
+      {{x,y},{x,trans@y}}
+    }
+  ]
 
 
 TwoYPlot[plt1_,plt2_,OptionsPattern[]]:=
@@ -22,11 +59,16 @@ TwoYPlot[plt1_,plt2_,OptionsPattern[]]:=
       ft1,ft2,
       fs1,fs2,
       fts1,fts2,
-      pr1,pr2
+      pr1,pr2,
+      cto
     },
     {{fl1,ft1,fs1,fts1},{fl2,ft2,fs2,fts2}}=
       NormalizedOptionValue[#,{FrameLabel,FrameTicks,FrameStyle,FrameTicksStyle}]&/@{gr1,gr2};
     {pr1,pr2}=PlotRange/.GraphicsInformation@{plt1,plt2};
+    cto=With[
+      {opts=GetCoordinatesToolOptions/@{gr1,gr2}},
+      Through[opts[#]]&
+    ];
     Replace[
       OptionValue[Method],
       {
@@ -34,7 +76,40 @@ TwoYPlot[plt1_,plt2_,OptionsPattern[]]:=
         {CombinePlots,pat_}:>(CombinePlots[##,"AnnotationPattern"->pat]&)
       }
     ][
-      plt1,
+      Show[
+        plt1,
+        Method->FilterRules[
+          OptionValue[Graphics,Options@gr1,Method],
+          Except@CoordinatesToolOptions
+        ],
+        CoordinatesToolOptions->With[
+          {
+            trans=Evaluate@Rescale[#,Last@pr1,Last@pr2]&,
+            cvf=cto@"CopiedValueFunction",
+            df=cto@"DisplayFunction"
+          },
+          {
+            "CopiedValueFunction"->ApplyCoordinatesTools[cvf,trans],
+            "DisplayFunction"->If[
+              df==={None,None},
+              None,
+              Apply[
+                Grid@{
+                  {"\[LongLeftArrow]",#,""},
+                  {"",#2,"\[LongRightArrow]"}
+                }&
+              ]@*
+                ApplyCoordinatesTools[
+                  MapThread[
+                    Replace[#,None->#2]&,
+                    {df,cvf}
+                  ],
+                  trans
+                ]
+            ]
+          }
+        ]
+      ],
       plt2/.Graphics[prim_,opts___]:>Graphics[
         GeometricTransformation[
           prim,

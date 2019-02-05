@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 Begin["`Private`"]
 
 
@@ -11,6 +10,10 @@ ExtractGraphics[Legended[expr_,__]]:=expr
 ValidGraphicsQ[Legended[expr_,__]]:=ValidGraphicsQ[expr]
 ValidGraphicsQ[_Graphics]:=True
 ValidGraphicsQ[_]:=False
+
+
+GraphicsOpt[g_Graphics,opt_]:=GraphicsOpt[Options@g,opt]
+GraphicsOpt[opts_,opt_]:=OptionValue[Graphics,opts,opt]
 
 
 NormalizeGraphicsOpt[FrameLabel][b_]:={{None,None},{b,None}}
@@ -28,7 +31,7 @@ NormalizeGraphicsOpt[FrameTicksStyle]:=NormalizeGraphicsOpt[FrameStyle]
 
 
 NormalizedOptionValue[g_,opt_List]:=NormalizedOptionValue[g,#]&/@opt
-NormalizedOptionValue[g_,opt_]:=NormalizeGraphicsOpt[opt][OptionValue[Graphics,Options@g,opt]]
+NormalizedOptionValue[g_,opt_]:=NormalizeGraphicsOpt[opt][GraphicsOpt[g,opt]]
 
 
 End[]
