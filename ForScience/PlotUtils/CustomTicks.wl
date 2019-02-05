@@ -101,6 +101,9 @@ Charting`ScaledTicks[{"TicksFunction",CustomTicks[opts:OptionsPattern[]]},sc_,"N
 Protect/@prot;
 
 
+CustomTicks::invTicks="Could not generate ticks using supplied options ``";
+
+
 CustomTicks[opts:OptionsPattern[]]/;MemberQ[{opts},Scaled,All,Heads->True]:=
   Unevaluated@CustomTicks[opts]/.Scaled->iScaled
 CustomTicks[opts:OptionsPattern[]][limits__]:=
@@ -112,8 +115,11 @@ CustomTicks[opts:OptionsPattern[]][limits__]:=
     },
     ProcessTickSpec[pOpts]/@
       Replace[
-        NormalizeTickSpec/@
-          Charting`ScaledTicks[scaleFuncs]@@rLimits,
+        Replace[
+          NormalizeTickSpec/@
+            Charting`ScaledTicks[scaleFuncs]@@rLimits,
+            Except@_List:>(Message[CustomTicks::invTicks,pOpts];{})
+        ],
         {
           {_?(Not@*Between[{limits}]),_Spacer,__}:>
             Nothing,
