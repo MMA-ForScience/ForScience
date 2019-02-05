@@ -6,6 +6,10 @@ Usage[CustomTicks]="CustomTicks[opts] is a customizable tick generation function
 Begin["`Private`"]
 
 
+(* Scaled[...] will be replaced by iScaled[...] to prevent replacement by Graphics typesetting *)
+MakeBoxes[iScaled,frm_]^:=MakeBoxes[Scaled,frm]
+
+
 ProcessScalingFunctions[Scaled[s_]]:=
   {#/s&,#*s&}
 ProcessScalingFunctions[spec_]:=
@@ -97,13 +101,16 @@ Charting`ScaledTicks[{"TicksFunction",CustomTicks[opts:OptionsPattern[]]},sc_,"N
 Protect/@prot;
 
 
+CustomTicks[opts:OptionsPattern[]]/;MemberQ[{opts},Scaled,All,Heads->True]:=
+  Unevaluated@CustomTicks[opts]/.Scaled->iScaled
 CustomTicks[opts:OptionsPattern[]][limits__]:=
   With[
     {
-      scaleFuncs=ProcessScalingFunctions@OptionValue@ScalingFunctions,
+      pOpts={opts}/.iScaled->Scaled,
+      scaleFuncs=ProcessScalingFunctions[OptionValue@ScalingFunctions/.iScaled->Scaled],
       rLimits=Round[{limits},10.^(Round@Log10[-Subtract[limits]]-OptionValue@Precision)]
     },
-    ProcessTickSpec[opts]/@
+    ProcessTickSpec[pOpts]/@
       Replace[
         NormalizeTickSpec/@
           Charting`ScaledTicks[scaleFuncs]@@rLimits,
