@@ -62,17 +62,18 @@ ProcessTickSpec[OptionsPattern[CustomTicks]][{x_,lbl_,len_,sty_}]:=
       minorQ=Head@lbl===Spacer,
       lblStyle=OptionValue@LabelStyle,
       tckStyle=Replace[OptionValue@TicksStyle,{maj_,min_}:>If[minorQ,min,maj]],
-      tckLength=Replace[OptionValue@"TicksLength",{maj_,min_}:>If[minorQ,min,maj]]
+      tckLength=Replace[OptionValue@"TicksLength",{maj_,min_}:>If[minorQ,min,maj]],
+      tckStyleFunc=If[MatchQ[tckStyle,None|Automatic],#&,Style[#,tckStyle]&]
     },
     {
       x,
       Which[
         minorQ||lblStyle===Automatic,
-        lbl,
+        tckStyleFunc@lbl,
         lblStyle===None,
         Spacer@{0,0},
         True,
-        Style[lbl,lblStyle]
+        tckStyleFunc@Style[lbl,lblStyle]
       ],
       If[tckStyle===None,{0,0},ProcessTickLength[len,tckLength]],
       If[MatchQ[tckStyle,None|Automatic],sty,Flatten@{sty,tckStyle}]
