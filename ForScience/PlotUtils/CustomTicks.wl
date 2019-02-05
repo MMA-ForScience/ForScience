@@ -128,7 +128,7 @@ CustomTicks[opts:OptionsPattern[]][limits__]:=
               x,
               Sort@{limits}
             ],
-            ToString@lbl,
+            ToString[lbl,TraditionalForm],
             rest
           }
         },
