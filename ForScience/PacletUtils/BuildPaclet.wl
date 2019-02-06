@@ -35,7 +35,7 @@ flatOpts=OptionsPattern[]?(Not@*ListQ);
 GetMarker;
 
 
-BuildPaclet[dir_,o:flatOpts]:=foo[dir,{},o]
+BuildPaclet[dir_,o:flatOpts]:=BuildPaclet[dir,{},o]
 BuildPaclet[dir_,postProcs:procList,gProcs:(procList|procLists):{},o:flatOpts]:=
  BuildPaclet[dir,{{},postProcs},gProcs,o]
 BuildPaclet[dir_,procs:procLists,gPostProcs:procList:{},o:flatOpts]:=
