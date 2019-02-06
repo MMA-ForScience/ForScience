@@ -74,9 +74,8 @@ ParseFormatting[str_]:=Module[
     FrontEnd`UndocumentedTestFEParserPacket[pStr,True]
   ];
   pStr=pStr/.s_String:>StringReplace[s,"`´`´"->"\""];
-  If[MatchQ[pStr,BoxData[_String]],Return@First@pStr];
   pStr=Append[EndOfLine]@Replace[
-    Flatten@First@Replace[pStr,RowBox@x_:>x,\[Infinity]],
+    Flatten@Replace[{First@pStr},RowBox@x_:>x,\[Infinity]],
     {
       "```"->ti,
       "´´´"->mr,
@@ -95,8 +94,10 @@ ParseFormatting[str_]:=Module[
     FixedPoint[
       Replace[#,{pre___,s:Longest@Repeated[_String,{2,\[Infinity]}],post___}:>
        {pre,StringReplace["```´´"->", "]@StringJoin@s,post},1]&,
-      ParseToToken[pStr, i][EndOfLine]//.
-       {pre___,a_,sb,b_,post___}:>{pre,SubscriptBox[a,b],post}
+      First[
+        {ParseToToken[pStr, i][EndOfLine]}//.
+         {pre___,a:Except[sb]:"",sb,b:Except[sb]:"",post___}:>{pre,If[b==="",a,SubscriptBox[a,b]],post}
+      ]
     ]/."```´´"->",",
     EndOfFile|"Unmatched",
     (
