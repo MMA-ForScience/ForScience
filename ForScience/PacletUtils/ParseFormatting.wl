@@ -15,7 +15,7 @@ co;
 cc;
 lo;
 lc;
-tb;
+sb;
 
 
 ToRowBox[{el_}]:=el
@@ -34,6 +34,7 @@ ParseToToken[str_,i_,simplify_:True][t_]:=(
   ][[2]]
 )
 Attributes[ParseToToken]={HoldRest};
+
 
 ParseToken[str_,i_][ti]:=StyleBox[ParseToToken[str,i][ti],"TI"]
 ParseToken[str_,i_][mr]:=StyleBox[ParseToToken[str,i][mr],"MR"]
