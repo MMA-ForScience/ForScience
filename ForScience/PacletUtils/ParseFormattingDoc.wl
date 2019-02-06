@@ -6,7 +6,7 @@ Usage[ParseFormatting]="ParseFormatting[str] returns a box expression formatted 
 BuildAction[
 
 
-DocumentationHeader[ParseFormatting]=FSHeader["0.50.0","0.63.10"];
+DocumentationHeader[ParseFormatting]=FSHeader["0.50.0","0.87.18"];
 
 
 Details[ParseFormatting]={

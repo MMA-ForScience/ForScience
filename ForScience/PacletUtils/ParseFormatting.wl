@@ -56,49 +56,51 @@ ParseFormatting::unmatched="Unmatched closing group sequence `` found while pars
 ParseFormatting[str_]:=Module[
   {i=1,pStr},
   pStr=StringReplace[
-    {"```"->" ``` ",
-    "'''"->" ´´´ ",
-    "{*"->" ```´ ",
-    "*}"->" ```´` ",
-    "[*"->" `´``` ",
-    "*]"->" ´``` ",
-    "<*"->" ````` ",
-    "*>"->" ´```` ",
-    ", "->" ```´´ ",
-    " "->" ```` ",
-    "_"->" _ ",
-    "\""->"`´`´"
+    {
+      "\\"~~c_:>c,
+      "```"->" ```` ",
+      "'''"->" ```´ ",
+      "{*"->" ´``` ",
+      "*}"->" ````` ",
+      "[*"->" ````´ ",
+      "*]"->" ´```` ",
+      "<*"->" ```´` ",
+      "*>"->" ```´´ ",
+      ", "->" ´```´ ",
+      " "->" `´``` ",
+      "_"->" `````` ",
+      "\""->"`````´"
     }
   ]@str;
   pStr=First@MathLink`CallFrontEnd[
     FrontEnd`UndocumentedTestFEParserPacket[pStr,True]
   ];
-  pStr=pStr/.s_String:>StringReplace[s,"`´`´"->"\""];
+  pStr=pStr/.s_String:>StringReplace[s,"`````´"->"\""];
   pStr=Append[EndOfLine]@Replace[
     Flatten@Replace[{First@pStr},RowBox@x_:>x,\[Infinity]],
     {
-      "```"->ti,
-      "´´´"->mr,
-      "```´"->go,
-      "```´`"->gc,
-      "`´```"->co,
-      "´```"->cc,
-      "`````"->lo,
-      "´````"->lc,
-      "````"->" ",
-      "_"->sb
+      "````"->ti,
+      "```´"->mr,
+      "´```"->go,
+      "`````"->gc,
+      "````´"->co,
+      "´````"->cc,
+      "```´`"->lo,
+      "```´´"->lc,
+      "`´```"->" ",
+      "``````"->sb
     },
     1
   ];
   Catch[
     FixedPoint[
       Replace[#,{pre___,s:Longest@Repeated[_String,{2,\[Infinity]}],post___}:>
-       {pre,StringReplace["```´´"->", "]@StringJoin@s,post},1]&,
+       {pre,StringReplace["´```´"->", "]@StringJoin@s,post},1]&,
       First[
         {ParseToToken[pStr, i][EndOfLine]}//.
          {pre___,a:Except[sb]:"",sb,b:Except[sb]:"",post___}:>{pre,If[b==="",a,SubscriptBox[a,b]],post}
       ]
-    ]/."```´´"->",",
+    ]/."´```´"->",",
     EndOfFile|"Unmatched",
     (
       Replace[
