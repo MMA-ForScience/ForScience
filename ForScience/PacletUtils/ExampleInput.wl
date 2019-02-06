@@ -125,7 +125,10 @@ EIToBoxes[s_String,OptionsPattern[]]:=PrettifyBoxes[
   ][[1, 1]]/."
 "->"\[IndentingNewLine]"
 ]
-EIToBoxes[expr_,o:OptionsPattern[]]:=WrapBoxes[PrettifyBoxes@ToBoxes@Unevaluated@expr,o]
+EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
+  {Graphics,Graphics3D,Graph},
+  WrapBoxes[PrettifyBoxes@ToBoxes@Unevaluated@expr,o]
+]
 
 
 ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm]:=With[
