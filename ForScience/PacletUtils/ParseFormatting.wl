@@ -20,11 +20,16 @@ sb;
 
 ToRowBox[{el_}]:=el
 ToRowBox[l_]:=RowBox@l
+
+
+$closingSequences=<|ti->"```",mr->"'''",gc->"*}",cc->"*]",lc->"*>"|>;
+
+
 ParseToToken[str_,i_,simplify_:True][t_]:=(
   If[simplify,ToRowBox,RowBox]@Flatten@Reap[
     Module[{curToken},
       While[True,
-        If[i>Length@str,Throw[t,EndOfFile]];
+        If[i>Length@str,Throw[$closingSequences[t],EndOfFile]];
         curToken=str[[i]];
         ++i;
         If[curToken===t,Break[]];
@@ -41,11 +46,13 @@ ParseToken[str_,i_][mr]:=StyleBox[ParseToToken[str,i][mr],"MR"]
 ParseToken[str_,i_][go]:=ParseToToken[str,i,False][gc]
 ParseToken[str_,i_][co]:=TagBox[ParseToToken[str,i,False][cc],"[**]"]
 ParseToken[str_,i_][lo]:=TagBox[ParseToToken[str,i,False][lc],"<**>"]
+ParseToken[str_,i_][t:gc|cc|lc]:=Throw[$closingSequences[t],"Unmatched"]  
 ParseToken[str_,i_][t_]:=t
 Attributes[ParseToken]={HoldRest};
 
 
-ParseFormatting::badFormat="End reached while trying to parse formatting of \"``\".";
+ParseFormatting::endReached="End reached while looking for `` during parsing of \"``\".";
+ParseFormatting::unmatched="Unmatched closing group sequence `` found while parsing \"``\".";
 ParseFormatting[str_]:=Module[
   {i=1,pStr},
   pStr=StringReplace[
@@ -91,8 +98,17 @@ ParseFormatting[str_]:=Module[
       ParseToToken[pStr, i][EndOfLine]//.
        {pre___,a_,sb,b_,post___}:>{pre,SubscriptBox[a,b],post}
     ]/."```´´"->",",
-    EndOfFile,
-    (Message[ParseFormatting::badFormat,str];str)&
+    EndOfFile|"Unmatched",
+    (
+      Replace[
+        {##},
+        {
+          {seq_,EndOfFile}:>Message[ParseFormatting::endReached,seq,str],
+          {seq_,"Unmatched"}:>Message[ParseFormatting::unmatched,seq,str]
+        }
+      ];
+      str
+    )&
   ]
 ]
 SyntaxInformation[ParseFormatting]={"ArgumentsPattern"->{_}};
