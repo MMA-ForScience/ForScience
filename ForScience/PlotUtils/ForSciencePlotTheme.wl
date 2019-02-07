@@ -241,7 +241,7 @@ System`PlotThemeDump`resolvePlotTheme[{"FSThickLines",opts:OptionsPattern[]},"Co
 ]
 
 
-System`PlotThemeDump`resolvePlotTheme[{"FSMarkers",opts:OptionsPattern[]},"ListPlot"|"ListLogPlot"|"ListLinePlot"|"StackedListPlot"|"StackedDateListPlot"|"ListStepPlot"|"ListCurvePathPlot"|"ListLogLogPlot"|"ListLogLinearPlot"|"DateListPlot"|"DateListStepPlot"|"DateListLogPlot"|"FeatureSpacePlot"]:=
+System`PlotThemeDump`resolvePlotTheme[{"FSMarkers",opts:OptionsPattern[]},"ListPlot"|"ListLogPlot"|"StackedListPlot"|"StackedDateListPlot"|"ListStepPlot"|"ListCurvePathPlot"|"ListLogLogPlot"|"ListLogLinearPlot"|"DateListPlot"|"DateListStepPlot"|"DateListLogPlot"|"FeatureSpacePlot"]:=
   Themes`SetWeight[
     {
       PlotMarkers->FSThemeOption[PlotMarkers,opts]
