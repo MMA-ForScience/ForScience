@@ -5,8 +5,8 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 
 <<`InternalUtils`;
 <<`ColorFunctions`;
-<<`ForSciencePlotTheme`;
 <<`VectorMarker`;
+<<`ForSciencePlotTheme`;
 <<`CustomTicks`;
 <<`CombinePlots`;
 <<`GraphicsInformation`;
