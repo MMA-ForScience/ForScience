@@ -25,6 +25,7 @@ Details[FormatUsage]={
   "Format specifications can be arbitrarily nested.",
   "The formatted strings returned by [*FormatUsage*] are usable as usage messages for symbols.",
   "In \\<*```spec```\\*>, ```spec``` can either be the exact title of a documentation page or ```type```//```title```, where type is any documentation page type, such as Symbol,Format,Workflow,...",
+  "In \\<*```spec```\\*>, ```spec``` can also be a web link, e.g. \\<*http://wolfram.com\\*>. Note that the protocol (i.e. http:// or https://) needs to be present.",
   "The label of a link specified by \\<*```spec```\\*> can be specified by prepending ```label```::, i.e. ```label```::```title``` or ```label```::```type```//```title```."
 };
 

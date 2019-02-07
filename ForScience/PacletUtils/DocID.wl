@@ -151,15 +151,27 @@ RawDocumentationLink[Evaluate[ref:DocIDSpec]]:=With[
 Attributes[DocumentationLink]={HoldFirst};
 
 
-Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->{"InlineFormula"}};
+Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->Automatic};
 
 
 DocumentationLink[Evaluate[ref:DocIDSpec],OptionsPattern[]]:=With[
-  {id=DocID@ref},
-  RawDocumentationLink[id]/.{
-    {rId_,_Missing}->TagBox[rId@Label,Hyperlink->id,BaseStyle->OptionValue[BaseStyle]],
-    {rId_,uri_}->TemplateBox[{rId@Label,uri},OptionValue["LinkStyle"],BaseStyle->OptionValue[BaseStyle]]
-  }
+  {
+    id=DocID@ref,
+    bs=Replace[OptionValue[BaseStyle],Automatic->{"InlineFormula"}]
+  },
+  Switch[id[DocumentationType],
+    "http:"|"https:",
+    TemplateBox[
+      {id[Label],id[DocumentationType]<>"//"<>id[SymbolName]},
+      "WebLink",
+      BaseStyle->Replace[OptionValue[BaseStyle],Automatic->{"Text"}]
+    ],
+    _,
+    RawDocumentationLink[id]/.{
+      {rId_,_Missing}->TagBox[rId@Label,Hyperlink->id,BaseStyle->bs],
+      {rId_,uri_}->TemplateBox[{rId@Label,uri},OptionValue["LinkStyle"],BaseStyle->bs]
+    }
+  ]
 ]
 
 
