@@ -65,6 +65,10 @@ VectorMarker["Precise",o:OptionsPattern[]]:=
   VectorMarker[{"Precise",20},o]
 VectorMarker[{"Precise",s_},o:OptionsPattern[]]:=
   VectorMarker[{Style[#,Bold],s},o,Background->None]&/@$PreciseMarkers
+VectorMarker[Polygon,o:OptionsPattern[]]:=
+  VectorMarker[{Polygon,15},o]
+VectorMarker[{Polygon,s_},o:OptionsPattern[]]:=
+  VectorMarker[{Polygon@#,s},o]&/@{3,-3,4,-4,5,-5,6,-6}
 VectorMarker[Polygon[n_Integer,th_:0]|{Polygon[n_Integer,th_:0],size_?NumericQ},opts:OptionsPattern[]]:=VectorMarker[PolygonMetrics[n,th],size,opts]
 VectorMarker[(spec:s_String|Style[s_String,styles___])|{spec:s_String|Style[s_String,styles___],size_?NumericQ},opts:OptionsPattern[]]:=If[
   OptionValue["MakeEmpty"]===Automatic&&KeyMemberQ[$EmptyFilledMapping,s],
