@@ -13,7 +13,8 @@ Begin["`Private`"]
 
 
 GlyphMetrics[Style[s_String]]:=GlyphMetrics[s]
-GlyphMetrics[s:(_String|Style[_String,___])]:=GlyphMetrics[s]=Let[
+GlyphMetrics[s_String]:=GlyphMetrics[Style[s,FontFamily->"Arial"]]
+GlyphMetrics[s:Style[_String,___]]:=GlyphMetrics[s]=Let[
   {
     graphics=First@ImportString[ExportString[s,"PDF"],"PDF"],
     discretized=DiscretizeGraphics@graphics,
