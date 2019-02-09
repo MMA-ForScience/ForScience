@@ -72,10 +72,11 @@ ParseFormatting[str_]:=Module[
       "\""->"`````´"
     }
   ]@str;
+  pStr=StringReplace[pStr,"\\"->"\\\\"];
   pStr=First@MathLink`CallFrontEnd[
     FrontEnd`UndocumentedTestFEParserPacket[pStr,True]
   ];
-  pStr=pStr/.s_String:>StringReplace[s,"`````´"->"\""];
+  pStr=pStr/.s_String:>StringReplace[s,{"`````´"->"\"","\\\\"->"\\"}];
   pStr=Append[EndOfLine]@Replace[
     Flatten@Replace[{First@pStr},RowBox@x_:>x,\[Infinity]],
     {
