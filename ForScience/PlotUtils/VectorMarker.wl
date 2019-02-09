@@ -22,9 +22,10 @@ GlyphMetrics[s:Style[_String,___]]:=GlyphMetrics[s]=Let[
     filled=Thread@*GeometricFunctions`DecodeFilledCurve/@curves,
     holes=Area@DiscretizeGraphics@filled>1.01Area@discretized,
     plotRange=PlotRange@graphics,
+    bounds=RegionBounds@discretized,
     centroid=RegionCentroid@discretized
   },
-  <|"plotRange"->plotRange,"primitives"->curves,"filledPrimitives"->filled,"hasHoles"->holes,"centroid"->centroid|>
+  <|"plotRange"->plotRange,"bounds"->bounds,"primitives"->curves,"filledPrimitives"->filled,"hasHoles"->holes,"centroid"->centroid|>
 ]
 
 
@@ -45,13 +46,22 @@ PolygonMetrics[n_Integer,th_]:=PolygonMetrics[n,th]=Let[
         {Sin[ph0+ph],Cos[ph0+ph]}
       ]&,
       Abs@n
-    ]
+    ],
+    bounds=RegionBounds@polygon
   },
-  <|"plotRange"->1.5{{-1,1},{-1,1}},"primitives"->polygon,"filledPrimitives"->polygon,"hasHoles"->False,"centroid"->{0,0}|>
+  <|"plotRange"->1.5{{-1,1},{-1,1}},"bounds"->bounds,"primitives"->polygon,"filledPrimitives"->polygon,"hasHoles"->False,"centroid"->{0,0}|>
 ]
 
 
 $EmptyFilledMapping=<|"\[EmptyCircle]"->"\[FilledCircle]","\[EmptyDiamond]"->"\[FilledDiamond]","\[EmptyDownTriangle]"->"\[FilledDownTriangle]","\[EmptyRectangle]"->"\[FilledRectangle]","\[EmptySmallCircle]"->"\[FilledSmallCircle]","\[EmptySmallSquare]"->"\[FilledSmallSquare]","\[EmptySquare]"->"\[FilledSquare]","\[EmptyUpTriangle]"->"\[FilledUpTriangle]","\[EmptyVerySmallSquare]"->"\[FilledVerySmallSquare]"|>;
+
+
+ResolvePositionSpec[Right]:={1,0}
+ResolvePositionSpec[Left]:={-1,0}
+ResolvePositionSpec[Top]:={0,1}
+ResolvePositionSpec[Bottom]:={0,-1}
+ResolvePositionSpec[p:{_?NumericQ,_?NumericQ}]:=p
+ResolvePositionSpec[l_List]:=Total[ResolvePositionSpec/@l]
 
 
 Options[VectorMarker]={Background->White,"MakeEmpty"->Automatic,Thickness->Inherited,AlignmentPoint->Automatic,JoinForm->{"Miter",20},EdgeForm->Automatic};
@@ -89,7 +99,10 @@ VectorMarker[metrics_Association,size:_?NumericQ:10,OptionsPattern[]]:=Let[
   {
     makeEmpty=OptionValue["MakeEmpty"]/.{Full->!metrics["hasHoles"],Automatic->False,All->True},
     background=OptionValue[Background],
-    alignmentPoint=OptionValue[AlignmentPoint]/.Automatic:>metrics["centroid"],
+    alignmentPoint=OptionValue[AlignmentPoint]/.{
+      Automatic->metrics["centroid"],
+      ap_:>Mean/@metrics["bounds"]+0.5*Abs[Subtract@@@metrics["bounds"]]*ResolvePositionSpec[ap]
+    },
     bgPrimitives=If[makeEmpty||background===None,Nothing,{Opacity@Inherited,EdgeForm@None,background,metrics["filledPrimitives"]}],
     faceForm=Which[
       !makeEmpty,
