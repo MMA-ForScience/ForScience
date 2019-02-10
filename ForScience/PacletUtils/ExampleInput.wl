@@ -127,7 +127,13 @@ EIToBoxes[s_String,OptionsPattern[]]:=PrettifyBoxes[
 ]
 EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
   {Graphics,Graphics3D,Graph,Style},
-  WrapBoxes[PrettifyBoxes@ToBoxes@Unevaluated@expr,o]
+  WrapBoxes[
+    PrettifyBoxes@Block[
+      {$ContextPath=Prepend[$ContextPath,"ForScience`BuildAction`"]},
+      ToBoxes@Unevaluated@expr
+    ],
+    o
+  ]
 ]
 
 

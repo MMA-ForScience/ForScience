@@ -6,7 +6,7 @@ Usage[ExampleInput]="ExampleInput[expr_1,\[Ellipsis]] represents an input cell f
 BuildAction[
 
 
-DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.76.4"];
+DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.87.33"];
 
 
 Details[ExampleInput]={
@@ -42,7 +42,8 @@ Details[ExampleInput]={
   "Patterns specified for line wrapping are only matched against elements of [*RowBox*] expressions.",
   "The setting \"Multiline\"->[*Full*] is equivalent to specifying {\",\"|\";\"|\"(\"|\"[\"|\"\[LeftAssociation]\"|\"{\",\"}\"|\"\[RightAssociation]\"|\"]\"|\")\"}",
   Hyperlink["The contents of [*ExampleInput*] expressions are typeset as they will appear in the generated documentation page.","Typesetting"],
-  "[*ExampleInput*] has attribute [*  HoldAll*]."
+  Hyperlink["Symbols in the context entered by [*Begin*][[*BuildAction*]] do not get their context prepended.","BuildActionContext"],
+  "[*ExampleInput*] has attribute [*HoldAll*]."
 };
 
 
@@ -312,6 +313,19 @@ Examples[ExampleInput,"Possible issues"]={
         {
           \"Using strings does not have issues:\",
           ExampleInput[\"myNewSymbol=3;\"]
+        }
+      };",
+      End[];,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False],
+    Labeled["The context entered by [*Begin*][[*BuildAction*]] is not affected:","BuildActionContext"],
+    ExampleInput[
+      Begin[BuildAction];,
+      "Examples[test,\"Basic examples\"]={
+        {
+          \"Using strings does not have issues:\",
+          ExampleInput[myNewSymbol=3;]
         }
       };",
       End[];,
