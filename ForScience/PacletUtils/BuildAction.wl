@@ -11,6 +11,9 @@ Begin["`Private`"]
 $EnableBuildActions=False;
 
 
+$BuildActionContext="ForScience`BuildAction`";
+
+
 Attributes[BuildAction]={HoldAll};
 
 
@@ -19,7 +22,7 @@ SyntaxInformation[BuildAction]={"ArgumentsPattern"->{__}};
 
 BuildAction[acts__]/;$BuildActive||$EnableBuildActions:=CompoundExpression[acts]
 BuildAction[acts__]:=Null
-Begin[BuildAction]^:=Begin["ForScience`BuildAction`"]
+Begin[BuildAction]^:=Begin[$BuildActionContext]
 
 
 CleanBuildActions[expr_]:=With[
