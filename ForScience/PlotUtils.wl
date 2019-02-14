@@ -14,4 +14,10 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`PlotGrid`;
 
 
+<<`ColorFunctionsDoc`;
+<<`CustomTicksDoc`;
+<<`CombinePlotsDoc`;
+<<`GraphicsInformationDoc`;
+
+
 EndPackage[]

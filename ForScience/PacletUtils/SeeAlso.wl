@@ -9,7 +9,7 @@ Begin["`Private`"]
 Attributes[SeeAlso]={HoldFirst};
 
 
-SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list/held expression of symbols is expexted.";
+SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list/held expression of symbols is expected.";
 
 
 DeclareMetadataHandler[SeeAlso,"invalidInput",_,(List|Hold)[_Symbol...],{}]

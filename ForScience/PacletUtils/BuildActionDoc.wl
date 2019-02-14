@@ -6,7 +6,7 @@ Usage[CleanBuildActions]="CleanBuildActions[{expr_1,\[Ellipsis]}] removes any to
 Usage[$EnableBuildActions]="$EnableBuildActions can be set to [*True*] to manually enable the evaluation of expressions wrapped in [*BuildAction*].";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[BuildAction]=FSHeader["0.49.0","0.87.31"];
@@ -53,4 +53,4 @@ Details[$EnableBuildActions]={
 SeeAlso[$EnableBuildActions]=Hold[BuildAction,BuildPaclet,$BuildActive];
 
 
-]
+End[]

@@ -4,7 +4,7 @@ Usage[Tutorials]="[*[*Tutorials[sym]*]'''={```tutorial```_1,\[Ellipsis]}'''*] se
 [*[*Tutorials[guide]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the related tutorials for ```guide```.
 [*[*Tutorials[tut]*]'''={```tutorial```_1,\[Ellipsis]}'''*] sets the related tutorials for ```tut```.";
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Tutorials]=FSHeader["0.64.0","0.68.0"];
@@ -63,4 +63,4 @@ SeeAlso[Tutorials]={DocumentationBuilder,Tutorial,TutorialOverview,Guides,SeeAls
 Guides[Tutorials]={$GuideCreatingDocPages};
 
 
-]
+End[]

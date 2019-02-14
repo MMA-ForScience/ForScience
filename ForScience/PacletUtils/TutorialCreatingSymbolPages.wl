@@ -3,6 +3,9 @@
 $TutorialCreatingSymbolPages=Tutorial["Creating Symbol Documentation Pages"];
 
 
+Begin[BuildAction]
+
+
 DocumentationHeader[$TutorialCreatingSymbolPages]=FSTutorialHeader;
 
 
@@ -184,3 +187,6 @@ TutorialSections[$TutorialCreatingSymbolPages,"Closing Remarks"]={
 
 
 Guides[$TutorialCreatingSymbolPages]={$GuideCreatingDocPages};
+
+
+End[]

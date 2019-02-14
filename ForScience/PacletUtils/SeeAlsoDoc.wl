@@ -4,7 +4,7 @@ Usage[SeeAlso]="[*[*SeeAlso[sym]*]'''={```sym_1```,\[Ellipsis]}'''*] sets the sy
 [*[*SeeAlso[sym]*]'''='''[*Hold[sym_1,\[Ellipsis]]*]*] can be used if some of the symbols have ownvalues.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[SeeAlso]=FSHeader["0.59.0","0.63.12"];
@@ -70,4 +70,4 @@ Guides[SeeAlso]={$GuideCreatingDocPages};
 Tutorials[SeeAlso]={$TutorialCreatingSymbolPages};
 
 
-]
+End[]

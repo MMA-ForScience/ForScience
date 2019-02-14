@@ -3,6 +3,9 @@
 $GuideCreatingDocPages=Guide["Creating Documentation Pages"];
 
 
+Begin[BuildAction]
+
+
 DocumentationHeader[$GuideCreatingDocPages]=FSGuideHeader;
 
 
@@ -53,3 +56,6 @@ Guides[$GuideCreatingDocPages]={$GuidePacletUtils};
 
 
 Tutorials[$GuideCreatingDocPages]={$TutorialCreatingSymbolPages};
+
+
+End[]

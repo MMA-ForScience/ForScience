@@ -3,7 +3,7 @@
 Usage[ParseFormatting]="ParseFormatting[str] returns a box expression formatted according to the format specification of ```str```.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[ParseFormatting]=FSHeader["0.50.0","0.87.18"];
@@ -24,4 +24,4 @@ SeeAlso[ParseFormatting]={Usage,MakeUsageString,FormatUsage};
 Guides[ParseFormatting]={$GuideCreatingDocPages};
 
 
-]
+End[]

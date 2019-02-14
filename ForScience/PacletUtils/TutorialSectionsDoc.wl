@@ -2,13 +2,13 @@
 
 Usage[TutorialSections]="TutorialSections[tut] contains all sections of the tutorial ```tut```.
 [*[*TutorialSections[tut,sec,subsec,\[Ellipsis]]*]'''={```part_1```,\[Ellipsis]}'''*] assigns the specified contents to the specified section of the tutorial.
-[*[*TutorialSections[tut,\[Ellipsis]],None*]'''={```part_1```,\[Ellipsis]}'''*] assigns the specified contents to the specified section itself, allowing for other subsections to be specified.
+[*[*TutorialSections[tut,\[Ellipsis],None]*]'''={```part_1```,\[Ellipsis]}'''*] assigns the specified contents to the specified section itself, allowing for other subsections to be specified.
 [*[*TutorialSections[tut,sec,subsec,\[Ellipsis]]*]'''=\[LeftAssociation]```subsubsec```\[Rule]\[Ellipsis],\[Ellipsis]\[RightAssociation]'''*] assigns the (sub)subsections to the specified (sub)section.
 TutorialSections[tut,\[Ellipsis]] returns the assigned section text/list of subsections.
 [*[*TutorialSections[tut,\[Ellipsis]]*]'''=.'''*] removes the specified tutorial section.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[TutorialSections]=FSHeader["0.68.0"];
@@ -297,4 +297,4 @@ SeeAlso[TutorialSections]={DocumentationBuilder,ExampleInput,Tutorial,Guides,Tut
 Guides[TutorialSections]={$GuideCreatingDocPages};
 
 
-]
+End[]

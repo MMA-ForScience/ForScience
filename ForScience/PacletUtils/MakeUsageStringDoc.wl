@@ -4,7 +4,7 @@ Usage[MakeUsageString]="MakeUsageString[boxes] converts the box expression retur
 MakeUsageString[{boxes_1,\[Ellipsis]}] creates a multiline string, with line ```i``` corresponding to ```boxes_i```.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[MakeUsageString]=FSHeader["0.50.0","0.60.9"];
@@ -23,4 +23,4 @@ SeeAlso[MakeUsageString]={Usage,ParseFormatting,FormatUsage};
 Guides[MakeUsageString]={$GuideCreatingDocPages};
 
 
-]
+End[]

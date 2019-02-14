@@ -3,7 +3,7 @@
 Usage[ExampleInput]="ExampleInput[expr_1,\[Ellipsis]] represents an input cell for an example in the documentation. The output will be automatically added.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[ExampleInput]=FSHeader["0.58.0","0.87.33"];
@@ -387,4 +387,4 @@ SeeAlso[ExampleInput]={Examples,TutorialSections,DocumentationBuilder,Usage,Deta
 Guides[ExampleInput]={$GuideCreatingDocPages};
 
 
-]
+End[]

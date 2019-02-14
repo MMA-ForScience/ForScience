@@ -3,7 +3,7 @@
 Usage[FormatUsageCase]="FormatUsageCase[str] prepares all function calls wrapped in \\[* and \\*] to be formatted by [*ParseFormatting*].";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[FormatUsageCase]=FSHeader["0.0.1","0.60.4"];
@@ -83,4 +83,4 @@ SeeAlso[FormatUsageCase]={ParseFormatting,FormatUsage,Usage,MakeUsageString};
 Guides[FormatUsageCase]={$GuideCreatingDocPages};
 
 
-]
+End[]

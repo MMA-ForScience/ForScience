@@ -10,7 +10,7 @@ Usage[SetDocumentationOptions]="{*[*SetDocumentationOptions*][```part```[```sym`
 SetDocumentationOptions[part,opt_1\[Rule]val_1,\[Ellipsis]] sets the default options for the specified part of the generated documentation pages.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[DocumentationOptions]=FSHeader["0.76.0"];
@@ -137,4 +137,4 @@ Guides[SetDocumentationOptions]={$GuideCreatingDocPages};
 Tutorials[SetDocumentationOptions]={$TutorialCreatingSymbolPages};
 
 
-]
+End[]

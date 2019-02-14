@@ -4,7 +4,7 @@ Usage[Guide]="[*'''```sym```='''[*Guide[title]*]*] tags ```sym``` as a documenta
 Usage[GuideQ]="GuideQ[sym] returns whether ```sym``` is tagged as documentation guide symbol.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Guide]=FSHeader["0.66.0","0.67.14"];
@@ -129,4 +129,4 @@ SeeAlso[GuideQ]={Guide,DocumentationHeader,DocumentationBuilder};
 Guides[GuideQ]={$GuideCreatingDocPages};
 
 
-]
+End[]

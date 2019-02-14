@@ -47,4 +47,7 @@ Block[{Notation`AutoLoadNotationPalette=False},
 <<`ListLookup`;
 
 
+<<`ImportDatasetDoc`;
+
+
 EndPackage[]

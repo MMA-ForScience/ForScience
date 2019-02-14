@@ -3,6 +3,9 @@
 $GuidePacletUtils=Guide["PacletUtils"];
 
 
+Begin[BuildAction]
+
+
 DocumentationHeader[$GuidePacletUtils]=FSGuideHeader;
 
 
@@ -31,7 +34,13 @@ GuideSections[$GuidePacletUtils]={
 };
 
 
-(Guides@#=DeleteDuplicates[Append[Guides@#,$GuidePacletUtils]])&/@Unevaluated@@@`Private`HeldSymbol/@Names["ForScience`PacletUtils`*"]
+(Guides@#=DeleteDuplicates[Append[Guides@#,$GuidePacletUtils]])&[
+  Unevaluated@@ToExpression[#,StandardForm,Hold]
+  ]&/@
+    Names["ForScience`PacletUtils`*"]
 
 
 Guides[$GuidePacletUtils]={$GuideCreatingDocPages};
+
+
+End[]

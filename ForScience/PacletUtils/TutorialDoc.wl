@@ -4,7 +4,7 @@ Usage[Tutorial]="[*'''```sym```='''[*Tutorial[title]*]*] tags ```sym``` as a doc
 Usage[TutorialQ]="TutorialQ[sym] returns whether ```sym``` is tagged as documentation tutorial symbol.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Tutorial]=FSHeader["0.68.0"];
@@ -140,4 +140,4 @@ SeeAlso[TutorialQ]={Tutorial,DocumentationHeader,DocumentationBuilder};
 Guides[TutorialQ]={$GuideCreatingDocPages};
 
 
-]
+End[]

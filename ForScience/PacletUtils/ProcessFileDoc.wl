@@ -6,7 +6,7 @@ ProcessFile[{proc_1,\[Ellipsis]}] is the operator form.";
 Usage[$ProcessedFile]="$ProcessedFile is set to the absolute path of the file currently being processed by [*ProcessFile*]. Otherwise, it is '''\"\"'''.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[ProcessFile]=FSHeader["0.46.0","0.83.15"];
@@ -139,4 +139,4 @@ Examples[$ProcessedFile,"Basic examples"]={
 SeeAlso[$ProcessedFile]={ProcessFile};
 
 
-]
+End[]

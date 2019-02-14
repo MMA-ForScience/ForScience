@@ -4,7 +4,7 @@ Usage[GuideSections]="[*[*GuideSections[guide]*]'''={{```line```_1,\[Ellipsis]},
 Usage[SectionTitle]="SectionTitle[title] can be used as first element of a guide page section to indicate the title.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[GuideSections]=FSHeader["0.66.0"];
@@ -218,4 +218,4 @@ SeeAlso[SectionTitle]={GuideSections,DocumentationBuilder};
 Guides[SectionTitle]={$GuideCreatingDocPages};
 
 
-]
+End[]

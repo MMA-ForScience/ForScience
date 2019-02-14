@@ -4,7 +4,7 @@ Usage[TutorialOverview]="[*'''```sym```='''[*TutorialOverview[title]*]*] tags ``
 Usage[TutorialOverviewQ]="TutorialOverviewQ[sym] returns whether ```sym``` is tagged as tutorial overview symbol.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[TutorialOverview]=FSHeader["0.70.0"];
@@ -121,4 +121,4 @@ SeeAlso[TutorialOverviewQ]={TutorialOverview,DocumentationHeader,DocumentationBu
 Guides[TutorialOverviewQ]={$GuideCreatingDocPages};
 
 
-]
+End[]

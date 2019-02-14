@@ -7,7 +7,7 @@ Examples[sym,\[Ellipsis]] returns the assigned list of examples/example subsecti
 [*[*Examples[sym,\[Ellipsis]]*]'''=.'''*] removes the specified example section.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Examples]=FSHeader["0.58.0","0.76.7"];
@@ -278,4 +278,4 @@ Guides[Examples]={$GuideCreatingDocPages};
 Tutorials[Examples]={$TutorialCreatingSymbolPages};
 
 
-]
+End[]

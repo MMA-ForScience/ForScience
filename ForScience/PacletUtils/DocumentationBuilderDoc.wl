@@ -5,7 +5,7 @@ DocumentationBuilder[sym] builds and displays the documentation page for the spe
 DocumentationBuilder[tagged] builds and displays the documentation page of the appropriate type for the tagged symbol ```tagged```. The return value is a reference to that notebook.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.83.10"];
@@ -151,4 +151,4 @@ Guides[DocumentationBuilder]={$GuideCreatingDocPages};
 Tutorials[DocumentationBuilder]={$TutorialCreatingSymbolPages};
 
 
-]
+End[]

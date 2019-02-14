@@ -10,7 +10,7 @@ Usage[$BuiltPaclet]="$BuiltPaclet is set to the name of the actively built pacle
 Usage[$BuildCacheDirectory]="$BuildCacheDirectory is set to the absolute path to the cache directory specified for [*BuildPaclet*] during build. If no paclet is being built, this is '''\"\"'''."
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[BuildPaclet]=FSHeader["0.48.0","0.83.10"];
@@ -84,4 +84,4 @@ Details[$BuildCacheDirectory]={
 SeeAlso[$BuildCacheDirectory]=Hold[BuildPaclet,$BuildActive,$BuiltPaclet]
 
 
-]
+End[]

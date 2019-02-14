@@ -4,7 +4,7 @@ Usage[Abstract]="[*[*Abstract[guide]*]'''=```abstract```'''*] sets the abstract 
 [*[*Abstract[overview]*]'''=```abstract```'''*] sets the abstract for the overview page ```overview``` to ```abstract```.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Abstract]=FSHeader["0.66.0","0.70.0"];
@@ -50,4 +50,4 @@ SeeAlso[Abstract]={Guide,TutorialOverview,DocumentationBuilder,GuideSections,Tut
 Guides[Abstract]={$GuideCreatingDocPages};
 
 
-]
+End[]

@@ -7,7 +7,7 @@ OverviewEntries[overview,\[Ellipsis]] returns the assigned tutorial/TOC subsecti
 [*[*OverviewEntries[overview,\[Ellipsis]]*]'''=.'''*] removes the specified part of the TOC.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[OverviewEntries]=FSHeader["0.70.0"];
@@ -171,4 +171,4 @@ SeeAlso[OverviewEntries]={DocumentationBuilder,TutorialOverview,Tutorial,Example
 Guides[OverviewEntries]={$GuideCreatingDocPages};
 
 
-]
+End[]

@@ -3,7 +3,7 @@
 Usage[FormatUsage]="FormatUsage[str] combines the functionalities of [*FormatUsageCase*], [*ParseFormatting*] and [*MakeUsageString*].";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.87.42"];
@@ -91,4 +91,4 @@ SeeAlso[FormatUsage]={Usage,FormatUsageCase,ParseFormatting,MakeUsageString};
 Guides[FormatUsage]={$GuideCreatingDocPages};
 
 
-]
+End[]

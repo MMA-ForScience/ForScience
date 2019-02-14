@@ -4,7 +4,7 @@ Usage[DocumentationHeader]="[*[*DocumentationHeader[sym]*]'''={```header```,```c
 Usage[$ForScienceColor]="$ForScienceColor is the documentation header color used by the ForScience package.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[DocumentationHeader]=FSHeader["0.55.0","0.70.2"];
@@ -83,4 +83,4 @@ SeeAlso[$ForScienceColor]={DocumentationHeader,DocumentationBuilder};
 Guides[$ForScienceColor]={$GuideCreatingDocPages};
 
 
-]
+End[]

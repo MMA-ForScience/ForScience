@@ -48,6 +48,14 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`UnloadPacletDocumentation`;
 
 
+BuildAction[
+  (* guide & tutorial symbols. Need to declare them here, as they're used inside Begin[BuildAction] ... End[] *)
+  $GuidePacletUtils;
+  $GuideCreatingDocPages;
+  $TutorialCreatingSymbolPages;
+]
+
+
 <<`FormatUsageCaseDoc`;
 <<`ParseFormattingDoc`;
 <<`MakeUsageStringDoc`;
@@ -73,6 +81,12 @@ BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","Documentation
 <<`SeeAlsoDoc`;
 <<`TutorialsDoc`;
 <<`GuidesDoc`;
+<<`FSHeaderDoc`;
+<<`CleanExampleDirectoryDoc`;
+<<`CompatibilityCheckerDoc`;
+<<`VariableLeakTracerDoc`;
+<<`UsageCompilerDoc`;
+<<`BuildTimeEvaluateDoc`;
 
 
 <<`PacletSelfCheck`;

@@ -1,10 +1,11 @@
 (* ::Package:: *)
 
 Usage[Guides]="[*[*Guides[sym]*]'''={```guide```_1,\[Ellipsis]}'''*] sets the guides to appear in the \"Related Guides\" section of the documentation page built by [*DocumentationBuilder*].
-[*[*Guides[guide]*]'''={```guide```_1,\[Ellipsis]}'''*] sets the related guides for ```guide```.";
+[*[*Guides[guide]*]'''={```guide```_1,\[Ellipsis]}'''*] sets the related guides for ```guide```.
+[*[*Guides[tut]*]'''={```guide```_1,\[Ellipsis]}'''*] sets the related guides for ```tut```.";
 
 
-BuildAction[
+Begin[BuildAction]
 
 
 DocumentationHeader[Guides]=FSHeader["0.64.0","0.66.0"];
@@ -56,7 +57,7 @@ Examples[Guides,"Properties & Relations"]={
     "[*Guides*] can be used to set related guides of guide pages:",
     ExampleInput[
       gd=Guide["Test guide"];,
-      DocumentationHeader[gd]={"TEST GUIDE",Red,"Never introdcued"};,
+      DocumentationHeader[gd]={"TEST GUIDE",Red,"Never introduced"};,
       Guides[gd]={"Associations"};,
       DocumentationBuilder[gd]
     ],
@@ -71,4 +72,4 @@ SeeAlso[Guides]={DocumentationBuilder,Guide,Tutorials,SeeAlso,Usage,Details,Exam
 Guides[Guides]={$GuideCreatingDocPages};
 
 
-]
+End[]
