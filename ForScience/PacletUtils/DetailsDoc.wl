@@ -23,7 +23,7 @@ Details[Details]={
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
   Hyperlink["Hyperlinked notes can be used to refer to examples in the [*Examples*] section.","Hyperlink"],
-  "In formatted strings, symbols wrapped in [\[InvisibleSpace]*\[Ellipsis]*\[InvisibleSpace]] are converted into hyperlinks if they are documented.",
+  "In formatted strings, symbols wrapped in \\[*\[Ellipsis]\\*] are converted into hyperlinks if they are documented.",
   "Tables can have 2 or 3 columns. Possible types of entries are:",
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
@@ -60,7 +60,7 @@ Examples[Details,"Basic examples"]={
     ExampleInput[NotebookClose[%];,Visible->False]
   },
   {
-    "Hyperlinks are generated for symbols wrapped in [\[InvisibleSpace]*\[Ellipsis]*\[InvisibleSpace]]:",
+    "Hyperlinks are generated for symbols wrapped in \\[*\[Ellipsis]\\*]:",
     ExampleInput[
       "Details[test]={
         \"Hyperlinks for symbols: [*DocumentationBuilder*], [*Details*]\",

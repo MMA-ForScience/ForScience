@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Usage[FormatUsageCase]="FormatUsageCase[str] prepares all function calls wrapped in [\[InvisibleSpace]* and *\[InvisibleSpace]] to be formatted by [*ParseFormatting*].";
+Usage[FormatUsageCase]="FormatUsageCase[str] prepares all function calls wrapped in \\[* and \\*] to be formatted by [*ParseFormatting*].";
 
 
 BuildAction[
