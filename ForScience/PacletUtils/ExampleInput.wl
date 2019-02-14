@@ -187,11 +187,12 @@ EvaluateAndWrite[nb_,cells_,nbOpts:OptionsPattern[]]:=
 (* NotebookEvaluate leaks $Context/$ContextPath/$Line when called from a cell with CellContext 
    Global`Private`SavedContextInfo is also messed up due to excessive context switching back to Global`.
    This leads to $Context in cells without CellContext to be broken as well.
-   The Block is wrapped around the NotebookClose statement as well, as that seems to be the final blow to Global`Private`SavedContextInfo *)
+   The Block is wrapped around the NotebookClose statement as well, as that seems to be the final blow to Global`Private`SavedContextInfo
+   Needs to reset $ContextPath manually, as Blocking it causes random shadowing warnings, see https://mathematica.stackexchange.com/q/191511/  *)
 Block[
   {
     $Context=$Context,
-    $ContextPath=$ContextPath,
+    $OldContextPath=$ContextPath,
     $Line,
     Global`Private`SavedContextInfo
   },
@@ -205,7 +206,8 @@ Block[
     NotebookEvaluate[exNb,InsertResults->True];
     NotebookWrite[nb,First@NotebookGet@exNb];
     NotebookClose[exNb];
-  ]
+  ];
+  $ContextPath=$OldContextPath
 ]
 
 
