@@ -126,7 +126,7 @@ EIToBoxes[s_String,OptionsPattern[]]:=PrettifyBoxes[
 "->"\[IndentingNewLine]"
 ]
 EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
-  {Graphics,Graphics3D,Graph,Style},
+  {Graphics,Graphics3D,Graph,Style,$TypesetEI=False},
   WrapBoxes[
     PrettifyBoxes@Block[
       {$ContextPath=Prepend[$ContextPath,"ForScience`BuildAction`"]},
@@ -137,7 +137,10 @@ EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
 ]
 
 
-ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm]:=With[
+$TypesetEI=True;
+
+
+ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm]/;$TypesetEI:=With[
   {
     boxes=RowBox@{
       "ExampleInput",
