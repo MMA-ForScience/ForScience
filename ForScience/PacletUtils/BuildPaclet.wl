@@ -42,11 +42,11 @@ BuildPaclet[dir_,postProcs:procList,gProcs:(procList|procLists):{},o:flatOpts]:=
 BuildPaclet[dir_,procs:procLists,gPostProcs:procList:{},o:flatOpts]:=
  BuildPaclet[dir,procs,{{},gPostProcs},o]
 BuildPaclet[dir_,procs:{preProcs:procList,postProcs:procList},gProcs:{gPreProcs:procList,gPostProcs:procList},o:flatOpts]:=
-With[
+Module[
   {
     buildDir=OptionValue["BuildDirectory"],
     cacheDir=OptionValue["CacheDirectory"],
-    absoluteCacheDir=AbsoluteFileName@OptionValue["CacheDirectory"],
+    absoluteCacheDir,
     oldBuildActive=$BuildActive,
     oldBuiltPaclet=$BuiltPaclet,
     oldCacheDirectory=$BuildCacheDirectory
@@ -66,6 +66,7 @@ With[
     If[!FileExistsQ@cacheDir,
       CreateDirectory[cacheDir]
     ];
+    absoluteCacheDir=AbsoluteFileName@cacheDir;
     SetDirectory[buildDir],
     Message[BuildPaclet::initFailed];
     Return@$Failed

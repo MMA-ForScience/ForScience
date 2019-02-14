@@ -4,7 +4,7 @@ Paclet[
   Name -> "ForScience",
   Description -> "Contains various utility functions and styling to make it easier to use MMA for scientific plots",
   Creator -> "Lukas Lang & Marc Lehner",
-  Version -> "0.87.37",
+  Version -> "0.87.38",
   MathematicaVersion -> "11.1+",
   Extensions -> {
     { "Documentation", Language -> "English"},
