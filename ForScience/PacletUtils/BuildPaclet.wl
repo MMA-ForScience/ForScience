@@ -32,6 +32,7 @@ procLists={procList,procList};
 flatOpts=OptionsPattern[]?(Not@*ListQ);
 
 
+$PrivateContext=$Context;
 GetMarker;
 
 
@@ -70,7 +71,9 @@ With[
     Return@$Failed
   ];
   $BuildActive=True;
+  Begin[$PrivateContext];
   $BuiltPaclet=KeyMap[ToString,Association@@Get["PacletInfo.m"]]["Name"];
+  End[];
   $BuildCacheDirectory=absoluteCacheDir;
   If[OptionValue@ProgressIndicator,PrintTemporary@"Running pre-processors..."];
   #[]&/@gPreProcs;
