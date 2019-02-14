@@ -58,50 +58,50 @@ ParseFormatting[str_]:=Module[
   pStr=StringReplace[
     {
       "\\"~~c_:>c,
-      "```"->" ```` ",
-      "'''"->" ```´ ",
-      "{*"->" ´``` ",
-      "*}"->" ````` ",
-      "[*"->" ````´ ",
-      "*]"->" ´```` ",
-      "<*"->" ```´` ",
-      "*>"->" ```´´ ",
-      ", "->" ´```´ ",
-      " "->" `´``` ",
-      "_"->" `````` ",
-      "\""->"`````´"
+      "```"->" ```ti ",
+      "'''"->" ```mr ",
+      "{*"->" ```go ",
+      "*}"->" ```gc ",
+      "[*"->" ```co ",
+      "*]"->" ```cc ",
+      "<*"->" ```lo ",
+      "*>"->" ```lc ",
+      ", "->" ```cm ",
+      " "->" ```ws ",
+      "_"->" ```sb ",
+      "\""->"```qt"
     }
   ]@str;
   pStr=StringReplace[pStr,"\\"->"\\\\"];
   pStr=First@MathLink`CallFrontEnd[
     FrontEnd`UndocumentedTestFEParserPacket[pStr,True]
   ];
-  pStr=pStr/.s_String:>StringReplace[s,{"`````´"->"\"","\\\\"->"\\"}];
+  pStr=pStr/.s_String:>StringReplace[s,{"```qt"->"\"","\\\\"->"\\"}];
   pStr=Append[EndOfLine]@Replace[
     Flatten@Replace[{First@pStr},RowBox@x_:>x,\[Infinity]],
     {
-      "````"->ti,
-      "```´"->mr,
-      "´```"->go,
-      "`````"->gc,
-      "````´"->co,
-      "´````"->cc,
-      "```´`"->lo,
-      "```´´"->lc,
-      "`´```"->" ",
-      "``````"->sb
+      "```ti"->ti,
+      "```mr"->mr,
+      "```go"->go,
+      "```gc"->gc,
+      "```co"->co,
+      "```cc"->cc,
+      "```lo"->lo,
+      "```lc"->lc,
+      "```ws"->" ",
+      "```sb"->sb
     },
     1
   ];
   Catch[
     FixedPoint[
       Replace[#,{pre___,s:Longest@Repeated[_String,{2,\[Infinity]}],post___}:>
-       {pre,StringReplace["´```´"->", "]@StringJoin@s,post},1]&,
+       {pre,StringReplace["```cm"->", "]@StringJoin@s,post},1]&,
       First[
         {ParseToToken[pStr, i][EndOfLine]}//.
          {pre___,a:Except[sb]:"",sb,b:Except[sb]:"",post___}:>{pre,If[b==="",a,SubscriptBox[a,b]],post}
       ]
-    ]/."´```´"->",",
+    ]/."```cm"->",",
     EndOfFile|"Unmatched",
     (
       Replace[
