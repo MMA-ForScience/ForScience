@@ -20,7 +20,7 @@ Details[ExampleInput]={
     {"\"```str```\"","A string form of the expression to be inserted"}
   },
   "Specifying an input as string allows entering multiline inputs that are formatted as such.",
-  "Spaces at the beginning of lines in string inputs are removed in favor of [*\\[IndentingNewline]*]",
+  "Spaces at the beginning of lines in string inputs are removed in favor of ***<*\[IndentingNewLine]::\\\\[IndentingNewLine]*>***",
   "[*ExampleInput*] accepts the following options:",
   TableForm@{
     {InitializationCell,Automatic,"Whether the input cell should be an initialization cell"},
