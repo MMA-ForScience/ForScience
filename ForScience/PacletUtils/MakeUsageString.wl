@@ -15,6 +15,7 @@ MakeUsageString[boxes_List]:=StringRiffle[
       boxes,
       {
         TagBox[b_,"[**]"]:>StyleBox[b,"MR"],
+        TagBox[RowBox@l:{__String},"<**>"]:>DocID[Evaluate@StringJoin@l][Label],
         TagBox[b_,_]:>b
       },
       All      
