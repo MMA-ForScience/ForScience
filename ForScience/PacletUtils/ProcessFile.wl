@@ -40,7 +40,7 @@ ProcessFile[{in_,out_},processors_List]:=Block[
           res
         },
         res=(RightComposition@@processors)@init;
-        If[init=!=res,
+        If[init=!=res||in=!=out,
           Export[
             out,
             StringReplace[
