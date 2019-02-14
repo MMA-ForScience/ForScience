@@ -12,7 +12,7 @@ SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 CodeCell[box_]:=Cell[BoxData@box,"InlineFormula",FontFamily->"Source Sans Pro"]
 
 
-BoxesToDocEntry[boxes:(_RowBox|_TagBox)]:=
+BoxesToDocEntry[boxes:(_RowBox|_TagBox|_StyleBox)]:=
 Replace[ (* clean up box structures *)
   Replace[ (* process all TagBoxes, from the inside out *)
     Replace[ (* for RowBoxes ... *)

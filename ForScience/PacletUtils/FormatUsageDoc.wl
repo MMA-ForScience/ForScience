@@ -6,7 +6,7 @@ Usage[FormatUsage]="FormatUsage[str] combines the functionalities of [*FormatUsa
 BuildAction[
 
 
-DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.87.18"];
+DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.87.42"];
 
 
 Details[FormatUsage]={
@@ -15,6 +15,7 @@ Details[FormatUsage]={
   TableForm@{
     {"``\\````str`````\\`","Formats ```str``` as \"TI\" (times italic), e.g. ```str```"},
     {"\\'''```str```\\'''","Formats ```str``` as \"MR\" (mono regular), e.g. '''str'''"},
+    {"\\***```str```\\***","Prevents display of special characters in ```str```"},
     {"```a```\\_```b```","Formats as subscript, e.g. a_b"},
     {"\\{*```str```\\*}","Treats ```str``` as a single token, e.g. for subscripting"},
     {"\\[*```str```\\*]","Effectively applies [*FormatUsageCase*] to ```str``` and tags it for hyperlinking (for documentation pages)"},
@@ -55,6 +56,10 @@ myFunc[{lhs\[RuleDelayed]rhs}] does something."];],
   {
     "Escape characters that would otherwise be interpreted as format specifiers:",
     ExampleInput[FormatUsage["\\```bar\\_\\{*ab,\\'''cd\\'''\\*}\\```"]]
+  },
+  {
+    "Show the control sequences for special characters instead of the characters themselves:",
+    ExampleInput[FormatUsage["The character \[Alpha] can be entered as ***\[Alpha]***."]]
   }
 };
 
