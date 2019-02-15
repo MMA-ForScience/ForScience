@@ -115,7 +115,16 @@ VectorMarker[metrics_Association,size:_?NumericQ:10,OptionsPattern[]]:=Let[
     edgeForm=Replace[
       OptionValue[EdgeForm],
       {
-        (Automatic/;makeEmpty)|All:>EdgeForm@{JoinForm@OptionValue[JoinForm],Thickness@OptionValue[Thickness],RGBColor@Inherited,Opacity@Inherited},
+        (Automatic/;makeEmpty)|All:>
+          EdgeForm@{
+            JoinForm@OptionValue[JoinForm],
+            Replace[
+              OptionValue[Thickness],
+              t:Except[_Thickness|_AbsoluteThickness]:>Thickness@t
+            ],
+            RGBColor@Inherited,
+            Opacity@Inherited
+          },
         None|Automatic:>EdgeForm@None,
         e_:>EdgeForm@e
       }
