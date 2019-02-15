@@ -184,18 +184,21 @@ With[
 ExampleLink[ref_]:=ButtonBox["\[NonBreakingSpace]\[RightGuillemet]",BaseStyle->"ExampleLink",ButtonData->GenerateCellID[ref]]
 
 
-ExampleLinkedCell[Hyperlink[text_String,ref_]]:=
-Cell[
-  Replace[
-    ParseToDocEntry@text,
-    {
-      TextData@t_:>TextData@Append[t,ExampleLink@ref],
-      s_String:>TextData@{s,ExampleLink@ref},
-      b_BoxData:>TextData@{Cell@b,ExampleLink@ref},
-      d_:>BoxData@{Cell@d,ExampleLink@ref}
-    }
-  ],
-  "Notes"
+ExampleLinkedCell[Hyperlink[text_String,{refs__}|ref_]]:=
+With[
+  {links=Sequence@@ExampleLink/@{ref,refs}},
+  Cell[
+    Replace[
+      ParseToDocEntry@text,
+      {
+        TextData@{t___}:>TextData@{t,links},
+        s_String:>TextData@{s,links},
+        b_BoxData:>TextData@{Cell@b,links},
+        d_:>BoxData@{Cell@d,links}
+      }
+    ],
+    "Notes"
+  ]
 ]
 
 

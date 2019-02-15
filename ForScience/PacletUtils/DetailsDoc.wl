@@ -6,7 +6,7 @@ Usage[Details]="[*[*Details[sym]*]'''={```note```_1,\[Ellipsis]}'''*] sets the c
 Begin[BuildAction]
 
 
-DocumentationHeader[Details]=FSHeader["0.57.0","0.76.3"];
+DocumentationHeader[Details]=FSHeader["0.57.0","0.87.49"];
 
 
 Details[Details]={
@@ -23,6 +23,7 @@ Details[Details]={
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
   Hyperlink["Hyperlinked notes can be used to refer to examples in the [*Examples*] section.","Hyperlink"],
+  "In [*Hyperlink*][\"```note```\",```ref```], ```ref``` can either be a single reference or a list of references linking to different examples.",
   "In formatted strings, symbols wrapped in \\[*\[Ellipsis]\\*] are converted into hyperlinks if they are documented.",
   "Tables can have 2 or 3 columns. Possible types of entries are:",
   TableForm@{
