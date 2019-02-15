@@ -12,6 +12,9 @@ VectorMarker[{marker_1,\[Ellipsis]}] represents a list of polygon plotmarkers.";
 Begin["`Private`"]
 
 
+BuildAction[Clear@GlyphMetrics]
+
+
 GlyphMetrics[Style[s_String]]:=GlyphMetrics[s]
 GlyphMetrics[s_String]:=GlyphMetrics[Style[s,FontFamily->"Arial"]]
 GlyphMetrics[s:Style[_String,___]]:=GlyphMetrics[s]=Let[
@@ -33,7 +36,7 @@ $DefaultMarkers=Graphics`PlotMarkers[][[All,1]];
 $PreciseMarkers={"+","\[Times]","*","\[CirclePlus]","\[CircleTimes]","\[CircleDot]"};
 
 
-$DefaultGlyphMetrics=BuildTimeEvaluate["DefaultPlotMarkers",AssociationMap[GlyphMetrics]@Join[$DefaultMarkers,$PreciseMarkers]];
+$DefaultGlyphMetrics=BuildTimeEvaluate["DefaultPlotMarkers",AssociationMap[GlyphMetrics]@Join[$DefaultMarkers,$PreciseMarkers],"CacheID"->1];
 KeyValueMap[(GlyphMetrics[#]=#2)&]@$DefaultGlyphMetrics;
 
 
