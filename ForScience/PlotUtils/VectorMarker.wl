@@ -67,7 +67,15 @@ ResolvePositionSpec[p:{_?NumericQ,_?NumericQ}]:=p
 ResolvePositionSpec[l_List]:=Total[ResolvePositionSpec/@l]
 
 
-Options[VectorMarker]={Background->White,"MakeEmpty"->Automatic,Thickness->Inherited,AlignmentPoint->Automatic,JoinForm->{"Miter",20},EdgeForm->Automatic};
+Options[VectorMarker]={
+  Background->White,
+  "MakeEmpty"->Automatic,
+  Thickness->Inherited,
+  AlignmentPoint->Automatic,
+  JoinForm->{"Miter",20},
+  EdgeForm->Automatic,
+  FaceForm->Automatic
+};
 
 
 VectorMarker[Automatic,o:OptionsPattern[]]:=
@@ -109,7 +117,19 @@ VectorMarker[metrics_Association,size:_?NumericQ:10,OptionsPattern[]]:=Let[
     bgPrimitives=If[makeEmpty||background===None,Nothing,{Opacity@Inherited,EdgeForm@None,background,metrics["filledPrimitives"]}],
     faceForm=Which[
       !makeEmpty,
-      FaceForm@{RGBColor@Inherited,Opacity@Inherited},
+      Replace[
+        OptionValue[FaceForm],
+        {
+          None->FaceForm@None,
+          Automatic|Directive[d___]|{d___}|d2_:>
+            FaceForm@{
+              RGBColor@Inherited,
+              Opacity@Inherited,
+              d,
+              d2
+            }
+        }
+      ],
       background===None,
       FaceForm@None,
       True,
