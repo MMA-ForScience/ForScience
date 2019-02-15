@@ -1,12 +1,6 @@
 (* ::Package:: *)
 
-Usage[VectorMarker]="VectorMarker[str] represents a vectorized plotmarker with the same shape as ```str```.
-[*VectorMarker*][[*Style*][str,\[Ellipsis]]] represents a vectorized plotmarker with the same shape as [*Style[str,\[Ellipsis]]*].
-[*VectorMarker*][[*Polygon[n]*]] represents a ```n```-sided polygon plotmarker standing on its flat base.
-[*VectorMarker*][[*Polygon[-n]*]] represents a ```n```-sided polygon plotmarker standing on its tip.
-[*VectorMarker*][[*Polygon[sideSpec,\[Theta]]*]] represents a polygon plotmarker rotated by ```\[Theta]```.
-VectorMarker[{spec,size}] represents a polygon plotmarker with size ```size```.
-VectorMarker[{marker_1,\[Ellipsis]}] represents a list of polygon plotmarkers.";
+VectorMarker;
 
 
 Begin["`Private`"]

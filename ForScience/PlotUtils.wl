@@ -15,6 +15,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 
 
 <<`ColorFunctionsDoc`;
+<<`VectorMarkerDoc`;
 <<`CustomTicksDoc`;
 <<`CombinePlotsDoc`;
 <<`GraphicsInformationDoc`;
