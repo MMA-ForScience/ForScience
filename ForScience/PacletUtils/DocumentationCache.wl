@@ -75,7 +75,7 @@ DocumentationCacheGet[sym_,type_,OptionsPattern[]]:=With[
       cacheData=Import[cacheFile<>".mx"]
     },
     If[cacheData["Dependencies"]=!=curID,Return@Null];
-    If[AnyTrue[cacheData[Hyperlink],Apply[DocumentedQ]],
+    If[AnyTrue[cacheData[Hyperlink],DocumentedQ],
       Export[
         cacheFile<>".nb",
         Import[cacheFile<>".nb"]/.
