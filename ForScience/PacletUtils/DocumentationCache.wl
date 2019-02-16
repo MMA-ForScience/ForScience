@@ -83,7 +83,10 @@ DocumentationCacheGet[sym_,type_,OptionsPattern[]]:=With[
            _,
            Hyperlink->{id_,linkFunc_}|id_/;DocumentedQ[id],
            OptionsPattern[]
-         ]:>First[{linkFunc,DocumentationLink}]@id
+         ]:>With[
+            {res=First[{linkFunc,DocumentationLink}]@id},
+            res/;True
+          ]
       ]
     ];
     cacheFile<>".nb"
