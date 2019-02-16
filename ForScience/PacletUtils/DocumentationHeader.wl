@@ -93,7 +93,7 @@ With[
 ]
 
 
-HeaderDropdownLink/:(ref_:>HeaderDropdownLink[ref_]):=RawDocumentationLink[ref]/.{
+HeaderDropdownLink/:(_:>HeaderDropdownLink[ref_]):=RawDocumentationLink[ref]/.{
   {id_,_Missing}->(id@Label:>TagBox[ref,Hyperlink->{id,HeaderDropdownLink}]),
   {id_,uri_}->(id@Label:>Documentation`HelpLookup[uri])
 }
