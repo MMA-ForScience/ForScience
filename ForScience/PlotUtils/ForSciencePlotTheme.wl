@@ -9,12 +9,15 @@ Begin["`Private`"]
 System`PlotThemeDump`resolvePlotTheme["ForScience",s_]:=
   System`PlotThemeDump`resolvePlotTheme[{"ForScience"},s]
 System`PlotThemeDump`resolvePlotTheme[{"ForScience",opts:OptionsPattern[]},s_]:=
+  Themes`SetWeight[
   Join[
     System`PlotThemeDump`resolvePlotTheme[{"FSColors",opts},s],
     System`PlotThemeDump`resolvePlotTheme[{"FSFrame",opts},s],
     System`PlotThemeDump`resolvePlotTheme[{"FSThickLines",opts},s],
     System`PlotThemeDump`resolvePlotTheme[{"FSMarkers",opts},s],
     System`PlotThemeDump`resolvePlotTheme[{"FSLabels",opts},s]
+    ],
+    Themes`$DesignWeight
   ]
 
 
