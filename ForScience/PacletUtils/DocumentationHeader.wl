@@ -29,7 +29,7 @@ DocumentationHeader/:
  )
 HoldPattern[DocumentationHeader[sym_]=.]^:=
  (
-   DeleteCases[$DocumentedObjects,sym];
+   $DocumentedObjects=DeleteCases[$DocumentedObjects,sym];
    sym/:DocumentationHeader[sym]=.
  )
 HoldPattern[DocumentationHeader[sym_]=header_]^:=
