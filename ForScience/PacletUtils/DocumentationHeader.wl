@@ -12,7 +12,9 @@ $ForScienceColor=Darker@Green;
 SyntaxInformation[DocumentationHeader]={"ArgumentsPattern"->{_}};
 
 
-$DocumentedObjects=Hold[];
+If[!MatchQ[$DocumentedObjects,_Hold],
+  $DocumentedObjects=Hold[];
+]
 
 
 Attributes[DocumentationHeader]={HoldFirst};
