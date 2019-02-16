@@ -126,7 +126,7 @@ EIToBoxes[s_String,OptionsPattern[]]:=PrettifyBoxes[
 "->"\[IndentingNewLine]"
 ]
 EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
-  {Graphics,Graphics3D,Graph,Style,$TypesetEI=False},
+  {Graphics,Graphics3D,Graph,Style,Hue,GrayLevel,RGBColor,CMYKColor,LABColor,LCHColor,LUVColor,XYZColor,$TypesetEI=False},
   WrapBoxes[
     PrettifyBoxes@Replace[
       ToBoxes@Unevaluated@expr,
