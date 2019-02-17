@@ -359,7 +359,7 @@ Examples[ExampleInput,"Possible issues"]={
   },
   {
     "Some settings for the \"Multiline\" option might result in syntactically invalid expressions:",
-    ExampleInput["ExampleInput[\"a\"<>\"b\"<>\"c\",\"Multiline\"->{None,\"<>\"}]"]
+    ExampleInput["ExampleInput[\"a\"~~\"b\"~~\"c\",\"Multiline\"->{None,\"~~\"}]"]
   },
   {
     "Outputs of invisible cells are not automatically hidden:",

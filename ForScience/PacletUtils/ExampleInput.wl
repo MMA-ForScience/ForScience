@@ -43,10 +43,43 @@ BoxWidth[_[args___]]:=Max[BoxWidth/@Unevaluated@{args}]
 BoxWidth[_]:=0
 
 
-PrettifyBoxes[boxes_]:=Replace[
-  boxes,
+InfixOperator[str_String]:=InfixOperator[str]=InfixOperator[Symbol@str]
+InfixOperator[sym_Symbol]:=InfixOperator[sym]=MakeBoxes[sym[_,_]][[1,2]]
+
+
+$PrettifyRules=Dispatch@{
   RowBox@{"Association","[",args___,"]"}:>
-   RowBox@{"\[LeftAssociation]",args,"\[RightAssociation]"},
+    RowBox@{"\[LeftAssociation]",args,"\[RightAssociation]"},
+  RowBox@{"Inequality","[",RowBox@{args___},"]"}:>
+    RowBox@MapAt[
+      If[Precedence[#,InputForm]<Precedence@Equal,
+        RowBox@{"(",#,")"},
+        #
+      ]&,
+      ;;;;2
+    ]@MapAt[
+      InfixOperator,
+      2;;;;2
+    ]@{args}[[;;;;2]],
+  RowBox@{h_,"[",RowBox@{"[",args__,"]"},"]"}:>
+    RowBox@{h,"\[LeftDoubleBracket]",RowBox@{args},"\[RightDoubleBracket]"},
+  "->"->"\[Rule]",
+  ":>"->"\[RuleDelayed]",
+  ">="->"\[GreaterEqual]",
+  "<="->"\[LessEqual]",
+  "=="->"\[Equal]",
+  "!="->"\[NotEqual]",
+  "[["->"\[LeftDoubleBracket]",
+  "]]"->"\[RightDoubleBracket]",
+  "Pi"->"\[Pi]",
+  "*"->" "
+};
+
+
+$prettifyTime=0;
+PrettifyBoxes[boxes_]:=($prettifyTime+=#;#2)&@@AbsoluteTiming@Replace[
+  boxes,
+  $PrettifyRules,
   All
 ]
 
@@ -125,24 +158,24 @@ EIToBoxes[s_String,OptionsPattern[]]:=PrettifyBoxes[
   ][[1, 1]]/."
 "->"\[IndentingNewLine]"
 ]
-EIToBoxes[expr_,o:OptionsPattern[]]:=Block[
-  {Graphics,Graphics3D,Graph,Style,Hue,GrayLevel,RGBColor,CMYKColor,LABColor,LCHColor,LUVColor,XYZColor,$TypesetEI=False},
+EIToBoxes[expr_,o:OptionsPattern[]]:=
   WrapBoxes[
     PrettifyBoxes@Replace[
-      ToBoxes@Unevaluated@expr,
+      MathLink`CallFrontEnd[
+        FrontEnd`UndocumentedTestFEParserPacket[
+          ToString[Unevaluated@expr,InputForm],
+          True
+        ]
+      ][[1,1]],
       s_String?(StringStartsQ@$BuildActionContext):>
         StringDrop[s,StringLength@$BuildActionContext],
       All
     ],
     o
   ]
-]
 
 
-$TypesetEI=True;
-
-
-ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm]/;$TypesetEI:=With[
+ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm]:=With[
   {
     boxes=RowBox@{
       "ExampleInput",
