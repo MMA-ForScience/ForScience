@@ -223,7 +223,7 @@ PlotGrid[
         ]
       ],
       o,
-      AspectRatio->Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
+      AspectRatio->ny/nx/Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
     ];
     (RightComposition@@Flatten@legends)@grid
   ]
