@@ -125,26 +125,28 @@ PlotGrid[
     ];
     {ny,nx}=Dimensions@l;
     sizes=Expand2DSpec[OptionValue[ItemSize],{nx,ny}];
-    rangeSizes=Mean/@(
+    rangeSizes=Map[Mean]/@(
       MapAt[
         Transpose,
-        2
+        1
       ]@Transpose[
         Apply[
           Abs@*Subtract,
           gi[PlotRange],
           {3}
-        ],
+        ]/.
+          Null->{Null,Null},
         {2,3,1}
       ]/.
         Null->Nothing
     );
-    imageSizes=Mean/@(
+    imageSizes=Map[Mean]/@(
       MapAt[
         Transpose,
-        2
+        1
       ]@Transpose[
-        gi[ImageSize],
+        gi[ImageSize]/.
+          Null->{Null,Null},
         {2,3,1}
       ]/.
         Null->Nothing
