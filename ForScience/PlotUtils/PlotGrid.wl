@@ -161,14 +161,13 @@ PlotGrid[
           s_:>s/#2
         }
       ]&,
-      {
+      #
+    ]&/@Transpose@{
         sizes,
         Total@Replace[#,{_[s_]:>s,Automatic->1},1]&/@sizes+0 sizes,
         Normalize[#,Total]&/@rangeSizes,
         Normalize[#,Total]&/@imageSizes
-      },
-      2
-    ];
+      };
     sizes=Normalize[#,Total]&/@sizes;
     positions=FoldList[Plus,0,Most@#]&/@MapAt[Reverse,2]@sizes;
     {grid,legends}=Reap@Graphics[
