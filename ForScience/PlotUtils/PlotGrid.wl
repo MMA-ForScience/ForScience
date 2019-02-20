@@ -97,6 +97,10 @@ PlotGrid[
     {
       nx,ny,
       padding,
+      frameStyle,
+      frameGraphics,
+      frameInset=Nothing,
+      framePadding=0,
       gi=GraphicsInformation[l],
       grid,
       legends,
@@ -172,58 +176,77 @@ PlotGrid[
       };
     sizes=Normalize[#,Total]&/@sizes;
     positions=FoldList[Plus,0,Most@#]&/@MapAt[Reverse,2]@sizes;
-    {grid,legends}=Reap@Graphics[
-      Inset[
-        Graphics[
-          Table[
-            If[l[[i,j]]=!=Null,
-              Inset[
-                Show[
-                  ClipFrameLabels[
-                      ApplyToWrapped[
-                        (Sow@#2;#)&,
-                        l[[i,j]],
-                        _Graphics,
-                        Legended[_,Except@_?LegendInsideQ],
-                        Method->Function
-                      ],
-                    Keys@Select[
-                      ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
-                        <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
-                      EqualTo@Null
-                    ]
-                  ],
-                  ImagePadding->padding,
-                  AspectRatio->Full
-                ],
-                {positions[[1,j]],positions[[2,1+ny-i]]},
-                Scaled[{0,0}],
-                Offset[Total/@padding,Scaled@{sizes[[1,j]],sizes[[2,i]]}]
-              ],
-              Nothing
-            ],
-            {i,ny},
-            {j,nx}
-          ],
-          PlotRange->{{0,1},{0,1}},
-          ImagePadding->padding,
-          AspectRatio->Full
+    frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
+      OptionValue[FrameStyle],
+      Automatic->GraphicsOpt[FirstCase[l,_Graphics,{},All],FrameStyle]
+    ];
+    If[OptionValue[FrameLabel]=!=None,
+      frameGraphics=Graphics[
+        {},
+        Frame->True,
+        FrameTicks->None,
+        FrameStyle->Replace[
+          frameStyle,
+          None|Directive[d___]|{d___}|d2_:>
+            Directive[d,d2,Opacity@0],
+          {2}
         ],
+        FrameLabel->Replace[
+          NormalizeGraphicsOpt[FrameLabel]@OptionValue[FrameLabel],
+          lbl:Except[None]:>Style[lbl,Opacity@1],
+          {2}
+        ],
+        AspectRatio->Full,
+        ImageSize->Total/@imageSizes
+      ];
+      framePadding=GraphicsInformation[frameGraphics][ImagePadding];
+      frameInset=Inset[
+        frameGraphics,
+        Offset[-padding[[All,1]],Scaled[{0,0}]],
         Scaled[{0,0}],
-        ImageScaled[{0,0}],
-        Scaled[{1,1}]
+        Offset[Total/@(padding+framePadding),Scaled[{1,1}]]
+      ]
+    ];
+    {grid,legends}=Reap@Graphics[
+      {
+        Table[
+          If[l[[i,j]]=!=Null,
+            Inset[
+              Show[
+                ClipFrameLabels[
+                    ApplyToWrapped[
+                      (Sow@#2;#)&,
+                      l[[i,j]],
+                      _Graphics,
+                      Legended[_,Except@_?LegendInsideQ],
+                      Method->Function
+                    ],
+                  Keys@Select[
+                    ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
+                      <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
+                    EqualTo@Null
+                  ]
+                ],
+                ImagePadding->padding,
+                AspectRatio->Full
+              ],
+              {positions[[1,j]],positions[[2,1+ny-i]]},
+              Scaled[{0,0}],
+              Offset[Total/@padding,Scaled@{sizes[[1,j]],sizes[[2,i]]}]
+            ],
+            Nothing
+          ],
+          {i,ny},
+          {j,nx}
+        ],
+        frameInset
+      },
+      PlotRange->{{0,1},{0,1}},
+      FilterRules[
+        FilterRules[{o},Options@Graphics],
+        Except[FrameLabel]
       ],
-      Frame->True,
-      FrameTicks->None,
-      FrameStyle->Replace[
-        OptionValue[FrameStyle],
-        Automatic->Directive[
-          OptionValue[Graphics,Options@FirstCase[l,_Graphics,{},All],FrameStyle]/.
-            c_?ColorQ:>(FontColor->c),
-          White
-        ]
-      ],
-      o,
+      ImagePadding->padding+framePadding,
       AspectRatio->ny/nx/Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
     ];
     (RightComposition@@Flatten@legends)@grid
