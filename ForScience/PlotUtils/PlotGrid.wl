@@ -86,7 +86,7 @@ Expand2DSpec[spec_,{m_,n_}]:=
   Expand2DSpec[{spec,spec},{m,n}]
 
 
-Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic};
+Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic,Spacings->None};
 
 
 PlotGrid[
@@ -107,7 +107,10 @@ PlotGrid[
       sizes,
       rangeSizes,
       imageSizes,
-      positions
+      spacings,
+      positions,
+      positionOffsets,
+      sizeOffsets
     },
     padding=Apply[
       Max[
@@ -175,7 +178,24 @@ PlotGrid[
         Normalize[#,Total]&/@imageSizes
       };
     sizes=Normalize[#,Total]&/@sizes;
-    positions=FoldList[Plus,0,Most@#]&/@MapAt[Reverse,2]@sizes;
+    spacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
+    positionOffsets=Replace[
+      spacings,
+      _Scaled->0,
+      {2}
+    ];
+    spacings=Replace[
+      spacings,
+      {
+        Scaled@s_:>s,
+        _->0
+      },
+      {2}
+    ];
+    sizes*=(1-Total/@spacings);
+    sizeOffsets=-Total/@positionOffsets*sizes;
+    positionOffsets=FoldList[Plus,0,#]&/@MapAt[Reverse,2][positionOffsets+Most/@sizeOffsets];
+    positions=FoldList[Plus,0,#]&/@Plus@@MapAt[Most,{1,All}]@MapAt[Reverse,{All,2}]@{sizes,spacings};
     frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
       OptionValue[FrameStyle],
       Automatic->GraphicsOpt[FirstCase[l,_Graphics,{},All],FrameStyle]
@@ -230,9 +250,15 @@ PlotGrid[
                 ImagePadding->padding,
                 AspectRatio->Full
               ],
-              {positions[[1,j]],positions[[2,1+ny-i]]},
+              Offset[
+                {positionOffsets[[1,j]],positionOffsets[[2,1+ny-i]]},
+                {positions[[1,j]],positions[[2,1+ny-i]]}
+              ],
               Scaled[{0,0}],
-              Offset[Total/@padding,Scaled@{sizes[[1,j]],sizes[[2,i]]}]
+              Offset[
+                Total/@padding+{sizeOffsets[[1,j]],sizeOffsets[[2,i]]},
+                Scaled@{sizes[[1,j]],sizes[[2,i]]}
+              ]
             ],
             Nothing
           ],
