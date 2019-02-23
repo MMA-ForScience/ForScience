@@ -100,6 +100,9 @@ XYLookup[{i_,j_}][{x_,y_}]:=
   {x[[j]],y[[i]]}
 
 
+PlotGrid::noScaled="Invalid item size spec ``. At least one column/row dimension must be relative.";
+
+
 Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic,Spacings->None};
 
 
@@ -172,6 +175,23 @@ PlotGrid[
       ]/.
         Null->Nothing
     );
+    sizeOffsets=Replace[
+      sizes,
+      {
+        Offset[off_,_:0]:>off,
+        _->0
+      },
+      {2}
+    ];
+    sizes=Replace[
+      sizes,
+      Offset[_,sz_:0]:>sz,
+      {2}
+    ];
+    If[MemberQ[Total/@sizes,0],
+      Message[PlotGrid::noScaled,OptionValue[ItemSize]];
+      Return@$Failed
+    ];
     sizes=MapThread[
       Replace[
         #,
@@ -191,6 +211,10 @@ PlotGrid[
         Normalize[#,Total]&/@rangeSizes,
         Normalize[#,Total]&/@imageSizes
       };
+    If[MemberQ[Total/@sizes,0],
+      Message[PlotGrid::noScaled,OptionValue[ItemSize]];
+      Return@$Failed
+    ];
     sizes=Normalize[#,Total]&/@sizes;
     spacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
     positionOffsets=Replace[
@@ -207,7 +231,7 @@ PlotGrid[
       {2}
     ];
     sizes*=(1-Total/@spacings);
-    sizeOffsets=-Total/@positionOffsets*sizes;
+    sizeOffsets+=-(Total/@positionOffsets+Total/@sizeOffsets)*sizes;
     positionOffsets=AccumulateShifts[sizeOffsets,positionOffsets];
     positions=AccumulateShifts[sizes,spacings];
     frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
@@ -247,31 +271,31 @@ PlotGrid[
           If[l[[i,j]]=!=Null,
             With[
               {xyLookup=XYLookup[{i,j}]},
-            Inset[
-              Show[
-                ClipFrameLabels[
-                    ApplyToWrapped[
-                      (Sow@#2;#)&,
-                      l[[i,j]],
-                      _Graphics,
-                      Legended[_,Except@_?LegendInsideQ],
-                      Method->Function
-                    ],
-                  Keys@Select[
-                    ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
-                      <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
-                    EqualTo@Null
-                  ]
+              Inset[
+                Show[
+                  ClipFrameLabels[
+                      ApplyToWrapped[
+                        (Sow@#2;#)&,
+                        l[[i,j]],
+                        _Graphics,
+                        Legended[_,Except@_?LegendInsideQ],
+                        Method->Function
+                      ],
+                    Keys@Select[
+                      ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
+                        <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
+                      EqualTo@Null
+                    ]
+                  ],
+                  ImagePadding->padding,
+                  AspectRatio->Full
                 ],
-                ImagePadding->padding,
-                AspectRatio->Full
-              ],
-              Offset[
+                Offset[
                   xyLookup@positionOffsets,
                   xyLookup@positions
-              ],
-              Scaled[{0,0}],
-              Offset[
+                ],
+                Scaled[{0,0}],
+                Offset[
                   Total/@padding+xyLookup@sizeOffsets,
                   Scaled@xyLookup@sizes
                 ]
