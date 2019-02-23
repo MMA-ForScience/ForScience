@@ -86,6 +86,20 @@ Expand2DSpec[spec_,{m_,n_}]:=
   Expand2DSpec[{spec,spec},{m,n}]
 
 
+ReverseY[{x_,y_}]:=
+  {x,Reverse@y}
+
+
+AccumulateShifts[vals_,shifts_]:=
+  ReverseY[
+    FoldList[Plus,0,#]&/@(Most/@ReverseY@vals+ReverseY@shifts)
+  ]
+
+
+XYLookup[{i_,j_}][{x_,y_}]:=
+  {x[[j]],y[[i]]}
+
+
 Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic,Spacings->None};
 
 
@@ -194,8 +208,8 @@ PlotGrid[
     ];
     sizes*=(1-Total/@spacings);
     sizeOffsets=-Total/@positionOffsets*sizes;
-    positionOffsets=FoldList[Plus,0,#]&/@MapAt[Reverse,2][positionOffsets+Most/@sizeOffsets];
-    positions=FoldList[Plus,0,#]&/@Plus@@MapAt[Most,{1,All}]@MapAt[Reverse,{All,2}]@{sizes,spacings};
+    positionOffsets=AccumulateShifts[sizeOffsets,positionOffsets];
+    positions=AccumulateShifts[sizes,spacings];
     frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
       OptionValue[FrameStyle],
       Automatic->GraphicsOpt[FirstCase[l,_Graphics,{},All],FrameStyle]
@@ -231,6 +245,8 @@ PlotGrid[
       {
         Table[
           If[l[[i,j]]=!=Null,
+            With[
+              {xyLookup=XYLookup[{i,j}]},
             Inset[
               Show[
                 ClipFrameLabels[
@@ -251,13 +267,14 @@ PlotGrid[
                 AspectRatio->Full
               ],
               Offset[
-                {positionOffsets[[1,j]],positionOffsets[[2,1+ny-i]]},
-                {positions[[1,j]],positions[[2,1+ny-i]]}
+                  xyLookup@positionOffsets,
+                  xyLookup@positions
               ],
               Scaled[{0,0}],
               Offset[
-                Total/@padding+{sizeOffsets[[1,j]],sizeOffsets[[2,i]]},
-                Scaled@{sizes[[1,j]],sizes[[2,i]]}
+                  Total/@padding+xyLookup@sizeOffsets,
+                  Scaled@xyLookup@sizes
+                ]
               ]
             ],
             Nothing
