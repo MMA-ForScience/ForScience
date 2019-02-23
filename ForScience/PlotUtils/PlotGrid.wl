@@ -183,12 +183,13 @@ PlotGrid[
   Module[
     {
       nx,ny,
+      plots,
       padding,
       frameStyle,
       frameGraphics,
       frameInset=Nothing,
       framePadding=0,
-      gi=GraphicsInformation[l],
+      gi,
       grid,
       legends,
       sizes,
@@ -201,6 +202,26 @@ PlotGrid[
       sizeOffsets,
       showFrameLabels
     },
+    {ny,nx}=Dimensions@l;
+    rawSpacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
+    showFrameLabels=Map[
+      ExpandFrameLabelSpec,
+      ExpandGridSpec[OptionValue["ShowFrameLabels"],{nx,ny}]/.
+        Directive->List,
+      {2}
+    ];
+    plots=Table[
+      ApplyShowFrameLabels[
+        {i,j},
+        l[[i,j]],
+        showFrameLabels[[i,j]],
+        l,
+        rawSpacings
+      ],
+      {i,ny},
+      {j,nx}
+    ];
+    gi=GraphicsInformation[plots];
     padding=Apply[
       Max[
         Replace[
@@ -219,7 +240,6 @@ PlotGrid[
       },
       {2}
     ];
-    {ny,nx}=Dimensions@l;
     sizes=Expand2DSpec[OptionValue[ItemSize],{nx,ny}];
     rangeSizes=Map[Mean]/@(
       MapAt[
@@ -288,7 +308,6 @@ PlotGrid[
       Return@$Failed
     ];
     sizes=Normalize[#,Total]&/@sizes;
-    rawSpacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
     positionOffsets=Replace[
       rawSpacings,
       _Scaled->0,
@@ -308,7 +327,7 @@ PlotGrid[
     positions=AccumulateShifts[sizes,spacings];
     frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
       OptionValue[FrameStyle],
-      Automatic->GraphicsOpt[FirstCase[l,_Graphics,{},All],FrameStyle]
+      Automatic->GraphicsOpt[FirstCase[plots,_Graphics,{},All],FrameStyle]
     ];
     If[OptionValue[FrameLabel]=!=None,
       frameGraphics=Graphics[
@@ -337,32 +356,20 @@ PlotGrid[
         Offset[Total/@(padding+framePadding),Scaled[{1,1}]]
       ]
     ];
-    showFrameLabels=Map[
-      ExpandFrameLabelSpec,
-      ExpandGridSpec[OptionValue["ShowFrameLabels"],{nx,ny}]/.
-        Directive->List,
-      {2}
-    ];
     {grid,legends}=Reap@Graphics[
       {
         Table[
-          If[l[[i,j]]=!=Null,
+          If[plots[[i,j]]=!=Null,
             With[
               {xyLookup=XYLookup[{i,j}]},
               Inset[
                 Show[
-                  ApplyShowFrameLabels[
-                    {i,j},
-                    ApplyToWrapped[
-                      (Sow@#2;#)&,
-                      l[[i,j]],
-                      _Graphics,
-                      Legended[_,Except@_?LegendInsideQ],
-                      Method->Function
-                    ],
-                    showFrameLabels[[i,j]],
-                    l,
-                    rawSpacings
+                  ApplyToWrapped[
+                    (Sow@#2;#)&,
+                    plots[[i,j]],
+                    _Graphics,
+                    Legended[_,Except@_?LegendInsideQ],
+                    Method->Function
                   ],
                   ImagePadding->padding,
                   AspectRatio->Full
