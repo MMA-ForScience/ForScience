@@ -86,6 +86,54 @@ Expand2DSpec[spec_,{m_,n_}]:=
   Expand2DSpec[{spec,spec},{m,n}]
 
 
+Expand2DSpecToGrid[spec_,{m_,n_}]:=
+  Module[
+    {wspec,hspec},
+    {wspec,hspec}=Expand2DSpec[spec/.Automatic->iAutomatic,{m,n}];
+    MapThread[
+      First@*DeleteCases[iAutomatic],
+      {
+        Table[wspec,n],
+        Transpose@Table[hspec,m],
+        Table[Automatic,{m,n}]
+      }
+    ]
+  ]
+
+
+ExpandGridSpec[spec_,{m_,n_}]:=
+  Module[
+    {wspec,hspec},
+    {wspec,hspec}=Expand2DSpec[spec/.Automatic->explicitAutomatic,{m,n}];
+    MapThread[
+      First@*DeleteCases[Automatic]@*List,
+      {
+        Table[wspec,n],
+        Transpose@Table[hspec,m],
+        Table[explicitAutomatic,n,m]
+      },
+      2
+    ]/.
+      explicitAutomatic->Automatic
+  ]
+ExpandGridSpec[{wspec_,hspec_,posRules:{__Rule}},{m_,n_}]:=
+  Module[
+    {grid=ExpandGridSpec[{wspec,hspec},{m,n}]},
+    (grid[[Sequence@@Span@@@#]]=#2)&@@@posRules;
+    grid
+  ]
+
+
+ExpandFrameLabelSpec[{def:Except[_Rule]:Automatic,rules___Rule}]:=
+  #->Lookup[<|rules|>,#,def]&/@{Left,Right,Bottom,Top}
+ExpandFrameLabelSpec[s:Automatic|Full|True|False|All|None]:=
+  ExpandFrameLabelSpec[{s}/.{All->True,None->False}]
+ExpandFrameLabelSpec[{h_,v_}]:=
+  {Left->v,Right->v,Bottom->h,Top->h}
+ExpandFrameLabelSpec[{{l_,r_},{b_,t_}}]:=
+  {Left->l,Right->r,Bottom->b,Top->t}
+
+
 ReverseY[{x_,y_}]:=
   {x,Reverse@y}
 
@@ -100,10 +148,32 @@ XYLookup[{i_,j_}][{x_,y_}]:=
   {x[[j]],y[[i]]}
 
 
+ApplyShowFrameLabels[{i_,j_},gr_,setting_,grid_,spacings_]:=
+  With[
+    {
+      plotsPresent=ListLookup[grid,{i,j}+#/.(0->Null),Null]=!=Null&/@
+        <|Left->{0,-1},Right->{0,1},Bottom->{1,0},Top->{-1,0}|>,
+      spacingsPresent=ListLookup[spacings,#/.(0->Null),1]=!=0&/@
+        <|Left->{1,j-1},Right->{1,j},Bottom->{2,i},Top->{2,i-1}|>
+    },
+    ClipFrameLabels[
+      gr,
+      If[
+        #2/.{
+          Automatic->!plotsPresent[#],
+          Full->!plotsPresent[#]||spacingsPresent[#]
+        },
+        #,
+        Nothing
+      ]&@@@setting
+    ]
+  ]
+
+
 PlotGrid::noScaled="Invalid item size spec ``. At least one column/row dimension must be relative.";
 
 
-Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic,Spacings->None};
+Options[PlotGrid]={FrameStyle->Automatic,ItemSize->Automatic,Spacings->None,"ShowFrameLabels"->Automatic};
 
 
 PlotGrid[
@@ -124,10 +194,12 @@ PlotGrid[
       sizes,
       rangeSizes,
       imageSizes,
+      rawSpacings,
       spacings,
       positions,
       positionOffsets,
-      sizeOffsets
+      sizeOffsets,
+      showFrameLabels
     },
     padding=Apply[
       Max[
@@ -216,14 +288,14 @@ PlotGrid[
       Return@$Failed
     ];
     sizes=Normalize[#,Total]&/@sizes;
-    spacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
+    rawSpacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
     positionOffsets=Replace[
-      spacings,
+      rawSpacings,
       _Scaled->0,
       {2}
     ];
     spacings=Replace[
-      spacings,
+      rawSpacings,
       {
         Scaled@s_:>s,
         _->0
@@ -265,6 +337,12 @@ PlotGrid[
         Offset[Total/@(padding+framePadding),Scaled[{1,1}]]
       ]
     ];
+    showFrameLabels=Map[
+      ExpandFrameLabelSpec,
+      ExpandGridSpec[OptionValue["ShowFrameLabels"],{nx,ny}]/.
+        Directive->List,
+      {2}
+    ];
     {grid,legends}=Reap@Graphics[
       {
         Table[
@@ -273,19 +351,18 @@ PlotGrid[
               {xyLookup=XYLookup[{i,j}]},
               Inset[
                 Show[
-                  ClipFrameLabels[
-                      ApplyToWrapped[
-                        (Sow@#2;#)&,
-                        l[[i,j]],
-                        _Graphics,
-                        Legended[_,Except@_?LegendInsideQ],
-                        Method->Function
-                      ],
-                    Keys@Select[
-                      ListLookup[l,{i,j}+#/.(0->Null),Null]&/@
-                        <|Top->{-1,0},Left->{0,-1},Bottom->{1,0},Right->{0,1}|>,
-                      EqualTo@Null
-                    ]
+                  ApplyShowFrameLabels[
+                    {i,j},
+                    ApplyToWrapped[
+                      (Sow@#2;#)&,
+                      l[[i,j]],
+                      _Graphics,
+                      Legended[_,Except@_?LegendInsideQ],
+                      Method->Function
+                    ],
+                    showFrameLabels[[i,j]],
+                    l,
+                    rawSpacings
                   ],
                   ImagePadding->padding,
                   AspectRatio->Full
