@@ -356,7 +356,20 @@ PlotGrid[
         Offset[Total/@(padding+framePadding),Scaled[{1,1}]]
       ]
     ];
-    {grid,legends}=Reap@Graphics[
+    {plots,legends}=Reap@Map[
+      If[#=!=Null,
+        ApplyToWrapped[
+          (Sow@#2;#)&,
+          #,
+          _Graphics,
+          Legended[_,Except@_?LegendInsideQ],
+          Method->Function
+        ]
+      ]&,
+      plots,
+      {2}
+    ];
+    grid=Graphics[
       {
         Table[
           If[plots[[i,j]]=!=Null,
@@ -364,13 +377,7 @@ PlotGrid[
               {xyLookup=XYLookup[{i,j}]},
               Inset[
                 Show[
-                  ApplyToWrapped[
-                    (Sow@#2;#)&,
-                    plots[[i,j]],
-                    _Graphics,
-                    Legended[_,Except@_?LegendInsideQ],
-                    Method->Function
-                  ],
+                  plots[[i,j]],
                   ImagePadding->padding,
                   AspectRatio->Full
                 ],
