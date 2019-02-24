@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Usage[PlotGrid]="PlotGrid[{{plt_{*1,1*},\[Ellipsis]},\[Ellipsis]}] arranges the given matrix of plots into a grid where adjacent plots share the frame ticks.";
+PlotGrid;
 
 
 Begin["`Private`"]

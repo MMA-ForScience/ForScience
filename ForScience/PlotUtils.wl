@@ -20,6 +20,7 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`CustomTicksDoc`;
 <<`CombinePlotsDoc`;
 <<`GraphicsInformationDoc`;
+<<`PlotGridDoc`;
 
 
 EndPackage[]
