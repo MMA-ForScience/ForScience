@@ -378,7 +378,7 @@ PlotGrid[
               Inset[
                 Show[
                   plots[[i,j]],
-                  ImagePadding->padding,
+                  ImagePadding->gi[ImagePadding][[i,j]],
                   AspectRatio->Full
                 ],
                 Offset[
@@ -387,7 +387,7 @@ PlotGrid[
                 ],
                 Scaled[{0,0}],
                 Offset[
-                  Total/@padding+xyLookup@sizeOffsets,
+                  Total/@gi[ImagePadding][[i,j]]+xyLookup@sizeOffsets,
                   Scaled@xyLookup@sizes
                 ]
               ]
