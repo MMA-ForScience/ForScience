@@ -11,7 +11,7 @@ Begin["`Private`"]
 ToNotebook[gr_]:=
   Notebook[
     {
-      Cell[BoxData@ToBoxes@InstrumentGraphics[ExtractGraphics/@gr],"Output"]
+      Cell[BoxData@ToBoxes@InstrumentGraphics[ExtractGraphics/@gr],"Output",ImageSizeMultipliers->{1,1}]
     },
     WindowSize->CurrentValue[EvaluationNotebook[],WindowSize]
   ]
