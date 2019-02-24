@@ -400,12 +400,15 @@ PlotGrid[
         frameInset
       },
       PlotRange->{{0,1},{0,1}},
+      AspectRatio->Replace[
+        OptionValue[AspectRatio],
+        Automatic->ny/nx/GeometricMean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
+      ],
       FilterRules[
         FilterRules[{o},Options@Graphics],
         Except[FrameLabel]
       ],
-      ImagePadding->padding+framePadding,
-      AspectRatio->ny/nx/Mean[Divide@@@DeleteCases[Null]@Flatten[gi["PlotRangeSize"],1]]
+      ImagePadding->padding+framePadding
     ];
     (RightComposition@@Flatten@legends)@grid
   ]
