@@ -321,8 +321,8 @@ PlotGrid[
       },
       {2}
     ];
-    sizes*=(1-Total/@spacings);
     sizeOffsets+=-(Total/@positionOffsets+Total/@sizeOffsets)*sizes;
+    sizes*=(1-Total/@spacings);
     positionOffsets=AccumulateShifts[sizeOffsets,positionOffsets];
     positions=AccumulateShifts[sizes,spacings];
     frameStyle=NormalizeGraphicsOpt[FrameStyle]@Replace[
