@@ -6,7 +6,7 @@ Usage[PlotGrid]="PlotGrid[{{plt_{*1,1*},\[Ellipsis]},\[Ellipsis]}] arranges the 
 Begin[BuildAction]
 
 
-DocumentationHeader[PlotGrid]=FSHeader["0.83.0","0.87.73"];
+DocumentationHeader[PlotGrid]=FSHeader["0.83.0","0.87.77"];
 
 
 Details[PlotGrid]={
@@ -65,7 +65,8 @@ Details[PlotGrid]={
   "In the setting for \"ShowFrameLabels\", [*Directive*] can be used instead of [*List*] to indicate that a specification should be interpreted as one instead of a sequence for different items.",
   "In \"ShowFrameLabels\" settings, the ```side_i``` can be [*Left*], [*Right*], [*Top*] or [*Bottom*].",
   "The ```plt_{*i,j*}``` can be [*Null*], in which case the corresponding grid space is left empty.",
-  "[*PlotGrid*] returns a [*Graphics*] expression or a [*Legended*] graphics expression."
+  "[*PlotGrid*] returns a [*Graphics*] expression or a [*Legended*] graphics expression.",
+  "[*PlotGrid*] sets [*CoordinatesToolOptions*] to enable extraction of coordinates from any of the plots. The format of the points is {{```i```,```j```},{```x```,```y```}}, where ```i```,```j``` are the indices of the plot and ```x```,```y``` the coordinates in the coordinate system of the plot."
 };
 
 

@@ -13,6 +13,7 @@ ValidGraphicsQ[_]:=False
 
 
 GraphicsOpt[g_Graphics,opt_]:=GraphicsOpt[Options@g,opt]
+GraphicsOpt[l_Legended,opt_]:=GraphicsOpt[ExtractGraphics@l,opt]
 GraphicsOpt[opts_,opt_]:=OptionValue[Graphics,opts,opt]
 
 
@@ -32,6 +33,34 @@ NormalizeGraphicsOpt[FrameTicksStyle]:=NormalizeGraphicsOpt[FrameStyle]
 
 NormalizedOptionValue[g_,opt_List]:=NormalizedOptionValue[g,#]&/@opt
 NormalizedOptionValue[g_,opt_]:=NormalizeGraphicsOpt[opt][GraphicsOpt[g,opt]]
+
+
+Options[ResolveCoordinatesTool]={"CopiedValueFunction"->Identity,"DisplayFunction"->Automatic};
+
+
+ResolveCoordinatesTool[Automatic][_]:=Identity
+ResolveCoordinatesTool[OptionsPattern[]][cvf:"CopiedValueFunction"]:=Replace[OptionValue@cvf,Automatic->Identity]
+ResolveCoordinatesTool[OptionsPattern[]][df:"DisplayFunction"]:=Replace[OptionValue@df,Automatic->OptionValue@"CopiedValueFunction"]
+
+
+(* get CoordinateToolOptions from a Graphics object. Since the setting can be directly inside
+   the Graphics or inside Method, we need to combine both (and handle Automatic settings for both
+   Method, CoordinateToolOptions and DisplayFunction along the way *)
+GetCoordinatesToolOptions[gr_]:=
+  ResolveCoordinatesTool@
+    GraphicsOpt[
+      {
+        FilterRules[
+          Replace[
+            GraphicsOpt[gr,Method],
+            Automatic->{}
+          ],
+          CoordinatesToolOptions
+        ],
+        Options@gr
+      },
+      CoordinatesToolOptions
+    ]
 
 
 End[]

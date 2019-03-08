@@ -12,34 +12,6 @@ Options[TwoYPlot]={Method->Automatic};
 InsertRightYAxis[{{l_,_},bt_},{{r_,_},_}]:={{l,r},bt}
 
 
-Options[ResolveCoordinatesTool]={"CopiedValueFunction"->Identity,"DisplayFunction"->Automatic};
-
-
-ResolveCoordinatesTool[Automatic][_]:=Identity
-ResolveCoordinatesTool[OptionsPattern[]][cvf:"CopiedValueFunction"]:=Replace[OptionValue@cvf,Automatic->Identity]
-ResolveCoordinatesTool[OptionsPattern[]][df:"DisplayFunction"]:=Replace[OptionValue@df,Automatic->OptionValue@"CopiedValueFunction"]
-
-
-(* get CoordinateToolOptions from a Graphics object. Since the setting can be directly inside
-   the Graphics or inside Method, we need to combine both (and handle Automatic settings for both
-   Method, CoordinateToolOptions and DisplayFunction along the way *)
-GetCoordinatesToolOptions[gr_]:=
-  ResolveCoordinatesTool@
-    GraphicsOpt[
-      {
-        FilterRules[
-          Replace[
-            GraphicsOpt[gr,Method],
-            Automatic->{}
-          ],
-          CoordinatesToolOptions
-        ],
-        Options@gr
-      },
-      CoordinatesToolOptions
-    ]
-
-
 ApplyCoordinatesTools[tools_,trans_][{x_,y_}]:=
   MapThread[
     Construct,

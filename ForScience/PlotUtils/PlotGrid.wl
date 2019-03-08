@@ -200,7 +200,8 @@ PlotGrid[
       positions,
       positionOffsets,
       sizeOffsets,
-      showFrameLabels
+      showFrameLabels,
+      effectiveImagePadding
     },
     {ny,nx}=Dimensions@l;
     rawSpacings=Expand2DSpec[OptionValue[Spacings],{nx-1,ny-1}]/.{None|Automatic->0};
@@ -408,7 +409,76 @@ PlotGrid[
         FilterRules[{o},Options@Graphics],
         Except[FrameLabel]
       ],
-      ImagePadding->padding+framePadding
+      ImagePadding->padding+framePadding   
+    ];
+    effectiveImagePadding=GraphicsOpt[grid,ImagePadding];
+    If[!MatchQ[effectiveImagePadding,{{_?NumericQ,_?NumericQ},{_?NumericQ,_?NumericQ}}],
+      effectiveImagePadding=GraphicsInformation[grid][ImagePadding]
+    ];
+    grid=Show[
+      grid,
+      CoordinatesToolOptions->With[
+        {
+          ny=ny,
+          positions=positions,
+          imagePadding=First/@effectiveImagePadding,
+          positionOffsets=positionOffsets,
+          sizes=sizes,
+          sizeOffsets=sizeOffsets,
+          plotRanges=gi[PlotRange],
+          df=Map[If[#=!=Null,GetCoordinatesToolOptions[#]@"DisplayFunction"]&,plots,{2}],
+          cvf=Map[If[#=!=Null,GetCoordinatesToolOptions[#]@"CopiedValueFunction"]&,plots,{2}]
+        },
+        Function[
+          {type,funcs,valFunc,def},
+          type->(With[
+            {
+              absPos=MousePosition["GraphicsAbsolute"]-imagePadding
+            },
+            With[
+              {
+                plotData=MapAt[Reverse,2]@Transpose@MapThread[
+                  List@@First[
+                    Normal@Map[First]@
+                      KeySelect[Apply@Between]@
+                        PositionIndex[
+                          Thread@{#,Thread@{#2,#2+#3}}
+                        ],
+                    {0,0}
+                  ]&,
+                  {
+                    #*absPos,
+                    positions*absPos+positionOffsets*#,
+                    sizes*absPos+sizeOffsets*#
+                  }
+                ]
+              },
+              With[
+                {
+                  id=Last@plotData
+                },
+                If[FreeQ[id,0]&&Extract[plotRanges,id]=!=Null,
+                  valFunc[
+                    id,
+                    Extract[funcs,id]@MapThread[
+                      Rescale,
+                      {
+                        plotData[[1,All,1]],
+                        plotData[[1,All,2]],
+                        Extract[plotRanges,id]
+                      }
+                    ]
+                  ],
+                  def
+                ]
+              ]
+            ]
+          ]&)
+        ]@@@{
+          {"DisplayFunction",df,Column@{Row@{"Plot: ",#},#2}&,"Not inside a plot"},
+          {"CopiedValueFunction",cvf,List,Missing["OutsidePlot"]}
+        }
+      ]
     ];
     (RightComposition@@Flatten@legends)@grid
   ]
