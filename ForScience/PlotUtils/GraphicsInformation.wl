@@ -50,9 +50,10 @@ GraphicsInformation[gr:{GraphicsObj..}]:=
     |>&/@
       Values@KeySort@<|
         Last@Reap[
-          Sow[#[[2]]->#2,#[[1]]]&@@@(
-            "Regions"/.FrontEndExecute@ExportPacket[ToNotebook[gr],"BoundingBox",Verbose->True]
-          ),
+          Sow[#[[2]]->#2,#[[1]]]&@@@Cases[
+            "Regions"/.FrontEndExecute@ExportPacket[ToNotebook[gr],"BoundingBox",Verbose->True],
+            {{_,"is"|"pr"},_}
+          ],
           _,
           #-><|#2|>&
         ]
