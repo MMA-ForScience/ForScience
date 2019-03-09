@@ -7,7 +7,7 @@ Usage[CustomTicks]="CustomTicks[opts] is a customizable tick generation function
 Begin[BuildAction]
 
 
-DocumentationHeader[CustomTicks]=FSHeader["0.87.0","0.87.11"];
+DocumentationHeader[CustomTicks]=FSHeader["0.87.0","0.87.78"];
 
 
 Details[CustomTicks]={
@@ -18,6 +18,7 @@ Details[CustomTicks]={
   TableForm@{
     {ScalingFunctions,Automatic,"Coordinate scaling functions"},
     {LabelStyle,Automatic,"Style to apply to the tick labels"},
+    {"\"LabelFunction\"",Identity,"Function to apply to the tick labels"},
     {TicksStyle,Automatic,"Style to apply to the tick marks"},
     {"\"TicksLength\"",Automatic,"Length of the tick marks"},
     {Precision,4,"Relative precision to use for plot range rounding"}
@@ -116,6 +117,22 @@ Examples[CustomTicks,"Options","LabelStyle"]={
   {
     "Using [*LabelStyle->None*], tick labels can be suppressed:",
     ExampleInput[Plot[Sin[x],{x,0,2Pi},Ticks->CustomTicks[LabelStyle->None]]]
+  }
+};
+
+
+Examples[CustomTicks,"Options","\"LabelFunction\""]={
+  {
+    "With the default setting \"LabelFunction\"->[*Identity*], no special function is applied to the tick labels:",
+    ExampleInput[Plot[Sin[x],{x,0,2Pi},Ticks->CustomTicks[]]]
+  },
+  {
+    "Rotate all labels by 90\[Degree]:",
+    ExampleInput[Plot[Sin[x],{x,0,2Pi},Ticks->CustomTicks["LabelFunction"->(Rotate[#,Pi/2]&)]]]
+  },
+  {
+    "Surround all labels by a frame:",
+    ExampleInput[Plot[Sin[x],{x,0,2Pi},Ticks->CustomTicks["LabelFunction"->Framed]]]
   }
 };
 
