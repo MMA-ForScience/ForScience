@@ -263,31 +263,50 @@ PlotGrid[
       Automatic->GraphicsOpt[FirstCase[plots,_Graphics,{},All],FrameStyle]
     ];
     If[OptionValue[FrameLabel]=!=None,
-      frameGraphics=Graphics[
-        {},
-        Frame->True,
-        FrameTicks->None,
-        FrameStyle->Replace[
-          frameStyle,
-          None|Directive[d___]|{d___}|d2_:>
-            Directive[d,d2,Opacity@0],
-          {2}
+      frameGraphics=If[
+        #=!=Table[None,2,2],
+        Graphics[
+          {},
+          Frame->True,
+          FrameTicks->None,
+          FrameStyle->Replace[
+            frameStyle,
+            None|Directive[d___]|{d___}|d2_:>
+              Directive[d,d2,Opacity@0],
+            {2}
+          ],
+          FrameLabel->Replace[
+            #,
+            lbl:Except[None]:>Style[lbl,Opacity@1],
+            {2}
+          ],
+          AspectRatio->Full,
+          ImageSize->Total/@imageSizes
         ],
-        FrameLabel->Replace[
-          NormalizeGraphicsOpt[FrameLabel]@OptionValue[FrameLabel],
-          lbl:Except[None]:>Style[lbl,Opacity@1],
-          {2}
-        ],
-        AspectRatio->Full,
-        ImageSize->Total/@imageSizes
-      ];
+        Null
+      ]&/@(
+        {{#,{None,None}},{{None,None},#2}}&@@
+          NormalizeGraphicsOpt[FrameLabel]@OptionValue[FrameLabel]
+      );
       framePadding=GraphicsInformation[frameGraphics][ImagePadding];
-      frameInset=Inset[
-        frameGraphics,
-        Offset[-padding[[All,1]],Scaled[{0,0}]],
-        Scaled[{0,0}],
-        Offset[Total/@(padding+framePadding),Scaled[{1,1}]]
-      ]
+      frameInset=MapThread[
+        If[
+          #=!=Null,
+          Inset[
+            #,
+            Offset[-#2,Scaled[{0,0}]],
+            Scaled[{0,0}],
+            Offset[#3,Scaled[{1,1}]]
+          ],
+          Nothing
+        ]&,
+        {
+          frameGraphics,
+          DiagonalMatrix@padding[[All,1]],
+          IdentityMatrix[2](Total/@(padding+#)&/@framePadding)
+        }
+      ];
+      framePadding=Extract[framePadding/.Null->Table[0,2,2],{{1,1},{2,2}}]
     ];
     {plots,legends}=Reap@Map[
       If[#=!=Null,
