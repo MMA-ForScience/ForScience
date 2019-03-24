@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util`"}]
+BeginPackage["ForScience`PlotUtils`",{"ForScience`","ForScience`PacletUtils`","ForScience`Util`"}]
 
 
 <<`InternalUtils`;

@@ -201,6 +201,9 @@ If[!TrueQ@ForScience`Private`$CategoricalAxisStylingFixed&&($VersionNumber<=11.3
 End[]
 
 
+$GuideForScience;
+
+
 EndPackage[]
 
 
@@ -208,3 +211,12 @@ EndPackage[]
 <<ForScience`Util`;
 <<ForScience`PlotUtils`;
 <<ForScience`ChemUtils`;
+
+
+Begin[BuildAction];
+
+
+<<ForScience`GuideForScience`;
+
+
+End[];

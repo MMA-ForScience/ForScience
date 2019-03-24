@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["ForScience`PacletUtils`",{"PacletManager`","JLink`","DocumentationSearch`"}]
+BeginPackage["ForScience`PacletUtils`",{"ForScience`","PacletManager`","JLink`","DocumentationSearch`"}]
 
 
 (*usage formatting utilities, need to make public before defining, as they're already used in the usage definition*)

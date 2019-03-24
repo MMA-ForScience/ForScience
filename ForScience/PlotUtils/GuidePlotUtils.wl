@@ -38,7 +38,7 @@ GuideSections[$GuidePlotUtils]={
     Names["ForScience`PlotUtils`*"]
 
 
-Guides[$GuidePlotUtils]={};
+Guides[$GuidePlotUtils]={$GuideForScience};
 
 
 End[]

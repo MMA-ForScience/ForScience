@@ -40,7 +40,7 @@ GuideSections[$GuidePacletUtils]={
     Names["ForScience`PacletUtils`*"]
 
 
-Guides[$GuidePacletUtils]={$GuideCreatingDocPages};
+Guides[$GuidePacletUtils]={$GuideForScience,$GuideCreatingDocPages};
 
 
 End[]
