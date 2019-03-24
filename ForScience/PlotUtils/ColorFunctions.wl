@@ -99,6 +99,48 @@ $ParulaData={
 };
 
 
+$FireData={
+  {"Fire","Fire color gradient",{}},
+  {"Gradients"},
+  1,
+  {0,1},
+  RGBColor@@@({
+    {0,0,0},
+    {0,0,61},
+    {1,0,96},
+    {25,0,130},
+    {49,0,165},
+    {73,0,192},
+    {98,0,220},
+    {122,0,227},
+    {146,0,210},
+    {162,0,181},
+    {173,0,151},
+    {184,0,122},
+    {195,0,93},
+    {207,14,64},
+    {217,35,35},
+    {229,57,5},
+    {240,79,0},
+    {252,101,0},
+    {255,117,0},
+    {255,133,0},
+    {255,147,0},
+    {255,161,0},
+    {255,175,0},
+    {255,190,0},
+    {255,205,0},
+    {255,219,0},
+    {255,234,0},
+    {255,248,35},
+    {255,255,98},
+    {255,255,160},
+    {255,255,223},
+    {255,255,255}
+  }/255)
+};
+
+
 If[!TrueQ@$ColorFunctionsRegistered,
   $ColorFunctionsRegistered=True;
   (* ensure that the ColorData framework is fully loaded.
@@ -119,13 +161,15 @@ If[!TrueQ@$ColorFunctionsRegistered,
     ];
   )&/@{
     $JetData,
-    $ParulaData
+    $ParulaData,
+    $FireData
   }
 ]
 
 
 Jet=ColorData["Jet"]
 Parula=ColorData["Parula"]
+Fire=ColorData["Fire"]
 
 
 End[]

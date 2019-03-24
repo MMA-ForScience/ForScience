@@ -2,6 +2,7 @@
 
 Usage[Jet]="Jet is a color scheme based on the MATLAB color scheme of the same name.";
 Usage[Parula]="Parula is a color scheme based on the MATLAB color scheme of the same name.";
+Usage[Fire]="Fire is a color scheme based on the ImageJ color scheme of the same name.";
 
 
 Begin[BuildAction]
@@ -39,7 +40,7 @@ Examples[Jet,"Basic examples"]={
 };
 
 
-SeeAlso[Jet]=Hold[ColorData,Parula,ColorFunction,ColorDataFunction];
+SeeAlso[Jet]=Hold[ColorData,Parula,Fire,ColorFunction,ColorDataFunction];
 
 
 DocumentationHeader[Parula]=FSHeader["0.85.0"];
@@ -74,7 +75,42 @@ Examples[Parula,"Basic examples"]={
 };
 
 
-SeeAlso[Parula]=Hold[ColorData,Jet,ColorFunction,ColorDataFunction];
+SeeAlso[Parula]=Hold[ColorData,Jet,Fire,ColorFunction,ColorDataFunction];
+
+
+DocumentationHeader[Fire]=FSHeader["0.88.0"];
+
+
+Details[Fire]={
+  "[*Fire*] is an adaptation of the ImageJ color function with the same name.",
+  "[*Fire*] is a [*ColorDataFunction*] gradient.",
+  "[*Fire*] is equivalent to [*ColorData*][\"Fire\"]."
+};
+
+
+Examples[Fire,"Basic examples"]={
+  {
+    "Load the ForScience package:",
+    ExampleInput[Needs["ForScience`PlotUtils`"]],
+    "[*Fire*] is a [*ColorDataFunction*]:",
+    ExampleInput[Fire]
+  },
+  {
+    "The color scheme can also be accessed via [*ColorData*]:",
+    ExampleInput[ColorData["Fire"]]
+  },
+  {
+    "Use the color scheme as [*ColorFunction*]:",
+    ExampleInput[ContourPlot[Sin[x+y]Sin[x-y],{x,-\[Pi],\[Pi]},{y,-\[Pi],\[Pi]},ColorFunction->Fire]]
+  },
+  {
+    "The color scheme can also be specified as string:",
+    ExampleInput[ContourPlot[Sin[x+y]Sin[x-y],{x,-\[Pi],\[Pi]},{y,-\[Pi],\[Pi]},ColorFunction->"Fire"]]
+  }
+};
+
+
+SeeAlso[Parula]=Hold[ColorData,Jet,Parula,ColorFunction,ColorDataFunction];
 
 
 End[]
