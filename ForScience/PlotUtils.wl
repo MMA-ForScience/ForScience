@@ -13,6 +13,12 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`PlotGrid`;
 
 
+BuildAction[
+  (* guide & tutorial symbols. Need to declare them here, as they're used inside Begin[BuildAction] ... End[] *)
+  $GuidePlotUtils;
+]
+
+
 <<`ColorFunctionsDoc`;
 <<`VectorMarkerDoc`;
 <<`ForSciencePlotThemeDoc`;
@@ -20,6 +26,11 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`CombinePlotsDoc`;
 <<`GraphicsInformationDoc`;
 <<`PlotGridDoc`;
+
+
+BuildAction[
+  <<`GuidePlotUtils`;
+]
 
 
 EndPackage[]
