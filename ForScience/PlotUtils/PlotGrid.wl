@@ -392,14 +392,16 @@ PlotGrid[
                 If[FreeQ[id,0]&&Extract[plotRanges,id]=!=Null,
                   valFunc[
                     id,
-                    Extract[funcs,id]@MapThread[
-                      Rescale,
-                      {
-                        plotData[[1,All,1]],
-                        plotData[[1,All,2]],
-                        Extract[plotRanges,id]
-                      }
-                    ]
+                    If[#=!=None,#,Nothing&]&[
+                      Extract[funcs,id]
+                    ]@MapThread[
+                        Rescale,
+                        {
+                          plotData[[1,All,1]],
+                          plotData[[1,All,2]],
+                          Extract[plotRanges,id]
+                        }
+                      ]
                   ],
                   def
                 ]

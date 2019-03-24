@@ -374,6 +374,55 @@ Examples[PlotGrid,"Possible issues"]={
 };
 
 
+Examples[PlotGrid,"Neat examples"]={
+  {
+    "Use [*PlotGrid*] to create new types of compound plots:",
+    ExampleInput[
+      data=RandomVariate[BinormalDistribution[{0,0},{1,2},0.6],1000];,
+      PlotGrid[
+        {
+          {
+            Histogram[
+              data[[All,2]],
+              20,
+              BarOrigin->Left,
+              Frame->{{True,False},{False,True}},
+              FrameTicks->{{True,False},{False,False}},
+              PlotRange->{Automatic,{-7,7}},
+              PlotRangePadding->0,
+              GridLines->{None,Automatic}
+            ],
+            ListPlot[
+              data,
+              Axes->False,
+              Frame->{{False,True},{False,True}},
+              GridLines->Automatic,
+              PlotRangePadding->0,
+              PlotRange->{{-4,4},{-7,7}}
+            ]
+          },
+          {
+            Null,
+            Histogram[
+              data[[All,1]],
+              20,
+              Frame->{{False,True},{True,False}},
+              FrameTicks->{{False,False},{True,False}},
+              PlotRange->{{-4,4},Automatic},
+              PlotRangePadding->0,
+              GridLines->{Automatic,None}
+            ]
+          }
+        },
+        ItemSize->{{1,3},{3,1}},
+        Frame->True,
+        FrameTicks->False
+      ]
+    ]
+  }
+};
+
+
 SeeAlso[PlotGrid]={Graphics,Legended,GraphicsGrid};
 
 
