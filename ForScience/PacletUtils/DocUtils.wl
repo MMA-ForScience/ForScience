@@ -52,9 +52,10 @@ SpecToCell[spec_BoxData,style_]:=Cell[spec,style,style]
 SpecToCell[spec_,style_]:=Cell[BoxData@ToBoxes@spec,style,style]
 
 
-StripFormatting[boxes_]:=StringReplace[
+StripFormatting[boxes_]:=StripFormatting[BoxData@boxes]
+StripFormatting[data:(_BoxData|_TextData)]:=StringReplace[
   c:("\\["~~WordCharacter..~~"]"):>ToExpression["\""<>c<>"\""]
-]@First@FrontEndExecute@FrontEnd`ExportPacket[BoxData@boxes,"PlainText"]
+]@First@FrontEndExecute@FrontEnd`ExportPacket[Cell@data,"PlainText"]
 
 
 GenerateCellID[expr_]:=Mod[Hash[expr],2^31]

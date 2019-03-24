@@ -27,7 +27,7 @@ AppendTo[$DocumentationTypes,"Overview"->"Tutorials"];
 DocumentationOfTypeQ[sym_,"Overview"]:=TutorialOverviewQ@sym
 
 
-DocumentationSummary[overview_,"Overview"]:=StripFormatting@Abstract@overview
+DocumentationSummary[overview_,"Overview"]:=StripFormatting@ParseToDocEntry@Abstract@overview
 
 
 MakeDocumentationContent[overview_,"Overview",nb_,opts:OptionsPattern[]]:=(

@@ -27,7 +27,7 @@ AppendTo[$DocumentationTypes,"Tutorial"->"Tutorials"];
 DocumentationOfTypeQ[sym_,"Tutorial"]:=TutorialQ@sym
 
 
-DocumentationSummary[tut_,"Tutorial"]:=StripFormatting@First[KeySortBy[{StringQ}]@TutorialSections@tut,""]
+DocumentationSummary[tut_,"Tutorial"]:=StripFormatting@ParseToDocEntry@First@First[KeySortBy[{StringQ}]@TutorialSections@tut,{""}]
 
 
 MakeDocumentationContent[tut_,"Tutorial",nb_,opts:OptionsPattern[]]:=(
