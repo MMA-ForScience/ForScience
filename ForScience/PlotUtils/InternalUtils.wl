@@ -17,6 +17,19 @@ GraphicsOpt[l_Legended,opt_]:=GraphicsOpt[ExtractGraphics@l,opt]
 GraphicsOpt[opts_,opt_]:=OptionValue[Graphics,opts,opt]
 
 
+NormalizeFrameSetting[val_]:=Replace[
+  Replace[
+    val,
+    {
+      None->False,
+      Automatic->True
+    },
+    {2}
+  ],
+  Except@Table[True|False,2,2]->Table[False,2,2]
+]
+
+
 NormalizeGraphicsOpt[FrameLabel][b_]:={{None,None},{b,None}}
 NormalizeGraphicsOpt[FrameLabel][{b_,l_,t_:None,r_:None,___}]:={{l,r},{b,t}}
 NormalizeGraphicsOpt[FrameLabel][s:{{_,_},{_,_}}]:=s
@@ -29,6 +42,10 @@ NormalizeGraphicsOpt[FrameStyle][{b_,l_,t_,r_}]:={{l,r},{b,t}}
 NormalizeGraphicsOpt[FrameStyle][s:{{_,_},{_,_}}]:=s
 NormalizeGraphicsOpt[FrameStyle][_]:=NormalizeGraphicsOpt[FrameStyle][None]
 NormalizeGraphicsOpt[FrameTicksStyle]:=NormalizeGraphicsOpt[FrameStyle]
+NormalizeGraphicsOpt[Frame][a_]:=NormalizeFrameSetting@{{a,a},{a,a}}
+NormalizeGraphicsOpt[Frame][{a_}]:=NormalizeFrameSetting@NormalizeGraphicsOpt[FrameStyle][True]
+NormalizeGraphicsOpt[Frame][{h_,v_}]:=NormalizeFrameSetting@{{v,v},{h,h}}
+NormalizeGraphicsOpt[Frame][{b_,l_,t_,r_:True}]:=NormalizeFrameSetting@{{l,r},{b,t}}
 
 
 NormalizedOptionValue[g_,opt_List]:=NormalizedOptionValue[g,#]&/@opt

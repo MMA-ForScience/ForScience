@@ -9,7 +9,8 @@ Begin["`Private`"]
 ClipFrameLabels[graph_,sides_List]:=
   graph/.g_Graphics:>With[
     {
-      drop=Complement[Keys@$SidePositions,sides]/.$SidePositions
+      drop=Complement[Keys@$SidePositions,sides]/.$SidePositions,
+      frame=NormalizedOptionValue[g,Frame]
     },
     Show[
       g,
@@ -18,8 +19,12 @@ ClipFrameLabels[graph_,sides_List]:=
         drop->None
       ],
       FrameTicksStyle->MapIndexed[
-        If[MemberQ[drop,#2],
+        Which[
+          !Extract[frame,#2],
+          None,
+          MemberQ[drop,#2],
           Directive[FontSize->0,FontOpacity->0,#],
+          True,
           #
         ]&,
         NormalizedOptionValue[g,FrameTicksStyle],
