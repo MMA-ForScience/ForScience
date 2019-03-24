@@ -10,7 +10,6 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`PacletUtils`","ForScience`Util
 <<`CustomTicks`;
 <<`CombinePlots`;
 <<`GraphicsInformation`;
-<<`TwoYPlot`;
 <<`PlotGrid`;
 
 

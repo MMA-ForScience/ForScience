@@ -63,4 +63,72 @@ GetCoordinatesToolOptions[gr_]:=
     ]
 
 
+$SidePositions=<|Left->{1,1},Right->{1,2},Bottom->{2,1},Top->{2,2}|>;
+
+
+ExpandSeqSpec[{start___,cycle:{__},end___},n_]:=
+  With[
+    {rem=Max[n-Length@{start},0]},
+    Join[
+      Take[{start},UpTo@n],
+      PadRight[{},Max[rem-Length@{end},0],cycle],
+      Take[{end},-Min[Length@{end},rem]]
+    ]
+  ]
+ExpandSeqSpec[{start___,{},end___},n_]:=
+  ExpandSeqSpec[{start,{Automatic},end},n]
+ExpandSeqSpec[{start___},n_]:=
+  ExpandSeqSpec[{start,{}},n]
+ExpandSeqSpec[spec_,n_]:=
+  ExpandSeqSpec[{{spec}},n]
+ExpandSeqSpec[{spec_,rules:{__Rule}},n_]:=
+  ReplacePart[ExpandSeqSpec[spec,n],rules]
+ExpandSeqSpec[rules:{__Rule},n_]:=
+  ExpandSeqSpec[{{},rules},n]
+
+
+Expand2DSpec[{wspec_:{},hspec_:{},___},{m_,n_}]:=
+  {ExpandSeqSpec[wspec,m],ExpandSeqSpec[hspec,n]}
+Expand2DSpec[spec_,{m_,n_}]:=
+  Expand2DSpec[{spec,spec},{m,n}]
+
+
+Expand2DSpecToGrid[spec_,{m_,n_}]:=
+  Module[
+    {wspec,hspec},
+    {wspec,hspec}=Expand2DSpec[spec/.Automatic->iAutomatic,{m,n}];
+    MapThread[
+      First@*DeleteCases[iAutomatic],
+      {
+        Table[wspec,n],
+        Transpose@Table[hspec,m],
+        Table[Automatic,{m,n}]
+      }
+    ]
+  ]
+
+
+ExpandGridSpec[spec_,{m_,n_}]:=
+  Module[
+    {wspec,hspec},
+    {wspec,hspec}=Expand2DSpec[spec/.Automatic->explicitAutomatic,{m,n}];
+    MapThread[
+      First@*DeleteCases[Automatic]@*List,
+      {
+        Table[wspec,n],
+        Transpose@Table[hspec,m],
+        Table[explicitAutomatic,n,m]
+      },
+      2
+    ]/.
+      explicitAutomatic->Automatic
+  ]
+ExpandGridSpec[{wspec_,hspec_,posRules:{__Rule}},{m_,n_}]:=
+  Module[
+    {grid=ExpandGridSpec[{wspec,hspec},{m,n}]},
+    (grid[[Sequence@@Span@@@#]]=#2)&@@@posRules;
+    grid
+  ]
+
+
 End[]

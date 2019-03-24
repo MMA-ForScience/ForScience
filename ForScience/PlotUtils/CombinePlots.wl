@@ -7,46 +7,303 @@ Begin["`Private`"]
 
 
 SeparateAnnotations[(wrap:Legended|Graphics)[first_,rest___],o:OptionsPattern[]]:=
- wrap[SeparateAnnotations[first,o],rest]
+  wrap[SeparateAnnotations[first,o],rest]
+SeparateAnnotations[GeometricTransformation[prim_,trans_],o:OptionsPattern[]]:=
+  (Sow@GeometricTransformation[#2,trans];GeometricTransformation[#,trans])&@@Reap@SeparateAnnotations[prim,o]
 SeparateAnnotations[annot_,OptionsPattern[CombinePlots]]:=
- (Sow[annot];{})/;
-  MatchQ[annot,OptionValue["AnnotationPattern"]]
+  (Sow[annot];{})/;
+   MatchQ[annot,OptionValue["AnnotationPattern"]]
 SeparateAnnotations[expr_,OptionsPattern[]]:=
- expr
+  expr
 SeparateAnnotations[expr_List,o:OptionsPattern[]]:=
- SeparateAnnotations[#,o]&/@expr
+  SeparateAnnotations[#,o]&/@expr
 
 
 GraphicsOptions[Legended[expr_,_]]:=
- GraphicsOptions[expr]
+  GraphicsOptions[expr]
 GraphicsOptions[gr_Graphics]:=
- Options@gr
+  Options@gr
 
 
-Options[CombinePlots]={"CombineProlog"->True,"CombineEpilog"->True,"AnnotationPattern"->(GraphicsGroup|Text)[___]};
+ResolveAxesSides[plots_List,sides_]:=
+  ResolveAxesSides[#,sides]&/@plots
+ResolveAxesSides[Axes[plots_,sides___],defSides_]:=
+  ResolveAxesSides[plots,Flatten@{sides,defSides}]
+ResolveAxesSides[plot_?ValidGraphicsQ,sides_]:=
+  Axes[
+    plot,
+    SortBy[Replace@{Bottom|Top->1,Left|Right->2}]@
+      DeleteDuplicatesBy[Replace[{Top->Bottom,Right->Left}]]@
+        Flatten@{sides/.Automatic->{Bottom,Left},Bottom,Left}
+  ]
+ResolveAxesSides[expr_,_]:=
+  (Message[CombinePlots::invGr,expr];{})
 
 
-CombinePlots[plots__,Longest[opts:OptionsPattern[]]]:=With[
-  {
-    cpOpts=FilterRules[{opts},Options@CombinePlots]
-  },
-  Show[
-    Flatten@MapAt[Graphics,-1]@Reap@SeparateAnnotations[{plots},cpOpts],
-    Complement[{opts},cpOpts],
-    If[OptionValue[CombinePlots,cpOpts,"CombineProlog"],
-      Prolog->(
-        OptionValue[Graphics,GraphicsOptions@#,Prolog]&
-      )/@Flatten@{plots},
-      Unevaluated@Sequence[]
-    ],
-    If[OptionValue[CombinePlots,cpOpts,"CombineEpilog"],
-      Epilog->(
-        OptionValue[Graphics,GraphicsOptions@#,Epilog]&
-      )/@Flatten@{plots},
-      Unevaluated@Sequence[]
+ConstructOptionValue[vals_]:=
+  Array[Extract[vals,FirstPosition[Values@$SidePositions,{##}]]&,{2,2}]
+
+
+ConstructOption[sideData_,opt_]:=
+  opt->ConstructOptionValue[sideData[[All,Key@opt]]]
+
+
+$IndicatorArrows=<|
+  {Left}->"\[LeftArrow]",
+  {Right}->"\[RightArrow]",
+  {Top}->"\[UpArrow]",
+  {Bottom}->"\[DownArrow]",
+  {Bottom,Left}->"\[LowerLeftArrow]",
+  {Bottom,Right}->"\[LowerRightArrow]",
+  {Top,Left}->"\[UpperLeftArrow]",
+  {Top,Right}->"\[UpperRightArrow]"
+|>;
+
+
+ConstructCoordinatesTool[cto_,_]/;Length@cto==1:=
+  Normal@AssociationMap[cto]@{"CopiedValueFunction","DisplayFunction"}
+ConstructCoordinatesTool[cto_,sideData_]:=
+  Module[
+    {
+      sides=Keys@cto,
+      sharedSides,
+      uniqueSides,
+      transforms
+    },
+    sharedSides=Flatten[Replace[{_,_}:>{}]@*DeleteDuplicates/@Transpose@sides];
+    uniqueSides=AssociationMap[DeleteCases[Alternatives@@sharedSides]]@sides;
+    transforms=Map[
+      With[
+        {
+          pos=#,
+          data=Extract[sideData,#]
+        },
+        If[
+          data["isTransformed"],
+          Evaluate@Rescale[#,Extract[sideData,{#,3-#2}&@@pos][PlotRange],data[PlotRange]]&,
+          #&
+        ]
+      ]&,
+      $SidePositions
+    ];
+    {
+      "CopiedValueFunction"->Apply[
+        Evaluate@Normal@MapIndexed[
+          Function[
+            {cvf,quadrant},
+            Hold[cvf]@MapThread[Construct,{transforms/@quadrant[[1,1]],{#,#2}}]
+          ],
+          (#["CopiedValueFunction"]&)/@cto
+        ]&/.Hold[cvf_]:>cvf
+      ],
+      "DisplayFunction"->Apply[
+        Evaluate@Grid[
+          If[Length@#==1,Transpose@#,#]&@Map[
+            Function[
+              quadrant,
+              If[KeyMemberQ[cto,quadrant],
+                With[
+                  {df=cto[quadrant]["DisplayFunction"]},
+                  If[df=!=None,
+                    Row@
+                      If[MemberQ[quadrant,Right],Reverse,#&]@
+                        {
+                          Style[$IndicatorArrows@uniqueSides@quadrant,20],
+                          "  ",
+                          Hold[df]@MapThread[Construct,{transforms/@quadrant,{#,#2}}]
+                        },
+                    ""
+                  ]
+                ],
+                ""
+              ]
+            ],
+            Outer[
+              List,
+              Sequence@@DeleteCases[
+                {{Top,Bottom},{Left,Right}},
+                Except[Alternatives@@Flatten@sides],
+                {2}
+              ]
+            ],
+            {2}
+          ],
+          Dividers->Center,
+          FrameStyle->Thick,
+          Spacings->2
+        ]&/.Hold[df_]:>df
+      ]
+    }
+  ]
+
+
+iCombinePlots[rawPlots_,{grOpts___},opts:OptionsPattern[CombinePlots]]:=
+  Module[
+    {
+      axesSides,
+      procPlots,
+      plots,
+      plotOpts,
+      gi,
+      plotData,
+      sideData,
+      plotRanges,
+      frameOpts={FrameLabel,FrameTicks,FrameStyle,FrameTicksStyle},
+      primarySides,
+      coordinatesTools
+    },
+    axesSides=ExpandSeqSpec[
+        Replace[
+          OptionValue["AxesSides"],
+          {
+            "TwoY"->{2->Right},
+            "TwoX"->{2->Top},
+            "TwoXY"->{2->Directive[Top,Right]}
+          }
+        ],
+        Length@rawPlots
+      ]/.Directive->List;
+    procPlots=Flatten@MapThread[ResolveAxesSides,{rawPlots,axesSides}];
+    plots=procPlots[[All,1]];
+    plotOpts=AssociationThread[frameOpts->NormalizedOptionValue[#,frameOpts]]&/@plots;
+    gi=GraphicsInformation[plots];
+    plotData=Transpose@{procPlots,plotOpts,gi[PlotRange]};
+    sideData=KeyValueMap[
+      FirstCase[
+        plotData,
+        {Axes[_,sides_/;MemberQ[sides,#]],o_,pr_}:>
+          Append[
+            Extract[{#,1}&@@#2]/@o,
+            {
+              PlotRange->pr[[3-First@#2]],
+              "isPrimary"->True
+            }
+          ],
+        Replace[
+          plotData[[1]],
+          {_,o_,pr_}:>
+            Append[
+              Extract[{#,2}&@@#2]/@o,
+              {
+                PlotRange->pr[[3-First@#2]],
+                "isPrimary"->False
+              }
+            ]
+        ]
+      ]&,
+      $SidePositions
+    ];
+    sideData=Array[Extract[sideData,FirstPosition[Values@$SidePositions,{##}]]&,{2,2}];
+    sideData=MapIndexed[
+      Append[
+        #,
+        "isTransformed"->#isPrimary&&Last@#2!=1&&sideData[[First@#2,1,"isPrimary"]]
+      ]&,
+      sideData,
+      {2}
+    ];
+    plotRanges=sideData[[All,All,Key@PlotRange]];
+    coordinatesTools=GetCoordinatesToolOptions@*ExtractGraphics/@
+      <|
+        FirstCase[procPlots,Axes[plt_,#]:>(#->plt),Nothing]&/@
+          Tuples@{{Bottom,Top},{Left,Right}}
+      |>;
+    procPlots=Replace[
+      procPlots,
+      {
+        Axes[plt_,{Bottom,Left}]:>plt,
+        Axes[plt_,sides_]:>(
+          plt/.Graphics[prim_,o___]:>With[
+            {
+              transform=GeometricTransformation[
+                #,
+                RescalingTransform[
+                  Extract[plotRanges,$SidePositions/@sides],
+                  Extract[plotRanges,$SidePositions/@{Bottom,Left}]
+                ]
+              ]&
+            },
+            Graphics[
+              transform@prim,
+              Prolog->transform@OptionValue[Graphics,{o},Prolog],
+              Epilog->transform@OptionValue[Graphics,{o},Epilog],
+              o
+            ]
+          ]
+        )
+      },
+      1
+    ];
+    Show[
+      Flatten@MapAt[Graphics,-1]@Reap@SeparateAnnotations[
+        procPlots,
+        opts
+      ],
+      grOpts,
+      PlotRange->plotRanges[[{2,1},1]],
+      FrameLabel->sideData[[All,All,Key@FrameLabel]],
+      FrameStyle->sideData[[All,All,Key@FrameStyle]],
+      FrameTicksStyle->sideData[[All,All,Key@FrameTicksStyle]],
+      FrameTicks->MapIndexed[
+        With[
+          {
+            pTicks=Replace[
+              #[FrameTicks],
+              {
+                Automatic->CustomTicks[LabelStyle->If[#isPrimary,Automatic,None]],
+                All->CustomTicks[]
+              }
+            ]
+          },
+          If[!#isTransformed,
+            pTicks,
+            Replace[
+              Replace[
+                pTicks,
+                f:Except[_List|False|None]:>f@@#[PlotRange]
+              ],
+              {x_,rest___}|x_:>Replace[
+                {Rescale[x,#[PlotRange],plotRanges[[First@#2,1]]],rest},
+                {y_}:>y
+              ],
+              1
+            ]
+          ]
+        ]&,
+        sideData,
+        {2}
+      ],
+      CoordinatesToolOptions->ConstructCoordinatesTool[coordinatesTools,sideData],
+      Method->Replace[GraphicsOpt[First@plots,Method],m:Except[Automatic]:>FilterRules[m,Except[CoordinatesToolOptions]]],
+      If[OptionValue["CombineProlog"],
+        Prolog->(
+          OptionValue[Graphics,GraphicsOptions@#,Prolog]&
+        )/@procPlots,
+        Unevaluated@Sequence[]
+      ],
+      If[OptionValue["CombineEpilog"],
+        Epilog->(
+          OptionValue[Graphics,GraphicsOptions@#,Epilog]&
+        )/@procPlots,
+        Unevaluated@Sequence[]
+      ]
     ]
   ]
-]
+
+
+CombinePlots::invGr="Will ignore invalid expression `` (expected graphics or legended graphics expression).";
+
+
+Options[CombinePlots]={"AxesSides"->Automatic,"CombineProlog"->True,"CombineEpilog"->True,"AnnotationPattern"->(GraphicsGroup|Text)[___]};
+
+
+CombinePlots[plots__,Longest[opts:OptionsPattern[]]]:=
+  With[
+    {
+      cpOpts=FilterRules[{opts},Options@CombinePlots]
+    },
+    iCombinePlots[{plots},Complement[{opts},cpOpts],cpOpts]
+  ]
 
 
 End[]
