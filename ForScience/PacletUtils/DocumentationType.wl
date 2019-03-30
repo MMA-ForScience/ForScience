@@ -7,13 +7,19 @@ Begin["`Private`"]
 
 
 $DocumentationTypeData=<||>;
+$DocumentationTypes=<||>;
+
+
 $DocumentationTypeData/:HoldPattern@AppendTo[$DocumentationTypeData,data_->def_]:=(
-  data[_]=def;
-  $DocumentationTypeData=Append[$DocumentationTypeData,data->def]
+  data[_]:=$DocumentationTypeData[data];
+  data/:AppendTo[data[Verbatim[Blank][]],item_]:=(
+    AppendTo[data[#],item]&/@Keys@$DocumentationTypes;
+    AppendTo[$DocumentationTypeData[data],item];
+  );
+  $DocumentationTypeData[data]=def;
 )
 
 
-$DocumentationTypes=<||>;
 $DocumentationTypes/:HoldPattern@AppendTo[$DocumentationTypes,spec:(type_->_)]:=(
   KeyValueMap[(#[type]=#2)&,$DocumentationTypeData];
   $DocumentationTypes=Append[$DocumentationTypes,spec]

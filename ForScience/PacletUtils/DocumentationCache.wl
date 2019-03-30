@@ -3,7 +3,7 @@
 Begin["`Private`"]
 
 
-AppendTo[$DocumentationTypeData,$DependencyCollectors->{DocumentationHeader}];
+AppendTo[$DocumentationTypeData,$DependencyCollectors->{}];
 
 
 Attributes[CacheFile]={HoldFirst};

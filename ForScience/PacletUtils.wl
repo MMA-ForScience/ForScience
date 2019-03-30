@@ -15,9 +15,9 @@ BeginPackage["ForScience`PacletUtils`",{"ForScience`","PacletManager`","JLink`",
 <<`BuildAction`;
 <<`DocumentationType`;
 <<`DocID`;
+<<`DocumentationCache`;
 <<`DocUtils`;
 <<`DocumentationHeader`;
-<<`DocumentationCache`;
 <<`DocumentationFooter`;
 <<`IndexDocumentation`;
 <<`DocumentationBuilder`;

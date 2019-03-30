@@ -9,6 +9,9 @@ Begin["`Private`"]
 $ForScienceColor=Darker@Green;
 
 
+AppendTo[$DependencyCollectors[_],DocumentationHeader]
+
+
 SyntaxInformation[DocumentationHeader]={"ArgumentsPattern"->{_}};
 
 
