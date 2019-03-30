@@ -139,41 +139,56 @@ With[
           {170,70}
         ],
         UpTo@4
-      ],
-      sOH=SummaryOverlayHover,
-      sO=SummaryOverlay
+      ]
     },
     {
       Last@ImageDimensions@fullThumb,
       Cell[
-        BoxData@TagBox[
-          ButtonBox[
-            StyleBox[
-              DynamicBox@ToBoxes@Overlay[
-                {
-                  Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
-                  If[CurrentValue["MouseOver"],sOH,sO]
-                },
-                Alignment->{Left,Center}
-              ],
-              Background->White
+        BoxData@ToBoxes@MouseAppearance[
+          Toggler[
+            Dynamic@CurrentValue[
+              EvaluationNotebook[],
+              {TaggingRules,"Openers","NotesSection","0"}
             ],
-            Appearance->None,ButtonFunction:>(CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}]=Open),
-            Evaluator->"System"
+            {
+              True->"",
+              False->Graphics[
+                {
+                  Inset[
+                    Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
+                    Scaled@{0,0},
+                    Scaled@{0,0}
+                  ],
+                  Inset[
+                    PaneSelector[
+                      {
+                        True->SummaryOverlayHover,
+                        False->SummaryOverlay
+                      },
+                      Dynamic@CurrentValue["MouseOver"]
+                    ],
+                    Scaled@{0,0},
+                    Scaled@{0,0}
+                  ]
+                },
+                AspectRatio->Full,
+                PlotRangePadding->None,
+                ImagePadding->None,
+                ImageSize->{720,80}
+              ]
+            },
+            ""
           ],
-          MouseAppearanceTag["LinkHand"]
+          "LinkHand"
         ],
         "NotesThumbnails",
-        CellOpen->Dynamic[
-          FEPrivate`Switch[
-            CurrentValue[EvaluationNotebook[],{TaggingRules,"Openers","NotesSection","0"}],
-            True,
-            False,
-            Open,
-            False,
-            _,
-            True
-          ]
+        CellOpen->Dynamic@If[
+          CurrentValue[
+            EvaluationNotebook[],
+            {TaggingRules,"Openers","NotesSection","0"}
+          ],
+          False,
+          True
         ]
       ]
     }

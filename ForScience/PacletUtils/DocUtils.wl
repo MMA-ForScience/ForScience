@@ -84,18 +84,17 @@ DocumentationOpener[{heading__},type_,index_]:=With[
   {arrow=$SectionArrow},
   Cell[
     TextData@{
-      Cell@BoxData@DynamicBox@ToBoxes@If[
-        MatchQ[
-          First@Dynamic[
-            CurrentValue[EvaluationNotebook[],
-              {TaggingRules,"Openers",type,index},
-              Closed
-            ]
-          ],
-          Open|True
-        ],
+      Cell@BoxData@ToBoxes@Rotate[
         arrow,
-        Rotate[arrow,Pi/2,{-1.65,-1}]
+        Dynamic@If[
+          CurrentValue[
+            EvaluationNotebook[],
+            {TaggingRules,"Openers",type,index}
+          ],
+          0,
+          Pi/2
+        ],
+        {-1.65,-1}
       ],
     Cell@BoxData@TemplateBox[{1},"Spacer1"],
     heading
@@ -138,8 +137,7 @@ With[
     },
     Dynamic@CurrentValue[
       EvaluationNotebook[],
-      {TaggingRules,"Openers",type,index},
-      Closed
+      {TaggingRules,"Openers",type,index}
     ]
   ]
 ]
