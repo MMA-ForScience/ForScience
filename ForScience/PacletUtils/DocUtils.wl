@@ -27,9 +27,13 @@ Replace[ (* clean up box structures *)
       ]
     ],
     {    
-      TagBox[RowBox@l_List,"[**]"]:>
-        RowBox@Replace[l,s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol"],1],
-      TagBox[RowBox@l:{__String},"<**>"]:>DocumentationLink@Evaluate@StringJoin@l
+      TagBox[arg_,"[**]"]:>
+        Replace[
+          arg,
+          s_String/;DefinedQ@s:>DocumentationLink[s,"Symbol",OptionValue["LinkOptions"]],
+          If[MatchQ[arg,RowBox@_List],{2},{0}]
+        ],
+      TagBox[RowBox@{s__String}|s2_String,"<**>"]:>DocumentationLink[Evaluate@StringJoin@{s,s2},OptionValue["LinkOptions"]]
     },
     All
   ],
