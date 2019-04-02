@@ -25,7 +25,12 @@ MakeTutorialsSection[sym_,nb_,OptionsPattern[]]:=With[
     NotebookWrite[nb,
       Cell@CellGroupData@Prepend[Cell["Tutorials","TutorialsSection"]][
         Cell[
-          BoxData@DocumentationLink[#,If[TutorialQ@#,"Tutorial","Overview"],"LinkStyle"->"RefLinkPlain",BaseStyle->{"Tutorials"}],
+          BoxData@DocumentationLink[
+            #,
+            Which[StringQ@#,"Tutorial OR Overview",TutorialQ@#,"Tutorial",True,"Overview"],
+            "LinkStyle"->"RefLinkPlain",
+            BaseStyle->{"Tutorials"}
+          ],
           "Tutorials"
         ]&/@valid
       ]

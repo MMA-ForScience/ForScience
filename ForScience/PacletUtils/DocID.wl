@@ -88,7 +88,7 @@ DocSearch[Evaluate[ref:DocIDSpec]]:=DocSearch[ref]=With[
     {{tp_,uri_}}:>{tp,"paclet:"<>uri}
   }/.{
     {"Format",uri_}/;id@SymbolName==id@Label:>{DocID["\""<>id@SymbolName<>"\""],uri},
-    {_,uri_}:>{id,uri}
+    {tp_,uri_}:>{id/.DocID[name_,sym_,_,tit_]:>DocID[name,sym,tp,tit],uri}
   }
 ]
 
