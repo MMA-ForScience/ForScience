@@ -34,7 +34,10 @@ DocID[name_String,types:{_String,_String},tit_String]:=DocID[name,Evaluate@Switc
   {t_,t_},
   First@types,
   _,
-  $InvalidType
+  StringRiffle[
+    Intersection@@(StringSplit[#," OR "]&)/@types,
+    " OR "
+  ]/.""->$InvalidType
 ],tit]
 DocID[name_String?DefinedQ,type_String,tit_String]:=HeldSymbol[name]/.Hold[s_]:>DocID[name,s,type,tit]
 DocID[name_String,type_String,tit_String]:=Select[
