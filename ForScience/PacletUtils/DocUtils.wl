@@ -9,7 +9,7 @@ Begin["`Private`"]
 SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 
 
-CodeCell[box_]:=Cell[BoxData@box,"InlineFormula",FontFamily->"Source Sans Pro"]
+CodeCell[box_]:=Cell[BoxData@box,"InlineFormula","InlineFormula",FontFamily->"Source Sans Pro"]
 
 
 Options[BoxesToDocEntry]={"LinkOptions"->{}}
@@ -80,36 +80,74 @@ $SectionArrow=Style[
     PlotRange->{{-3,4},{-1,1}},
     ImageSize->20
   ],
-  Magnification->0.68Inherited
+  Magnification->Dynamic[0.68 CurrentValue[Magnification]]
 ];
 
 
 Symbol["System`WholeCellGroupOpener"];
 
 
-DocumentationOpener[{heading__},type_,index_]:=With[
-  {arrow=$SectionArrow},
+AppendTo[$DocumentationStyles[_],
+  VersionAwareTemplateBox["SectionOpenerArrow",
+    ""&,
+    Evaluate@ToBoxes@Rotate[
+      $SectionArrow,
+      Dynamic@If[
+        CurrentValue[
+          EvaluationNotebook[],
+          #
+        ],
+        0,
+        Pi/2
+      ],
+      {-1.65,-1}
+    ]&
+  ]
+]
+AppendTo[$DocumentationStyles[_],
+  VersionAwareTemplateBox["LinkSectionHeader",
+    Evaluate@Cell@TextData@{
+      Cell@BoxData@TemplateBox[{},"SectionOpenerArrow"],
+      Cell@BoxData@SpacerBox@1,
+      #
+    }&,
+    #&
+  ]
+]
+LinkSectionHeader[tit_,sty_]:=
+  Cell[BoxData@TemplateBox[{tit},"LinkSectionHeader"],sty,sty]
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["SectionHeaderSpacer"],
+    CellMargins->Pre111StyleSwitch[{{0,0},{1,1}},-2],
+    CellElementSpacings->{
+      "CellMinHeight"->Pre111StyleSwitch[Inherited,0],
+      "ClosedCellHeight"->Pre111StyleSwitch[Inherited,0]
+    },
+    CellOpen->Pre111StyleSwitch[]
+  ]
+]
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["SectionFooterSpacer"],
+    CellMargins->Pre111StyleSwitch[{{0,0},{16,1}},-2],
+    CellElementSpacings->{
+      "CellMinHeight"->Pre111StyleSwitch[Inherited,0],
+      "ClosedCellHeight"->Pre111StyleSwitch[Inherited,0]
+    },
+    CellOpen->Pre111StyleSwitch[]
+  ]
+]
+
+
+DocumentationOpener[{heading__},type_,index_]:=
   Cell[
     TextData@{
-      Cell@BoxData@ToBoxes@Rotate[
-        arrow,
-        Dynamic@If[
-          CurrentValue[
-            EvaluationNotebook[],
-            {TaggingRules,"Openers",type,index}
-          ],
-          0,
-          Pi/2
-        ],
-        {-1.65,-1}
-      ],
-    Cell@BoxData@TemplateBox[{1},"Spacer1"],
-    heading
+      Cell@BoxData@TemplateBox[{{TaggingRules,"Openers",type,index}},"SectionOpenerArrow"],
+      Cell@BoxData@SpacerBox@1,
+      heading
     },
     type,
     WholeCellGroupOpener->True
   ]
-]
 
 
 AddOpenerTag[nb_,type_,open_]:=Module[

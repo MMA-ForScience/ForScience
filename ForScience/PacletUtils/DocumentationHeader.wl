@@ -42,19 +42,48 @@ HoldPattern[DocumentationHeader[sym_]=header_]^:=
 DocumentationHeader[_]:={}
 
 
-$HeaderMenuArrow=Cell@BoxData@GraphicsBox[
-  {
-    GrayLevel[2/3],
-    Thickness[0.13],
-    LineBox@{{-1.8,0.5},{0,0},{1.8,0.5}}
-  },
-  AspectRatio->1,
-  ImageSize->20,
-  PlotRange->{{-3,4},{-1,1}}
-];
-
-
 AppendTo[$DocumentationTypeData,$HeaderEntries->{}];
+
+
+AppendTo[$DocumentationStyles[_],
+  VersionAwareTemplateBox["PacletName",
+    Cell[#,"PacletNameCell"]&,
+    Evaluate@GridBox[
+      {{
+        ItemBox[
+          Cell[
+            BoxData@RowBox@{
+              SpacerBox@8,
+              Cell[#,"PacletNameCell",TextAlignment->Center],
+              SpacerBox@8
+            },
+            TextAlignment->Center
+          ],
+          Background->#2,
+          ItemSize->Full
+        ],
+        ""
+      }},
+      GridBoxAlignment->{"Rows"->{{Center}}},
+      GridBoxItemSize->{"Columns"->{Full,Scaled[0.02]},"Rows"->{{2.5}}}
+    ]&
+  ]
+];
+AppendTo[$DocumentationStyles[_],
+  VersionAwareTemplateBox["HeaderMenuArrow",
+  StyleBox["\[FilledDownTriangle]", "AnchorBarArrow"]&,
+  GraphicsBox[
+    {
+      GrayLevel[2/3],
+      Thickness[0.13],
+      LineBox@{{-1.8,0.5},{0,0},{1.8,0.5}}
+    },
+    AspectRatio->1,
+    ImageSize->20,
+    PlotRange->{{-3,4},{-1,1}}
+  ]&
+  ]
+];
 
 
 Attributes[MakeHeader]={HoldFirst};
@@ -69,20 +98,7 @@ With[
   },
   Cell[
     BoxData@GridBox@{{
-      GridBox[
-        {{
-          ItemBox[
-            Cell[
-              BoxData@RowBox@{SpacerBox@8,Cell[title,"PacletNameCell",TextAlignment->Center],SpacerBox@8},TextAlignment->Center
-            ],
-            Background->col,
-            ItemSize->Full
-          ],
-          ""
-        }},
-        GridBoxAlignment->{"Rows"->{{Center}}},
-        GridBoxItemSize->{"Columns"->{Full,Scaled[0.02]},"Rows"->{{2.5}}}
-      ],
+      TemplateBox[{title,col},"PacletName"],
       Cell[
         TextData@{
           Riffle[
@@ -108,7 +124,7 @@ MakeHeaderDropdown[title_,style_,refs_]:=If[Length@refs>0,
   Cell[
     BoxData@TagBox[
       ActionMenuBox[
-        FrameBox[Cell[TextData[{title," ",$HeaderMenuArrow}]],StripOnInput->False],
+        FrameBox[Cell[TextData[{title," ",Cell@BoxData@TemplateBox[{},"HeaderMenuArrow"]}]],StripOnInput->False],
         #:>HeaderDropdownLink[#]&/@refs,
         Appearance->None,
         MenuAppearance->Automatic,

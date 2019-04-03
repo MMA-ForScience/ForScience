@@ -27,7 +27,7 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
           _String,
           Cell[ParseToDocEntry@#,"TableText"],
           _Symbol,
-          Cell[BoxData@DocumentationLink[#,"Symbol"],"TableText"],
+          Cell[BoxData@CodeCell@DocumentationLink[#,"Symbol"],"TableText"],
           _,
           SpecToCell[#,"TableText"]
         ]&,
@@ -51,6 +51,18 @@ FormatTable[TableForm[tab_]]/;Length@Dimensions@tab>=2&&1<=(Dimensions@tab)[[2]]
 
 FormatTable::noTable="`` is not a valid table of dimension n\[Times]1, n\[Times]2 or n\[Times]3.";
 FormatTable[TableForm[t_]]:=(Message[FormatTable::noTable,t];Cell["Invalid table"])
+
+
+AppendTo[$DocumentationStyles["Symbol"],
+  Cell[StyleData["NotesThumbnails"],
+    ShowCellBracket->False,
+    CellMargins->Pre111StyleSwitch[-2,{{32,Inherited},{0,0}}],
+    CellElementSpacings->{
+      "CellMinHeight"->0,
+      "ClosedCellHeight"->0
+    }
+  ]
+];
 
 
 $MagnifierGlass=Image[CompressedData["
@@ -217,6 +229,14 @@ With[
 ]
 
 
+AppendTo[$DocumentationStyles["Symbol"],
+  VersionAwareTemplateBox["DetailsHeader",
+    "Details"&,
+    "Details and Options"&
+  ]
+];
+
+
 Options[MakeDetailsSection]={Details->True};
 
 
@@ -244,7 +264,7 @@ If[OptionValue@Details&&Length@Details@sym>0,
         nb,
         CreateDocumentationOpener[
           nb,
-          {Cell["Details and Options","NotesFrameText"]},
+          {Cell[BoxData@TemplateBox[{},"DetailsHeader"],"NotesFrameText","NotesFrameText"]},
           "NotesSection",
           notes,
           DocumentationOptionValue[Details[sym],Open]/.Automatic->First@thumbData<33

@@ -16,24 +16,34 @@ Tutorials::invalidSymbol="Symbol `` is not tagged as tutorial/overview and canno
 DeclareMetadataHandler[Tutorials,"invalidInput",_,{(_String|_Symbol)...},{}]
 
 
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["TutorialsSection"],
+    WholeCellGroupOpener->Pre111StyleSwitch[]
+  ]
+];
+
+
 Attributes[MakeTutorialsSection]={HoldFirst};
 
 
 MakeTutorialsSection[sym_,nb_,OptionsPattern[]]:=With[
   {valid=DeleteCases[_Symbol?(!TutorialQ@#&&!TutorialOverviewQ@#&)]@Tutorials[sym]},
-    If[Length@valid>0,
+  If[Length@valid>0,
     NotebookWrite[nb,
-      Cell@CellGroupData@Prepend[Cell["Tutorials","TutorialsSection"]][
-        Cell[
-          BoxData@DocumentationLink[
-            #,
-            Which[StringQ@#,"Tutorial OR Overview",TutorialQ@#,"Tutorial",True,"Overview"],
-            "LinkStyle"->"RefLinkPlain",
-            BaseStyle->{"Tutorials"}
-          ],
-          "Tutorials"
-        ]&/@valid
-      ]
+      Cell@CellGroupData@{
+        LinkSectionHeader["Tutorials","TutorialsSection"],
+        Cell["","SectionHeaderSpacer"],
+        Sequence@@(Cell[
+            BoxData@DocumentationLink[
+              #,
+              Which[StringQ@#,"Tutorial OR Overview",TutorialQ@#,"Tutorial",True,"Overview"],
+              "LinkStyle"->"RefLinkPlain",
+              BaseStyle->{"Tutorials"}
+            ],
+            "Tutorials"
+          ]&)/@valid,
+        Cell["","SectionFooterSpacer"]
+      }
     ]
   ]
 ]

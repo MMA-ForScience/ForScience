@@ -26,7 +26,7 @@ DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as Docum
 DocumentationBuilder::failed="Could not create documentation notebook for ``. Reason unknown.";
 
 
-Options[DocumentationBuilder]=Join[{ProgressIndicator->True},Options[DocumentationCachePut]];
+Options[DocumentationBuilder]=Join[{ProgressIndicator->True,"Pre111Compatibility"->False},Options[DocumentationCachePut]];
 
 
 Attributes[DocumentationBuilder]={HoldFirst};
@@ -77,83 +77,84 @@ DocumentationBuilder[opts:OptionsPattern[]]:=Module[
 
 
 DocumentationBuilder[sym_/;DocumentationHeader[sym]=!={},automated:(True|False):False,opts:OptionsPattern[]]:=
-With[
+Block[
   {
-    type=DocumentationType@sym
+    $Pre111CompatStyles=OptionValue["Pre111Compatibility"]
   },
   With[
     {
-      cachedFile=DocumentationCacheGet[sym,type,FilterRules[{opts},Options@DocumentationCacheGet]],
-      docFile=FileNameJoin@{Directory[],$DocumentationBaseDirectory,DocumentationPath[sym,"IncludeContext"->False]<>".nb"}
+      type=DocumentationType@sym
     },
-    If[cachedFile=!=Null,
-      If[automated,
-        Quiet@CreateDirectory[DirectoryName@docFile];
-        CopyFile[cachedFile,docFile],
-        NotebookPut@Import[cachedFile]
-      ],
-      Sow[Hold[sym,type],{DocumentationCacheGet,"Uncached"}];
-      With[
-        {
-          title=DocumentationTitle[sym]
-        },
+    With[
+      {
+        cachedFile=DocumentationCacheGet[sym,type,FilterRules[{opts},Options@DocumentationCacheGet]],
+        docFile=FileNameJoin@{Directory[],$DocumentationBaseDirectory,DocumentationPath[sym,"IncludeContext"->False]<>".nb"}
+      },
+      If[cachedFile=!=Null,
+        If[automated,
+          Quiet@CreateDirectory[DirectoryName@docFile];
+          CopyFile[cachedFile,docFile],
+          NotebookPut@Import[cachedFile]
+        ],
+        Sow[Hold[sym,type],{DocumentationCacheGet,"Uncached"}];
         With[
           {
-            nb=NotebookPut[
-              StyleDefinitions->Notebook[{
-                Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
-                Cell[StyleData["Input"],CellContext->Notebook],
-                Cell[StyleData["Output"],CellContext->Notebook]
-              }],
-              Saveable->False,
-              Visible->False,
-              TaggingRules->{
-                "NewStyles"->True,
-                "Openers"->{},
-                "Metadata"->{
-                  "title"->title,
-                  "description"->"",
-                  "label"->$BuiltPaclet<>" "<>type,
-                  "context"->Context@sym,
-                  "index"->True,
-                  "language"->"en",
-                  "paclet"->$BuiltPaclet,
-                  "type"->type,
-                  "windowtitle"->title,
-                  "uri"->DocumentationPath[sym],
-                  "summary"->DocumentationSummary[sym,type],
-                  "keywords"->{}
-                }
-              },
-              WindowTitle->title
-            ]
+            title=DocumentationTitle[sym]
           },
-          If[FailureQ@nb,
-            Message[DocumentationBuilder::failed,HoldForm@sym];
-            nb,
-            NotebookWrite[nb,MakeHeader[sym,type]];
-            With[
-              {linkedSymbols=DeleteDuplicates@First[
-                Last@Reap[
-                  MakeDocumentationContent[sym,type,nb,opts],
-                  Hyperlink
-                ],
-                {}
-              ]},
-              NotebookWrite[nb,MakeFooter[sym,type]];
-              If[automated,
-                Quiet@CreateDirectory[DirectoryName@docFile];
-                Export[
-                  docFile,
-                  Replace[NotebookGet[nb],(Visible->False):>Sequence[],1],
-                  PageWidth->Infinity
-                ];
-                NotebookClose[nb];
-                DocumentationCachePut[sym,type,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
-                With[
-                  {retNb=NotebookGet@nb},
+          With[
+            {
+              nb=NotebookPut[
+                Saveable->False,
+                StyleDefinitions->CreateStyleDefinitions[type],
+                Visible->False,
+                TaggingRules->{
+                  "NewStyles"->True,
+                  "Openers"->{},
+                  "Metadata"->{
+                    "title"->title,
+                    "description"->"",
+                    "label"->$BuiltPaclet<>" "<>type,
+                    "context"->Context@sym,
+                    "index"->True,
+                    "language"->"en",
+                    "paclet"->$BuiltPaclet,
+                    "type"->type,
+                    "windowtitle"->title,
+                    "uri"->DocumentationPath[sym],
+                    "summary"->DocumentationSummary[sym,type],
+                    "keywords"->{}
+                  }
+                },
+                WindowTitle->title
+              ]
+            },
+            If[FailureQ@nb,
+              Message[DocumentationBuilder::failed,HoldForm@sym];
+              nb,
+              NotebookWrite[nb,MakeHeader[sym,type]];
+              With[
+                {linkedSymbols=DeleteDuplicates@First[
+                  Last@Reap[
+                    MakeDocumentationContent[sym,type,nb,opts],
+                    Hyperlink
+                  ],
+                  {}
+                ]},
+                NotebookWrite[nb,MakeFooter[sym,type]];
+                If[automated,
+                  Quiet@CreateDirectory[DirectoryName@docFile];
+                  Export[
+                    docFile,
+                    Replace[NotebookGet[nb],(Visible->False):>Sequence[],1],
+                    PageWidth->Infinity
+                  ];
                   NotebookClose[nb];
-                  NotebookPut@Replace[retNb,(Visible->False)->(Visible->!$BuildActive),1]
+                  DocumentationCachePut[sym,type,docFile,linkedSymbols,FilterRules[{opts},Options@DocumentationCachePut]];,
+                  With[
+                    {retNb=NotebookGet@nb},
+                    NotebookClose[nb];
+                    NotebookPut@Replace[retNb,(Visible->False)->(Visible->!$BuildActive),1]
+                  ]
                 ]
               ]
             ]

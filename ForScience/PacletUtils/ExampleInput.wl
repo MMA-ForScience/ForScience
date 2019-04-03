@@ -207,6 +207,18 @@ EIToBoxData[ExampleInput[in_]]:=BoxData@in
 EIToBoxData[ExampleInput[in__]]:=BoxData@Riffle[{in},"\[IndentingNewLine]"]
 
 
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["Input"],
+    CellContext->Notebook
+  ]
+]
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["Output"],
+    CellContext->Notebook
+  ]
+]
+
+
 ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
   EIToBoxData[
     EIToBoxes[#,opts]&/@Unevaluated/@ProcessVisibleOption[exInput,OptionValue[ExampleInput,opts,Visible]]

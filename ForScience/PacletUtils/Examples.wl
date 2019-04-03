@@ -53,7 +53,13 @@ ExamplesSection[sym_,sec_Association,nb_,lev_,path_]:=
         nb,
         ExampleHeader[First@#,ExampleCount[Last@#]],
         type,
-        ExamplesSection[sym,Last@#,nb,lev+1,newPath],
+        Append[
+          If[lev==1,
+            Cell["","SectionFooterSpacer"],
+            Nothing
+          ]
+        ]@
+          ExamplesSection[sym,Last@#,nb,lev+1,newPath],
         DocumentationOptionValue[Examples[sym],Open]/.{
           All->True,
           None->False,
