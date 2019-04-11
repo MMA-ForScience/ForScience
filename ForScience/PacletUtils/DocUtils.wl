@@ -9,7 +9,7 @@ Begin["`Private`"]
 SpacerBox[width_]:=TemplateBox[{width},"Spacer1"]
 
 
-CodeCell[box_]:=Cell[BoxData@box,"InlineFormula","InlineFormula",FontFamily->"Source Sans Pro"]
+CodeCell[box_]:=Cell[BoxData@box,"InlineFormula","InlineFormula"]
 
 
 Options[BoxesToDocEntry]={"LinkOptions"->{}}
@@ -18,16 +18,22 @@ Options[BoxesToDocEntry]={"LinkOptions"->{}}
 BoxesToDocEntry[boxes:(_RowBox|_TagBox|_StyleBox),OptionsPattern[]]:=
 Replace[ (* clean up box structures *)
   Replace[ (* process all TagBoxes, from the inside out *)
-    Replace[ (* for RowBoxes ... *)
+    Replace[ (* do initial top-level formatting of the boxes  *)
       boxes,
-      row_RowBox:>Replace[ (* ... add space after comma on topmost level *)
-        row,
-        {
-          s_String:>StringReplace[s,","~~EndOfString:>", "],
-          b_:>CodeCell[b]
-        },
-        {2}
-      ]
+      {
+        row_RowBox:>Replace[
+          row,
+          {
+            (* add space after comma for strings RowBoxes *)
+            s_String:>StringReplace[s,","~~EndOfString:>", "],
+            (* wrap anything else in CodeCell *)
+            b_:>CodeCell[b]
+          },
+          {2}
+        ],
+        (* also wrap anything top-level (except RowBoxes) in CodeCell *)
+        b:Except[_String]:>CodeCell[b]
+      }
     ],
     {    
       TagBox[arg_,"[**]"]:>
@@ -41,10 +47,9 @@ Replace[ (* clean up box structures *)
     All
   ],
   {
-    RowBox[s_String|{s_String}]:>s (* single strings don't need any wrapper *),
-    RowBox@c_List:> (* RowBox->TextData, any nested boxes need to be wrapped in Cell@BoxData@... *)
-      TextData@Replace[c,b:Except[_String|_Cell(* from CodeCell *)]:>Cell@BoxData@b,1],
-    b_:>BoxData@CodeCell@b
+    RowBox[s_String|{s_String}]|s_String:>s (* single strings don't need any wrapper *),
+    RowBox@c_List:>TextData@c,
+    b_:>BoxData@b
   }
 ]
 BoxesToDocEntry[boxes_String,OptionsPattern[]]:=boxes

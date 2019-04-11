@@ -160,7 +160,7 @@ Options[DocumentationLink]={"LinkStyle"->"RefLink",BaseStyle->Automatic};
 DocumentationLink[Evaluate[ref:DocIDSpec],OptionsPattern[]]:=With[
   {
     id=DocID@ref,
-    bs=Replace[OptionValue[BaseStyle],Automatic->{"InlineFormula"}]
+    bs=Replace[OptionValue[BaseStyle],Automatic->{}]
   },
   Switch[id[DocumentationType],
     "http:"|"https:",
