@@ -13,8 +13,7 @@ DeclareMetadataHandler[Abstract,"invalidFormat",_,_String,""]
 
 
 MakeGuideAbstract[gd_,nb_,OptionsPattern[]]:=If[Abstract[gd]=!="",
-  NotebookWrite[nb,Cell[ParseToDocEntry@Abstract[gd],"GuideAbstract"]];
-  NotebookWrite[nb,Cell["\t","GuideDelimiterSubsection"]]
+  NotebookWrite[nb,Cell[ParseToDocEntry[Abstract[gd],"LinkOptions"->BaseStyle->"InlineFunctionSans"],"GuideAbstract"]]
 ]
 
 

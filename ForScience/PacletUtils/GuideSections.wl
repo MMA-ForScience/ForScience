@@ -93,13 +93,67 @@ MakeGuideSectionLine[elements_,sep_,link_]:=Riffle[
 ]
 
 
+AppendTo[$DocumentationStyles["Guide"],
+  Cell[StyleData["GuideMainSectionHeader",StyleDefinitions->StyleData["SeeAlsoSection"]],
+    CellMargins->Pre111StyleSwitch[0,-2],
+    CellElementSpacings->{
+      "CellMinHeight"->Pre111StyleSwitch[Inherited,0],
+      "ClosedCellHeight"->Pre111StyleSwitch[Inherited,0],
+      "ClosedGroupTopMargin"->Pre111StyleSwitch[60,4]
+    },
+    CellOpen->Pre111StyleSwitch[]
+  ]
+];
+AppendTo[$DocumentationStyles["Guide"],
+  Cell[StyleData["GuideSectionDelimiter",StyleDefinitions->StyleData["GuideDelimiter"]],
+    CellMargins->{{26,24},{Pre111StyleSwitch[-1,4],10}},
+    CellFrameMargins->{{0,0},{Pre111StyleSwitch[0,2],10}}
+  ]
+];
+AppendTo[$DocumentationStyles["Guide"],
+  Cell[StyleData["GuideMainDelimiter",StyleDefinitions->StyleData["GuideDelimiter"]],
+    CellMargins->Pre111StyleSwitch[-2,{{26,24},{4,10}}],
+    CellElementSpacings->{
+      "CellMinHeight"->Pre111StyleSwitch[0,1],
+      "ClosedCellHeight"->Pre111StyleSwitch[0,Inherited]
+    },
+    CellOpen->Pre111StyleSwitch[False,True]
+  ]
+];
+
+
 MakeGuideSections[gd_,nb_,OptionsPattern[]]:=If[GuideSections[gd]=!={},
+  If[$Pre111CompatStyles,
+    NotebookWrite[
+      nb,
+      Cell[
+        TextData@{
+          Cell@BoxData@TemplateBox[{},"SectionOpenerArrow"],
+          Cell@BoxData@SpacerBox[1],
+          "Reference"
+        },
+        "GuideMainSectionHeader","GuideMainSectionHeader"
+      ]
+    ];
+    NotebookWrite[
+      nb,
+      Cell["","SectionHeaderSpacer"]
+    ]
+  ];
+  NotebookWrite[
+    nb,
+    Cell["\t","GuideMainDelimiter"]
+  ];
   NotebookWrite[
     nb,
     #
   ]&/@Riffle[
     MakeGuideSection[#]&/@GuideSections[gd],
-    Cell["\t","GuideDelimiter"]
+    Cell["\t","GuideSectionDelimiter"]
+  ];
+  NotebookWrite[
+    nb,
+    Cell["","SectionFooterSpacer"]
   ]
 ]
 
