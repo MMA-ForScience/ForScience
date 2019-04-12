@@ -88,6 +88,13 @@ MakeTutorialJumpList[nb_,tut_]:=NotebookWrite[nb,
 ]
 
 
+AppendTo[$DocumentationStyles["Tutorial"],
+  Cell[StyleData["TutorialTableLink"],
+    FontSize->Pre111StyleSwitch[12,15]
+  ]
+];
+
+
 FormatTutorialTable[Labeled[g_Grid,label_]]:={
   FormatTutorialTable[g],
   Cell[ParseToDocEntry@label,"Caption"]
@@ -109,9 +116,9 @@ FormatTutorialTable[Grid[{header:{Label[_String]..}|PatternSequence[],Shortest[t
           Map[
             RawBoxes@Switch[#,
               _String,
-              Cell[ParseToDocEntry@#,"TableText"],
+              Cell[ParseToDocEntry[#,"LinkOptions"->BaseStyle->{"TutorialTableLink"}],"TableText","TableText"],
               _Symbol,
-              Cell[BoxData@DocumentationLink[#,"Symbol",BaseStyle->{tabStyle,CellFrame->0}],"TableText"],
+              Cell[BoxData@CodeCell@DocumentationLink[#,"Symbol",BaseStyle->{"TutorialTableLink"}],"TableText","TableText"],
               _,
               SpecToCell[#,"TableText"]
             ]&,
