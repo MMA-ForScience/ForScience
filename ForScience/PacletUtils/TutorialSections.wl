@@ -30,6 +30,37 @@ D8Lrgfg/ENfjMV+ARPOR3YRuPjaM4lcAueh4HA==
 "], "Byte", ColorSpace -> "RGB", ImageSize -> {8, 9}, Interleaving -> True]
 
 
+AppendTo[$DocumentationStyles["Tutorial"],
+  Cell[StyleData["GrayLinkWithIcon"],
+    TemplateBoxOptions->{
+      DisplayFunction->(
+        TagBox[
+          ButtonBox[
+            PaneSelectorBox[
+              {
+                True->RowBox@{
+                  #4,
+                  Cell[" "],
+                  StyleBox[#,FontColor->RGBColor[0.854902,0.396078,0.145098]]
+                },
+                False->RowBox@{
+                  #3,
+                  Cell[" "],
+                  #
+                }
+              },
+              Dynamic@CurrentValue["MouseOver"]
+            ],
+            ButtonData->#2
+          ],
+          MouseAppearanceTag["LinkHand"]
+        ]&
+      )
+    }
+  ]
+]
+
+
 MakeTutorialJumpList[nb_,tut_]:=NotebookWrite[nb,
   Cell[
     BoxData@GridBox[
