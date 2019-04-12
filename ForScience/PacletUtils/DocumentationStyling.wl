@@ -87,7 +87,21 @@ AppendTo[$DocumentationTypeData,$DocumentationStyles->{
       Tooltip->None
     }
   ],
-  Cell[StyleData["RefLinkPlain",StyleDefinitions->StyleData["RefLink"]]]
+  Cell[StyleData["RefLinkPlain",StyleDefinitions->StyleData["RefLink"]]],
+  Cell[StyleData["OrangeLink"],
+    TemplateBoxOptions->{
+      DisplayFunction:>(
+        TagBox[
+          ButtonBox[
+            StyleBox[#,FontColor->Dynamic@If[CurrentValue["MouseOver"],RGBColor[0.854902,0.396078,0.145098],Inherited]],
+            ButtonData->#2
+          ],
+          MouseAppearanceTag["LinkHand"]
+        ]&
+      )
+    },
+    ButtonBoxOptions->{BaseStyle->{"Link","GuideFunctionsSubsection"}}
+  ]
 }];
 
 
