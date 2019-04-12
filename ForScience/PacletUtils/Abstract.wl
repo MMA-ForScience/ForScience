@@ -12,18 +12,23 @@ Abstract::invalidFormat="Abstract of `` cannot be set to ``. A string is expecte
 DeclareMetadataHandler[Abstract,"invalidFormat",_,_String,""]
 
 
-MakeAbstract[gd_,nb_,OptionsPattern[]]:=If[Abstract[gd]=!="",
+MakeGuideAbstract[gd_,nb_,OptionsPattern[]]:=If[Abstract[gd]=!="",
   NotebookWrite[nb,Cell[ParseToDocEntry@Abstract[gd],"GuideAbstract"]];
   NotebookWrite[nb,Cell["\t","GuideDelimiterSubsection"]]
 ]
 
 
-AppendTo[$DocumentationSections["Guide"],MakeAbstract];
+MakeOverviewAbstract[gd_,nb_,OptionsPattern[]]:=If[Abstract[gd]=!="",
+  NotebookWrite[nb,Cell[ParseToDocEntry@Abstract[gd],"TutorialAbstract"]]
+]
+
+
+AppendTo[$DocumentationSections["Guide"],MakeGuideAbstract];
 AppendTo[$DependencyCollectors["Guide"],Abstract];
 
 
 
-AppendTo[$DocumentationSections["Overview"],MakeAbstract];
+AppendTo[$DocumentationSections["Overview"],MakeOverviewAbstract];
 AppendTo[$DependencyCollectors["Overview"],Abstract];
 
 
