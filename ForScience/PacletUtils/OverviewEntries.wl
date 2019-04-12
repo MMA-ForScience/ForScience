@@ -17,6 +17,24 @@ OverviewEntries::invalidKey="Overview entry key `` must be a string or tutorial 
 DeclareSectionAccessor[OverviewEntries,{"invalidFormat","noMixingEx","noMixingSub","needSubCat","invalidKey"},_,_String|_Symbol|Hyperlink[_],Automatic|_String|_Symbol]
 
 
+AppendTo[$DocumentationStyles["Overview"],
+  Cell[StyleData["TOCChapterLink"],
+    TemplateBoxOptions->{
+      DisplayFunction:>(
+        TagBox[
+          ButtonBox[
+            StyleBox[#,FontColor->Dynamic@If[CurrentValue["MouseOver"],RGBColor[0.854902,0.396078,0.145098],Inherited]],
+            ButtonData->#2,
+            BaseStyle->Pre111StyleSwitch[{"Link"},{"Link","GuideFunctionsSubsection"}]
+          ],
+          MouseAppearanceTag["LinkHand"]
+        ]&
+      )
+    }
+  ]
+];
+
+
 $TOCEntryLevels={"TOCChapter","TOCSection","TOCSubsection","TOCSubsubsection","TOCSubsubsubsection"};
 
 
@@ -28,12 +46,12 @@ MakeOverviewTOCEntries[sec_,lev_]:=KeyValueMap[
         #/.{
           Hyperlink[spec_]:>BoxData@DocumentationLink[
             spec,
-            "LinkStyle"->If[lev==1,"OrangeLink","RefLinkPlain"],
+            "LinkStyle"->If[lev==1,"TOCChapterLink","RefLinkPlain"],
             BaseStyle->{type}
           ],
           Hyperlink[lbl_,url_]:>BoxData@TemplateBox[
             {lbl,url},
-            If[lev==1,"OrangeLink","RefLinkPlain"],
+            If[lev==1,"TOCChapterLink","RefLinkPlain"],
             BaseStyle->{type}
           ]
         },
