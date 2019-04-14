@@ -24,9 +24,11 @@ Details[DocumentationBuilder]={
     {"\"CacheDirectory\"",Automatic,"The directory to store cached documentation pages and search indices"},
     {Usage,True,"Whether to generate the usage section"},
     {Details,True,"Whether to generate the details section"},
-    {Examples,True,"Whether to generate the examples section"}
+    {Examples,True,"Whether to generate the examples section"},
+    {"\"Pre111Compatibility\"",False,"Whether to generate documentation pages with pre 11.1 compatible styles"}
   },
   "With the default value \"CacheDirectory\"->[*Automatic*], the setting is taken from [*BuildPaclet*].",
+  "With the setting \"Pre111Compatibility\"->[*True*], compatibility code is included in the generated documentation pages that styles the documentation pages according to the Mathematica version they are opened in.",
   "Data for reference pages are attached to the symbol/guide/tutorial/overview symbol to be documented (e.g. [*Usage[sym]*]'''=```usage```''').",
   "The following data are used to build symbol reference pages:",
   TableForm@{
