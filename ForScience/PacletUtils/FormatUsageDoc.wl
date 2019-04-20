@@ -6,7 +6,7 @@ Usage[FormatUsage]="FormatUsage[str] combines the functionalities of [*FormatUsa
 Begin[BuildAction]
 
 
-DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.88.18"];
+DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.88.19"];
 
 
 Details[FormatUsage]={
@@ -16,6 +16,7 @@ Details[FormatUsage]={
     {"``\\````str`````\\`","Formats ```str``` as \"TI\" (times italic), e.g. ```str```"},
     {"\\'''```str```\\'''","Formats ```str``` as \"MR\" (mono regular), e.g. '''str'''"},
     {"\\***```str```\\***","Prevents display of special characters in ```str```"},
+    {"\\///```str```\\///","Formats ```str``` italic, e.g. ///str///"},
     {"```a```\\_```b```","Formats as subscript, e.g. a_b"},
     {"```a```\\^```b```","Formats as superscript, e.g. a^b"},
     {"\\{*```str```\\*}","Treats ```str``` as a single token, e.g. for subscripting"},
@@ -42,6 +43,10 @@ Examples[FormatUsage,"Basic examples"]={
   {
     "Test the different formatting styles:",
     ExampleInput[FormatUsage["FormatUsage can format ```Times Italic```, '''Mono Regular''' and subscripted_{*with spaces!*}."]]
+  },
+  {
+    "More formatting:",
+    ExampleInput[FormatUsage["///This text is italic///^{*and this is a superscript*}."]]
   },
   {
     "Create a string to be used as usage message and assign it:",

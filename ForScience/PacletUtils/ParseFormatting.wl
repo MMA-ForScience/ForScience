@@ -10,6 +10,7 @@ Begin["`Private`ParseFormatting`"]
 ti;
 mr;
 sc;
+it;
 go;
 gc;
 co;
@@ -24,7 +25,7 @@ ToRowBox[{el_}]:=el
 ToRowBox[l_]:=RowBox@l
 
 
-$closingSequences=<|ti->"```",mr->"'''",sc->"***",gc->"*}",cc->"*]",lc->"*>"|>;
+$closingSequences=<|ti->"```",mr->"'''",sc->"***",it->"///",gc->"*}",cc->"*]",lc->"*>"|>;
 
 
 ParseToToken[str_,i_,simplify_:True][t_]:=(
@@ -46,6 +47,7 @@ Attributes[ParseToToken]={HoldRest};
 ParseToken[str_,i_][ti]:=StyleBox[ParseToToken[str,i][ti],"TI"]
 ParseToken[str_,i_][mr]:=StyleBox[ParseToToken[str,i][mr],"MR"]
 ParseToken[str_,i_][sc]:=StyleBox[ParseToToken[str,i][sc],ShowSpecialCharacters->False]
+ParseToken[str_,i_][it]:=StyleBox[ParseToToken[str,i][it],FontSlant->Italic]
 ParseToken[str_,i_][go]:=ParseToToken[str,i,False][gc]
 ParseToken[str_,i_][co]:=TagBox[ParseToToken[str,i][cc],"[**]"]
 ParseToken[str_,i_][lo]:=TagBox[ParseToToken[str,i][lc],"<**>"]
@@ -64,6 +66,7 @@ ParseFormatting[str_]:=Module[
       "```"->" ```ti ",
       "'''"->" ```mr ",
       "***"->" ```sc ",
+      "///"->" ```it ",
       "{*"->" ```go ",
       "*}"->" ```gc ",
       "[*"->" ```co ",
@@ -88,6 +91,7 @@ ParseFormatting[str_]:=Module[
       "```ti"->ti,
       "```mr"->mr,
       "```sc"->sc,
+      "```it"->it,
       "```go"->go,
       "```gc"->gc,
       "```co"->co,
