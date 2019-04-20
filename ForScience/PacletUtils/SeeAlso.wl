@@ -15,11 +15,6 @@ SeeAlso::invalidInput="SeeAlso information of `` cannot be set to ``. A list/hel
 DeclareMetadataHandler[SeeAlso,"invalidInput",_,(List|Hold)[_Symbol...],{}]
 
 
-AppendTo[$DocumentationStyles[_],
-  Cell[StyleData["SeeAlsoSection"],
-    WholeCellGroupOpener->Pre111StyleSwitch[]
-  ]
-];
 AppendTo[$DocumentationStyles["Symbol"],
   Cell[StyleData["SeeAlsoItem",StyleDefinitions->"InlineFormula"],
     FontFamily->Pre111StyleSwitch["Verdana","Source Sans Pro"]
@@ -32,16 +27,17 @@ Attributes[MakeSeeAlsoSection]={HoldFirst};
 
 MakeSeeAlsoSection[sym_,nb_,OptionsPattern[]]:=If[Length@SeeAlso@sym>0,
   NotebookWrite[nb,
-    Cell@CellGroupData@{
-      LinkSectionHeader["See Also","SeeAlsoSection"],
-      Cell[
-        TextData@Riffle[
-          CodeCell@DocumentationLink[#,BaseStyle->{"SeeAlsoItem"}]&/@List@@Replace[SeeAlso[sym],s_:>DocID[s,"Symbol"],1],
-          Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "]
-        ],
-        "SeeAlso"
-      ]
-    }
+    LinkSection["See Also","SeeAlsoSection","RelatedFunction.png",False,
+      {
+        Cell[
+          TextData@Riffle[
+            CodeCell@DocumentationLink[#,BaseStyle->{"SeeAlsoItem"}]&/@List@@Replace[SeeAlso[sym],s_:>DocID[s,"Symbol"],1],
+            Unevaluated@Sequence["\[NonBreakingSpace]",StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]","InlineSeparator"]," "]
+          ],
+          "SeeAlso"
+        ]
+      }
+    ]
   ];
 ]
 

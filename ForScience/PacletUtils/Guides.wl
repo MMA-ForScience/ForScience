@@ -16,13 +16,6 @@ Guides::invalidSymbol="Symbol `` is not tagged as guide and cannot be added to t
 DeclareMetadataHandler[Guides,"invalidInput",_,{(_String|_Symbol)...},{}]
 
 
-AppendTo[$DocumentationStyles[_],
-  Cell[StyleData["MoreAboutSection"],
-    WholeCellGroupOpener->Pre111StyleSwitch[]
-  ]
-];
-
-
 Attributes[MakeGuidesSection]={HoldFirst};
 
 
@@ -30,15 +23,12 @@ MakeGuidesSection[sym_,nb_,OptionsPattern[]]:=With[
   {valid=DeleteCases[_Symbol?(Not@*GuideQ)]@Guides[sym]},
   If[Length@valid>0,
     NotebookWrite[nb,
-      Cell@CellGroupData@{
-        LinkSectionHeader["Related Guides","MoreAboutSection"],
-        Cell["","SectionHeaderSpacer"],
-        Sequence@@(Cell[
+      LinkSection["Related Guides","MoreAboutSection","RelatedGuide.png",True,
+        RowBox@{"\[FilledVerySmallSquare]",Cell[
           BoxData@DocumentationLink[#,"Guide","LinkStyle"->"RefLinkPlain",BaseStyle->{"MoreAbout"}],
           "MoreAbout"
-        ]&)/@valid,
-        Cell["","SectionFooterSpacer"]
-      }
+        ]}&/@valid
+      ]
     ]
   ]
 ]

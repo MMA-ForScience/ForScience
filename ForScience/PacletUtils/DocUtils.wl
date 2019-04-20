@@ -126,15 +126,57 @@ AppendTo[$DocumentationStyles[_],
 ]
 AppendTo[$DocumentationStyles[_],
   VersionAwareTemplateBox["LinkSectionHeader",
-    Evaluate@Cell@TextData@{
-      Cell@BoxData@SpacerBox@6,
-      #
-    }&,
-    #&
+    Evaluate@Cell[
+      TextData@{
+        Cell@BoxData@SpacerBox@6,
+        #
+      },
+      CellFrame->0
+    ]&,
+    #&,
+    CellMargins->StyleMultiSwitch[0,11.1,{{24,22},{8,28}},12.0,-2],
+    CellElementSpacings->{
+      "CellMinHeight"->Pre120StyleSwitch[Inherited,0],
+      "ClosedCellHeight"->Pre120StyleSwitch[Inherited,0]
+    },
+    CellFrame->{{False,False},{Pre111StyleSwitch[],Pre120StyleSwitch[]}},
+    CellOpen->Pre120StyleSwitch[],
+    WholeCellGroupOpener->Pre111StyleSwitch[]
   ]
 ]
-LinkSectionHeader[tit_,sty_]:=
-  Cell[BoxData@TemplateBox[{tit},"LinkSectionHeader"],sty,sty]
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["SpacerMargins"],
+    CellMargins->StyleMultiSwitch[{{29,24},{1,1}},11.1,{{36,24},{0,2}},12.0,{{24,22},{7,28}}]
+  ]
+]
+AppendTo[$DocumentationStyles[_],
+  VersionAwareTemplateBox[12.0,"LinkSectionContent",
+    #3&,
+    GridBox[
+      {{
+        DynamicBox@FEPrivate`ImportImage[FrontEnd`FileName[{"Documentation","FooterIcons"},#]],
+        GridBox[
+          {{#2},{#3}},
+          BaseStyle->{CellFrame->0},
+          GridBoxSpacings->{"Rows"->{0,0.7}}
+        ]
+      }},
+      GridBoxSpacings->{"Columns"->{{0.9}}}
+    ]&,
+    GridBoxOptions->{
+      ColumnAlignments->Left,
+      RowAlignments->Top,
+      GridBoxSpacings->{"Rows"->{0,{Pre120StyleSwitch[0.3,0.2]}}}
+    },
+    CellMargins->StyleMultiSwitch[{{28,24},{25,14}},11.1,{{37,24},{0,2}},12.0,{{24,22},{7,28}}],
+    CellFrame->{{False,False},{False,Pre120StyleSwitch[False,True]}},
+    CellGroupingRules->"NormalGrouping",
+    FontWeight->"Normal",
+    FontSize->Pre111StyleSwitch[15,16],
+    FontColor->Pre111StyleSwitch[GrayLevel[0.67],GrayLevel[0.545098]],
+    Background->None
+  ]
+]
 AppendTo[$DocumentationStyles[_],
   Cell[StyleData["SectionHeaderSpacer"],
     CellMargins->Pre111StyleSwitch[{{0,0},{1,1}},-2],
@@ -155,6 +197,27 @@ AppendTo[$DocumentationStyles[_],
     CellOpen->Pre111StyleSwitch[]
   ]
 ]
+LinkSection[tit_,sty_,ico_,spacers_,content_]:=
+  Cell@CellGroupData@{
+    Cell[
+      BoxData@TemplateBox[{tit},"LinkSectionHeader"],
+      sty,
+      sty,
+      "LinkSectionHeader"
+    ],
+    If[spacers,Cell["","SectionHeaderSpacer"],Nothing],
+    Cell[
+      BoxData@TemplateBox[
+        {ico,tit,GridBox[List/@content]},
+        "LinkSectionContent"
+      ],
+      sty,
+      sty,
+      "LinkSectionContent",
+      If[spacers,"SpacerMargins",Unevaluated@Sequence[]]
+    ],
+    If[spacers,Cell["","SectionFooterSpacer"],Nothing]
+  }
 
 
 DocumentationOpener[{heading__}|heading2_,type_,spacer_,index_,col_,opts:OptionsPattern[]]:=
@@ -165,7 +228,7 @@ DocumentationOpener[{heading__}|heading2_,type_,spacer_,index_,col_,opts:Options
         If[spacer,6,0],
         {TaggingRules,"Openers",type,index},
         col
-    },
+      },
       "SectionOpener"
     ],
     "SectionOpener",

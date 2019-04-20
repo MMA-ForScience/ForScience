@@ -8,7 +8,7 @@ DocumentationBuilder[tagged] builds and displays the documentation page of the a
 Begin[BuildAction]
 
 
-DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.88.27"];
+DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.88.35"];
 
 
 Details[DocumentationBuilder]={
@@ -28,7 +28,8 @@ Details[DocumentationBuilder]={
     {"\"Pre111Compatibility\"",False,"Whether to generate documentation pages with pre 11.1 compatible styles"}
   },
   "With the default value \"CacheDirectory\"->[*Automatic*], the setting is taken from [*BuildPaclet*].",
-  "With the setting \"Pre111Compatibility\"->[*True*], compatibility code is included in the generated documentation pages that styles the documentation pages according to the Mathematica version they are opened in.",
+  "The generate documentation pages include compatibility code to style them according to the ///Mathematica/// version they are opened in.",
+  "With the setting \"Pre111Compatibility\"->[*True*], compatibility code for ///Mathematica/// versions before 11.1 is also included.",
   "The following [*DocumentationOptions*] can be set for a symbol:",
   TableForm@{
     {Options,"{}","Custom options for the generated documentation page notebook"},
