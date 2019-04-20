@@ -266,6 +266,7 @@ If[OptionValue@Details&&Length@Details@sym>0,
           nb,
           {Cell[BoxData@TemplateBox[{},"DetailsHeader"],"NotesFrameText","NotesFrameText"]},
           "NotesSection",
+          True,
           notes,
           DocumentationOptionValue[Details[sym],Open]/.Automatic->First@thumbData<33
         ]

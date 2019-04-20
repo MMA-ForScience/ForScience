@@ -99,24 +99,27 @@ Symbol["System`WholeCellGroupOpener"];
 
 
 AppendTo[$DocumentationStyles[_],
-  VersionAwareTemplateBox["SectionOpenerArrow",
-    ""&,
-    Evaluate@ToBoxes@Rotate[
-      $SectionArrow[#2],
-      Dynamic@If[
-        CurrentValue[
-          EvaluationNotebook[],
-          #
+  VersionAwareTemplateBox["SectionOpener",
+    Evaluate@Cell@TextData@{
+      Cell@BoxData@SpacerBox@#2,
+      #
+    }&,
+    Evaluate@Cell@TextData@{
+      Cell@BoxData@ToBoxes@Rotate[
+        $SectionArrow[#4],
+        Dynamic@If[
+          CurrentValue[
+            EvaluationNotebook[],
+            #3
+          ],
+          0,
+          Pi/2
         ],
-        0,
-        Pi/2
+        {-1.65,-1}
       ],
-      {-1.65,-1}
-    ]&
-  ]
-]
-AppendTo[$DocumentationStyles[_],
-  Cell[StyleData["SectionOpener"],
+      Cell@BoxData@SpacerBox@1,
+      #
+    }&,
     ShowGroupOpener->Pre111StyleSwitch[],
     WholeCellGroupOpener->True
   ]
@@ -124,8 +127,7 @@ AppendTo[$DocumentationStyles[_],
 AppendTo[$DocumentationStyles[_],
   VersionAwareTemplateBox["LinkSectionHeader",
     Evaluate@Cell@TextData@{
-      Cell@BoxData@TemplateBox[{},"SectionOpenerArrow"],
-      Cell@BoxData@SpacerBox@1,
+      Cell@BoxData@SpacerBox@6,
       #
     }&,
     #&
@@ -155,16 +157,19 @@ AppendTo[$DocumentationStyles[_],
 ]
 
 
-DocumentationOpener[{heading__}|heading2_,type_,index_,col_,opts:OptionsPattern[]]:=
+DocumentationOpener[{heading__}|heading2_,type_,spacer_,index_,col_,opts:OptionsPattern[]]:=
   Cell[
-    TextData@{
-      Cell@BoxData@TemplateBox[{{TaggingRules,"Openers",type,index},col},"SectionOpenerArrow"],
-      Cell@BoxData@SpacerBox@1,
-      heading,
-      heading2
+    BoxData@TemplateBox[
+      {
+        Cell@TextData@{heading,heading2},
+        If[spacer,6,0],
+        {TaggingRules,"Openers",type,index},
+        col
     },
-    type,
+      "SectionOpener"
+    ],
     "SectionOpener",
+    type,
     opts
   ]
 
@@ -191,12 +196,12 @@ AddOpenerTag[nb_,type_,open_]:=Module[
 ]
 
 
-CreateDocumentationOpener[nb_,heading_,type_,{content___},open_:False,col_:$SectionColor,opts:OptionsPattern[]]:=
+CreateDocumentationOpener[nb_,heading_,type_,spacer_,{content___},open_:False,col_:$SectionColor,opts:OptionsPattern[]]:=
 With[
   {index=AddOpenerTag[nb,type,open]},
   Cell@CellGroupData[
     {
-      DocumentationOpener[heading,type,index,col,opts],
+      DocumentationOpener[heading,type,spacer,index,col,opts],
       content
     },
     Dynamic@CurrentValue[

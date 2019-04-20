@@ -46,13 +46,11 @@ ExamplesSection[sym_,sec_Association,nb_,lev_,path_]:=
         type=$ExampleLevels[[Min[lev,Length@$ExampleLevels]]],
         newPath=Append[path,First@#2]
       },
-      Insert[type,{1,1,1,-2}]@
-      MapAt[
-        BoxData@InterpretationBox[Cell[#],$Line=0;]&,{1,1,1,1}
-      ]@CreateDocumentationOpener[
+      CreateDocumentationOpener[
         nb,
         ExampleHeader[First@#,ExampleCount[Last@#]],
         type,
+        lev==1,
         Append[
           If[lev==1,
             Cell["","SectionFooterSpacer"],
@@ -101,7 +99,11 @@ MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@E
     First[StyleDefinitions/.Options[nb,StyleDefinitions]],
     (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
     {Cell[StyleData["ExampleDelimiter"],Evaluatable->True,CellContext->Notebook]},
-    Cell[StyleData[#],Evaluatable->True,CellContext->Notebook]&/@$ExampleLevels
+    Cell[StyleData[#],
+      Evaluatable->True,
+      CellContext->Notebook,
+      TemplateBoxOptions->{InterpretationFunction->($Line=0;&)}
+    ]&/@$ExampleLevels
   ]];
 ]
 

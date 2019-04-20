@@ -173,6 +173,7 @@ AssembleTutorialSection[nb_,tit_,type_,cont_,lvl_,open_]:=
     nb,
     tit,
     type,
+    False,
     cont,
     open===All||open>=lvl,
     $SectionColors[[Min[lvl,Length@$SectionColors]]],
