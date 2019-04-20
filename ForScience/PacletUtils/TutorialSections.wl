@@ -94,7 +94,7 @@ MakeTutorialJumpList[nb_,tut_]:=NotebookWrite[nb,
             BaseStyle->{"TutorialJumpBoxLink"}
           ]
         ]&,
-        ArrayReshape[#,{Ceiling[Length@#/2],2},""]&@Flatten@ExtractTutorialHeaders[
+        Transpose@ArrayReshape[#,{2,Ceiling[Length@#/2]},""]&@Flatten@ExtractTutorialHeaders[
           TutorialSections@tut,
           DocumentationOptionValue[TutorialSections[tut],"JumpBoxDepth"]
         ],
