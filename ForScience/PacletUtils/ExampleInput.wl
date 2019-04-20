@@ -204,6 +204,7 @@ ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm
         FrameMargins->7,
         Appearance->{"Default"->FrontEnd`FileName[{"Typeset","SummaryBox"},"Panel.9.png"]}
       ],
+      Sequence@@Riffle[MakeBoxes/@{opts},",",{1,-2,2}],
       "]"
     }
   },
