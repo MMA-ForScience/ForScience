@@ -183,7 +183,14 @@ ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm
       PanelBox[
         StyleBox[
           Replace[
-            EIToBoxes[#,opts]&/@Unevaluated/@Unevaluated@{in},
+            Replace[
+              EIToBoxes[#,opts]&/@Unevaluated/@Unevaluated@{in},
+              {
+                {bx_}:>bx,
+                bx:{__}:>RowBox@bx
+              },
+              1
+            ],
             {
               {bx_}:>bx,
               bx:{__}:>RowBox@Riffle[bx,"\[IndentingNewLine]"]
