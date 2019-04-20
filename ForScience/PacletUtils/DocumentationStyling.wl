@@ -22,11 +22,14 @@ VersionAwareTemplateBox[style_StyleData,pre111df_,post111df_,o:OptionsPattern[]]
   ]
 
 
-CreateStyleDefinitions[type_]:=
+CreateStyleDefinitions[type_,custom_]:=
   Notebook[
     {
       Cell[StyleData[StyleDefinitions->FrontEnd`FileName[{"Wolfram"},"Reference.nb",CharacterEncoding->"UTF-8"]]],
-      Sequence@@(
+      Sequence@@Replace[
+        GatherBy[
+          Join[
+            custom,
         $DocumentationStyles[type]/.{
           Pre111StyleSwitch[old_,new_]/;$Pre111CompatStyles:>
             FEPrivate`If[
@@ -39,7 +42,19 @@ CreateStyleDefinitions[type_]:=
           Pre111StyleSwitch[_,new_]:>new,
           Pre111StyleSwitch[]->False
         }
-      )
+          ],
+          #[[1,1]]&
+        ],
+        {
+          {style_Cell}:>style,
+          styles:{Cell[id_,___],__Cell}:>Cell[
+            id,
+            Sequence@@DeleteDuplicatesBy[First]@Flatten[Options/@styles]
+          ],
+          _->Nothing
+        },
+        1
+      ]
     }
   ]
 

@@ -8,7 +8,7 @@ DocumentationBuilder[tagged] builds and displays the documentation page of the a
 Begin[BuildAction]
 
 
-DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.83.10"];
+DocumentationHeader[DocumentationBuilder]=FSHeader["0.55.0","0.88.27"];
 
 
 Details[DocumentationBuilder]={
@@ -29,6 +29,13 @@ Details[DocumentationBuilder]={
   },
   "With the default value \"CacheDirectory\"->[*Automatic*], the setting is taken from [*BuildPaclet*].",
   "With the setting \"Pre111Compatibility\"->[*True*], compatibility code is included in the generated documentation pages that styles the documentation pages according to the Mathematica version they are opened in.",
+  "The following [*DocumentationOptions*] can be set for a symbol:",
+  TableForm@{
+    {Options,"{}","Custom options for the generated documentation page notebook"},
+    {StyleDefinitions,"{}","Custom style definitions to include in the documentation page stylesheet"}
+  },
+  Hyperlink["Settings given for [*Options*] and [*StyleDefinitions*] take precedence over default values.","OptionPrecedence"],
+  "Styles are specified as a list of [*Cell*][[*StyleData[\[Ellipsis]]*],\[Ellipsis]] expressions, as they would appear in a stylesheet.",
   "Data for reference pages are attached to the symbol/guide/tutorial/overview symbol to be documented (e.g. [*Usage[sym]*]'''=```usage```''').",
   "The following data are used to build symbol reference pages:",
   TableForm@{
@@ -138,6 +145,64 @@ Examples[DocumentationBuilder,"Options","Examples"]={
     ExampleInput[
       NotebookClose[nb];,
       nb=DocumentationBuilder[foo,Examples->False];
+    ],
+    ExampleInput[NotebookClose[nb];,Visible->False]
+  }
+};
+
+
+Examples[DocumentationBuilder,"DocumentationOptions","Options"]={
+  {
+    "Specify a custom background color for the documentation page:",
+    ExampleInput[
+      NotebookClose[nb];,
+      SetDocumentationOptions[DocumentationBuilder[foo],Options->Background->Green];,
+      nb=DocumentationBuilder[foo];
+    ],
+    ExampleInput[NotebookClose[nb];,Visible->False]
+  },
+  {
+    Labeled["Override the default window title of the documentation page:","OptionPrecedence"],
+    ExampleInput[
+      NotebookClose[nb];,
+      SetDocumentationOptions[DocumentationBuilder[foo],Options->WindowTitle->"This is custom!"];,
+      nb=DocumentationBuilder[foo];
+    ],
+    ExampleInput[NotebookClose[nb];,Visible->False]
+  }
+};
+
+
+Examples[DocumentationBuilder,"DocumentationOptions","StyleDefinitions"]={
+  {
+    "Specify a custom background color for input cells:",
+    ExampleInput[
+      NotebookClose[nb];,
+      Examples[foo,"Basic examples"]={{ExampleInput[CompleteGraph[5]]}};,
+      SetDocumentationOptions[
+        DocumentationBuilder[foo],
+        StyleDefinitions->{Cell[StyleData["Input"],Background->GrayLevel[0.8]]}
+      ];,
+      nb=DocumentationBuilder[foo];
+    ],
+    ExampleInput[NotebookClose[nb];,Visible->False]
+  },
+  {
+    "By default, graphs in documentation pages will be smaller than in a normal notebook:",
+    ExampleInput[
+      NotebookClose[nb];,
+      Examples[foo,"Basic examples"]={{ExampleInput[CompleteGraph[5]]}};,
+      nb=DocumentationBuilder[foo];
+    ],
+    ExampleInput[NotebookClose[nb];,Visible->False],
+    "Make [*Graph*] expressions bigger:",
+    ExampleInput[
+      NotebookClose[nb];,
+      SetDocumentationOptions[
+        DocumentationBuilder[foo],
+        StyleDefinitions->{Cell[StyleData["NetworkGraphics"],GraphicsBoxOptions->{ImageSizeRaw->250}]}
+      ];,
+      nb=DocumentationBuilder[foo];
     ],
     ExampleInput[NotebookClose[nb];,Visible->False]
   }

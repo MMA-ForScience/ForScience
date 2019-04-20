@@ -22,6 +22,10 @@ Attributes[DocumentationSummary]={HoldFirst};
 Attributes[MakeDocumentationContent]={HoldFirst};
 
 
+DocumentationOptions[DocumentationBuilder]={Options->{},StyleDefinitions->{}};
+AppendTo[$DependencyCollectors[_],FullDocumentationOptionValues@DocumentationBuilder];
+
+
 DocumentationBuilder::noDoc="Cannot generate documentation page for ``, as DocumentationHeader[`1`] is not set.";
 DocumentationBuilder::failed="Could not create documentation notebook for ``. Reason unknown.";
 
@@ -104,8 +108,9 @@ Block[
           With[
             {
               nb=NotebookPut[
+                Sequence@@Flatten@List@DocumentationOptionValue[DocumentationBuilder[sym],Options],
                 Saveable->False,
-                StyleDefinitions->CreateStyleDefinitions[type],
+                StyleDefinitions->CreateStyleDefinitions[type,Flatten@List@DocumentationOptionValue[DocumentationBuilder[sym],StyleDefinitions]],
                 Visible->False,
                 TaggingRules->{
                   "NewStyles"->True,
