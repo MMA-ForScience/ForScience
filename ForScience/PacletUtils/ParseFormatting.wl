@@ -17,6 +17,7 @@ cc;
 lo;
 lc;
 sb;
+sp;
 
 
 ToRowBox[{el_}]:=el
@@ -72,6 +73,7 @@ ParseFormatting[str_]:=Module[
       ", "->" ```cm ",
       " "->" ```ws ",
       "_"->" ```sb ",
+      "^"->" ```sp ",
       "\""->"```qt"
     }
   ]@str;
@@ -93,7 +95,8 @@ ParseFormatting[str_]:=Module[
       "```lo"->lo,
       "```lc"->lc,
       "```ws"->" ",
-      "```sb"->sb
+      "```sb"->sb,
+      "```sp"->sp
     },
     1
   ];
@@ -103,7 +106,8 @@ ParseFormatting[str_]:=Module[
        {pre,StringReplace["```cm"->", "]@StringJoin@s,post},1]&,
       First[
         {ParseToToken[pStr, i][EndOfLine]}//.
-         {pre___,a:Except[sb]:"",sb,b:Except[sb]:"",post___}:>{pre,If[b==="",a,SubscriptBox[a,b]],post}
+         {pre___,a:Except[sb|sp]:"",scr:sb|sp,b:Except[sb|sp]:"",post___}:>
+          {pre,If[b==="",a,If[scr===sb,SubscriptBox,SuperscriptBox][a,b]],post}
       ]
     ]/."```cm"->",",
     EndOfFile|"Unmatched",

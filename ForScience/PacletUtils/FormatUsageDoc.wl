@@ -6,7 +6,7 @@ Usage[FormatUsage]="FormatUsage[str] combines the functionalities of [*FormatUsa
 Begin[BuildAction]
 
 
-DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.87.42"];
+DocumentationHeader[FormatUsage]=FSHeader["0.0.1","0.88.18"];
 
 
 Details[FormatUsage]={
@@ -17,6 +17,7 @@ Details[FormatUsage]={
     {"\\'''```str```\\'''","Formats ```str``` as \"MR\" (mono regular), e.g. '''str'''"},
     {"\\***```str```\\***","Prevents display of special characters in ```str```"},
     {"```a```\\_```b```","Formats as subscript, e.g. a_b"},
+    {"```a```\\^```b```","Formats as superscript, e.g. a^b"},
     {"\\{*```str```\\*}","Treats ```str``` as a single token, e.g. for subscripting"},
     {"\\[*```str```\\*]","Effectively applies [*FormatUsageCase*] to ```str``` and tags it for hyperlinking (for documentation pages)"},
     {"\\<*```str```\\*>","Tags ```str``` for hyperlinking (for documentation pages)"},
