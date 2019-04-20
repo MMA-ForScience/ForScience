@@ -6,7 +6,7 @@ Usage[Details]="[*[*Details[sym]*]'''={```note```_1,\[Ellipsis]}'''*] sets the c
 Begin[BuildAction]
 
 
-DocumentationHeader[Details]=FSHeader["0.57.0","0.87.49"];
+DocumentationHeader[Details]=FSHeader["0.57.0","0.88.28"];
 
 
 Details[Details]={
@@ -18,6 +18,7 @@ Details[Details]={
     {"\"```note```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"[*Hyperlink*][\"```note```\",```ref```]","A formatted string linking to ```ref```"},
     {"[*TableForm[\[Ellipsis]]*]","A table with the specified contents"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specified [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
@@ -29,10 +30,12 @@ Details[Details]={
   TableForm@{
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"```symbol```","A symbol, to be hyperlinked if it is documented"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specified [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}    
   },
+  "In [*Style[str,\[Ellipsis]]*], the first named style is used as style for the generated cell if it exists.",
   "The following [*DocumentationOptions*] can be given:",
   TableForm@{
     {Open,False,"Whether the details section should be open by default"}

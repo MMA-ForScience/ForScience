@@ -7,7 +7,7 @@ Usage[SectionTitle]="SectionTitle[title] can be used as first element of a guide
 Begin[BuildAction]
 
 
-DocumentationHeader[GuideSections]=FSHeader["0.66.0"];
+DocumentationHeader[GuideSections]=FSHeader["0.66.0","0.88.28"];
 
 
 Details[GuideSections]={
@@ -19,11 +19,13 @@ Details[GuideSections]={
     {"{*{*{```sym```_1,\[Ellipsis],\"\[Ellipsis]\"}*}*}","A truncated list of symbols, with the ellipsis linked to the same page as the section title"},
     {"{*{*{```sym```_1,\[Ellipsis],[*Hyperlink*][\"\[Ellipsis]\",ref]}*}*}","A truncated list of symbols, with the ellipsis linked to the page specified by ```ref```"},
     {"{*{*{```sym```_1,\[Ellipsis],[*Text[desc]*]}*}*}","A list of symbols, with a description at the end"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A custom cell expression, to be inserted as is"},
     {"[*BoxData[\[Ellipsis]]*]","A [*BoxData*] expression, to be inserted wrapped into a cell"},
     {"```expr```","An arbitrary expression, to be converted to boxes using [*ToBoxes*]"}
   },
-  "The string in [*Text[desc]*] elements can contain formatting specifications supported by [*FormatUsage*]."
+  "The string in [*Text[desc]*] elements can contain formatting specifications supported by [*FormatUsage*].",
+  "In [*Style[str,\[Ellipsis]]*], the first named style is used as style for the generated cell if it exists."
 };
 
 

@@ -61,6 +61,12 @@ ParseToDocEntry[str_String,o:OptionsPattern[]]:=BoxesToDocEntry[ParseFormatting@
 
 SpecToCell[spec_Cell,_]:=spec
 SpecToCell[spec_BoxData,style_]:=Cell[spec,style,style]
+SpecToCell[Style[spec_,style_String],_]:=Cell[ParseToDocEntry@spec,style,style]
+SpecToCell[Style[spec_,opts___],style_]:=
+  Cell[
+    BoxData@StyleBox[Cell@ParseToDocEntry@spec,opts],
+    {#,#}&@FirstCase[{opts},_String,style]
+  ]
 SpecToCell[spec_,style_]:=Cell[BoxData@ToBoxes@spec,style,style]
 
 

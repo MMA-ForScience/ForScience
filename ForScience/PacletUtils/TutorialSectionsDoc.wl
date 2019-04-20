@@ -11,7 +11,7 @@ TutorialSections[tut,\[Ellipsis]] returns the assigned section text/list of subs
 Begin[BuildAction]
 
 
-DocumentationHeader[TutorialSections]=FSHeader["0.68.0"];
+DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.28"];
 
 
 Details[TutorialSections]={
@@ -25,6 +25,7 @@ Details[TutorialSections]={
     {"[*ExampleInput[\[Ellipsis]]*]","An input cell with the output automatically generated"},
     {"[*Grid[\[Ellipsis]]*]","A grid expression describing a table"},
     {"[*Labeled*][[*Grid[\[Ellipsis]]*]","A grid expression describing a table with a label at the bottom"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
@@ -34,6 +35,7 @@ Details[TutorialSections]={
     {"[*Label*][\"```header text```\"]","A cell of the header row"},
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"```symbol```","A symbol, to be hyperlinked if it is documented"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}    
@@ -41,6 +43,7 @@ Details[TutorialSections]={
   "For tables specified as [*Grid[\[Ellipsis]]*], any options supported by [*Grid*] can be specified to control the column widths, grid lines, etc.",
   "If table headers are specified using [*Label*][\"```header text```\"], all cells of the first row must have this form.",
   "If table headers are specified using [*Label*][\"```header text```\"], a horizonal line is automatically added below the header.",
+  "In [*Style[str,\[Ellipsis]]*], the first named style is used as style for the generated cell if it exists.",
   "To add both content and further subsections to the same section, store the content under the key [*None*], and further subsections under their respective titles.",
   "Tutorial sections are generated in the order they are added, or, more generally, in the order they appear in [*TutorialSections[sym]*], except for content under [*None*].",
   "Content specified under the key [*None*] is always put before any potential subsections.",

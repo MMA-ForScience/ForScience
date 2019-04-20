@@ -10,7 +10,7 @@ Examples[sym,\[Ellipsis]] returns the assigned list of examples/example subsecti
 Begin[BuildAction]
 
 
-DocumentationHeader[Examples]=FSHeader["0.58.0","0.76.7"];
+DocumentationHeader[Examples]=FSHeader["0.58.0","0.88.28"];
 
 
 Details[Examples]={
@@ -22,10 +22,12 @@ Details[Examples]={
     {"\"```text```\"","A string, to be formatted by [*ParseFormatting*]"},
     {"[*Labeled*][\"```text```\",```ref```]","A formatted string with label ```ref```"},
     {"[*ExampleInput[\[Ellipsis]]*]","An input cell with the output automatically generated"},
+    {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
     {"```expr```","Any expression, to be converted to boxes by [*ToBoxes*]"}
   },
+  "In [*Style[str,\[Ellipsis]]*], the first named style is used as style for the generated cell if it exists.",
   Hyperlink["Labeled strings can be used to refer to examples from the [*Details*] section.","Labeled"],
   "Example sections are generated in the order they are added, or, more generally, in the order they appear in [*Examples[sym]*].",
   "[*Examples[sym]*] is always an association with string keys, representing the section titles.",
