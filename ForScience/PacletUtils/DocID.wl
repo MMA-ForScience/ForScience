@@ -25,9 +25,21 @@ $InvalidType=Context@$InvalidType<>"DocID`$InvalidType";
 
 
 DocID[id_DocID]:=id
-DocID[spec_String,type_String:""]:=StringSplit[spec,{"::"->"::","//"},All]/.
- {{tit_,"::",ref__}:>{tit,ref},{type2___,tit_}:>{tit,type2,tit}}/.
-  {tit_,type2_:"",name_}:>DocID[name,{type,type2},tit]
+DocID[spec_String,type_String:""]:=StringSplit[spec,{"::"->"::","//"->"//"}]//
+  Replace@{
+    {lbl___,"::",typeRef:Except["::"]...}:>
+      {StringJoin[lbl],typeRef},
+    typeRef_:>
+      Prepend[typeRef,Automatic]
+  }//Replace@{
+    {lbl_,type2___,"//",ref:Except["//"]...}:>
+      {lbl,StringJoin[type2],StringJoin[ref]},
+    {lbl_,ref___}:>
+      {lbl,"",StringJoin[ref]}
+  }//Replace@{
+    {Automatic,type2_,ref_}:>DocID[ref,{type,type2},ref],
+    {lbl_,type2_,ref_}:>DocID[ref,{type,type2},lbl]
+  }
 DocID[name_String,types:{_String,_String},tit_String]:=DocID[name,Evaluate@Switch[types,
   {"",_}|{_,""},
   StringJoin@@types,
