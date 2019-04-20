@@ -190,6 +190,7 @@ ExampleInput/:MakeBoxes[ei:ExampleInput[in__,opts:OptionsPattern[]],StandardForm
             }
           ],
           "Input",
+          FormatType->StandardForm,
           ShowStringCharacters->True
         ],
         DefaultBaseStyle->{},
