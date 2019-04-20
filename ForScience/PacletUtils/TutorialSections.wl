@@ -171,13 +171,17 @@ KeyValueMap[
     }
   ]&
 ]@KeySortBy[{StringQ}]@sec
-MakeTutorialSection[sec_List,nb_,lev_]:=
+MakeTutorialSection[sec_List,_:"",_:""]:=
 Flatten@Map[
   Switch[#,
     _String,
     Cell[
       ParseToDocEntry@#,
       "Text"
+    ],
+    _List,
+    Cell@CellGroupData[
+      MakeTutorialSection[#]
     ],
     _Grid|Labeled[_Grid,_],
     FormatTutorialTable[#],

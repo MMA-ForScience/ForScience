@@ -11,7 +11,7 @@ TutorialSections[tut,\[Ellipsis]] returns the assigned section text/list of subs
 Begin[BuildAction]
 
 
-DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.29"];
+DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.31"];
 
 
 Details[TutorialSections]={
@@ -25,6 +25,7 @@ Details[TutorialSections]={
     {"[*ExampleInput[\[Ellipsis]]*]","An input cell with the output automatically generated"},
     {"[*Grid[\[Ellipsis]]*]","A grid expression describing a table"},
     {"[*Labeled*][[*Grid[\[Ellipsis]]*]","A grid expression describing a table with a label at the bottom"},
+    {"{```spec_1```,\[Ellipsis]}","A group of cells specified by ```spec_i```"},
     {"[*Style[str,\[Ellipsis]]*]","A string, to be parsed by [*ParseFormatting*] with the specified styles"},
     {"[*Cell[\[Ellipsis]]*]","A cell, to be inserted exactly as-is"},
     {"[*BoxData[\[Ellipsis]]*]","A custom cell with the specied [*BoxData*] content"},
