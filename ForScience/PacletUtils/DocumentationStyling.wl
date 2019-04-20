@@ -11,12 +11,27 @@ If[!MatchQ[$Pre111CompatStyles,True|False],
 ]
 
 
-VersionAwareTemplateBox[style_,pre111df_,post111df_,o:OptionsPattern[]]:=
-  VersionAwareTemplateBox[StyleData[style],pre111df,post111df,o]
-VersionAwareTemplateBox[style_StyleData,pre111df_,post111df_,o:OptionsPattern[]]:=
+StyleSwitch[ver_]:=FEPrivate`Less[FEPrivate`$VersionNumber,ver]
+StyleSwitch[ver_,old_,new_]:=FEPrivate`If[StyleSwitch[ver],old,new]
+
+
+StyleMultiSwitch[new_]:=new
+StyleMultiSwitch[old_,ver_,rest__]:=FEPrivate`If[StyleSwitch[ver],old,StyleMultiSwitch[rest]]
+
+
+VersionAwareTemplateBox[ver_Real:11.1,style_,preDf_,postDf_,o:OptionsPattern[]]:=
+  VersionAwareTemplateBox[ver,StyleData[style],preDf,postDf,o]
+VersionAwareTemplateBox[ver_Real:11.1,style_StyleData,preDf_,postDf_,o:OptionsPattern[]]:=
   Cell[style,
     TemplateBoxOptions->{
-      DisplayFunction->Pre111StyleSwitch[pre111df,post111df]
+      DisplayFunction->Switch[ver,
+        11.1,
+        Pre111StyleSwitch,
+        12.0,
+        Pre120StyleSwitch,
+        _,
+        StyleSwitch[ver,##]&
+      ][preDf,postDf]
     },
     o
   ]
@@ -30,18 +45,16 @@ CreateStyleDefinitions[type_,custom_]:=
         GatherBy[
           Join[
             custom,
-        $DocumentationStyles[type]/.{
-          Pre111StyleSwitch[old_,new_]/;$Pre111CompatStyles:>
-            FEPrivate`If[
-              FEPrivate`Less[FEPrivate`$VersionNumber,11.1],
-              old,
-              new
-            ],
-          Pre111StyleSwitch[]/;$Pre111CompatStyles:>
-            FEPrivate`Less[FEPrivate`$VersionNumber,11.1],
-          Pre111StyleSwitch[_,new_]:>new,
-          Pre111StyleSwitch[]->False
-        }
+            $DocumentationStyles[type]/.{
+              Pre120StyleSwitch[old_,new_]:>StyleSwitch[12.0,old,new],
+              Pre120StyleSwitch[]:>StyleSwitch[12.0],
+              Pre111StyleSwitch[old_,new_]/;$Pre111CompatStyles:>
+                StyleSwitch[11.1,old,new],
+              Pre111StyleSwitch[]/;$Pre111CompatStyles:>
+                StyleSwitch[11.1],
+              Pre111StyleSwitch[_,new_]:>new,
+              Pre111StyleSwitch[]->False
+            }
           ],
           #[[1,1]]&
         ],
