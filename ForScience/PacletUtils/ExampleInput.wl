@@ -230,10 +230,10 @@ AppendTo[$DocumentationStyles[_],
 
 ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
   EIToBoxData[
-    EIToBoxes[#,opts]&/@Unevaluated/@ProcessVisibleOption[exInput,OptionValue[ExampleInput,opts,Visible]]
+    EIToBoxes[#,opts]&/@Unevaluated/@ProcessVisibleOption[exInput,OptionValue[ExampleInput,{opts},Visible]]
   ],
   "Input",
-  InitializationCell->(OptionValue[ExampleInput,opts,InitializationCell]/.Automatic:>MemberQ[Hold[in],_Needs])
+  InitializationCell->(OptionValue[ExampleInput,{opts},InitializationCell]/.Automatic:>MemberQ[Hold[in],_Needs])
 ]
 
 
