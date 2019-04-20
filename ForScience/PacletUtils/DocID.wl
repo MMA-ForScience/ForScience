@@ -151,6 +151,13 @@ RawDocumentationLink[Evaluate[ref:DocIDSpec]]:=With[
 ]
 
 
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["WebLink"],
+    AutoSpacing->False
+  ]
+];
+
+
 Attributes[DocumentationLink]={HoldFirst};
 
 
