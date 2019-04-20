@@ -11,7 +11,7 @@ TutorialSections[tut,\[Ellipsis]] returns the assigned section text/list of subs
 Begin[BuildAction]
 
 
-DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.28"];
+DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.29"];
 
 
 Details[TutorialSections]={
@@ -47,7 +47,13 @@ Details[TutorialSections]={
   "To add both content and further subsections to the same section, store the content under the key [*None*], and further subsections under their respective titles.",
   "Tutorial sections are generated in the order they are added, or, more generally, in the order they appear in [*TutorialSections[sym]*], except for content under [*None*].",
   "Content specified under the key [*None*] is always put before any potential subsections.",
-  "If any titled sections are specified, a jump-list is added to the top of the tutorial.",
+  "If any titled sections are specified, a jump-box is added to the top of the tutorial.",
+  "The following [*DocumentationOptions*] can be given:",
+  TableForm@{
+    {"JumpBoxDepth","1","How many levels of sections to include in the jump-box"}
+  },
+  "With the default setting \"JumpBoxDepth\"->1, only top-level sections will be included in the jump-box.",
+  Hyperlink["The setting \"JumpBoxDepth\"->0 can be used to disable the jump-box.","NoJumpBox"],
   "For more information & examples, see the documentation of [*Examples*]."
 };
 
@@ -204,6 +210,36 @@ Examples[TutorialSections,"Scope"]={
       AppendTo[TutorialSections[tut,"Section 1"],"Content 1-2"];,
       TutorialSections[tut]
     ]
+  }
+};
+
+
+Examples[TutorialSections,"DocumentationOptions","\"JumpBoxDepth\""]={
+  {
+    "With the default setting \"JumpBoxDepth\"->1, the jump-box includes links to the top-level sections:",
+    ExampleInput[
+      TutorialSections[tut]=<|
+        "Section 1"-><|"Subsection 1.1"->{"Some text"},"Subsection 1.2"->{"Some more text"}|>,
+        "Section 2"-><|"Subsection 2.1"->{"Still more text"},"Subsection 2.2"->{"And still more"}|>|>;,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Include subsections in the jump-box:",
+    ExampleInput[
+      SetDocumentationOptions[TutorialSections[tut],"JumpBoxDepth"->2];,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    Labeled["Use \"JumpBoxDepth\"->0, to disable the jump-box:","NoJumpBox"],
+    ExampleInput[
+      SetDocumentationOptions[TutorialSections[tut],"JumpBoxDepth"->0];,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
   }
 };
 

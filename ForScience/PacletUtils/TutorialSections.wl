@@ -31,27 +31,30 @@ D8Lrgfg/ENfjMV+ARPOR3YRuPjaM4lcAueh4HA==
 
 
 AppendTo[$DocumentationStyles["Tutorial"],
-  Cell[StyleData["GrayLinkWithIcon"],
+  Cell[StyleData["JumpListLink",StyleDefinitions->StyleData["GrayLinkWithIcon"]],
     TemplateBoxOptions->{
       DisplayFunction->(
-        TagBox[
+        Evaluate@TagBox[
           ButtonBox[
             PaneSelectorBox[
               {
                 True->RowBox@{
-                  #4,
+                  SpacerBox[#],
+                  JumpListArrowHov,
                   Cell[" "],
-                  StyleBox[#,FontColor->RGBColor[0.854902,0.396078,0.145098]]
+                  StyleBox[#2,FontColor->RGBColor[0.854902,0.396078,0.145098]]
                 },
                 False->RowBox@{
-                  #3,
+                  SpacerBox[#],
+                  JumpListArrow,
                   Cell[" "],
-                  #
+                  StyleBox[#2,FontColor->#4]
                 }
               },
               Dynamic@CurrentValue["MouseOver"]
             ],
-            ButtonData->#2
+            ButtonData->#3,
+            BaseStyle->{"Link"}
           ],
           MouseAppearanceTag["LinkHand"]
         ]&
@@ -61,25 +64,40 @@ AppendTo[$DocumentationStyles["Tutorial"],
 ]
 
 
+DocumentationOptions[TutorialSections]={"JumpBoxDepth"->1};
+AppendTo[$DependencyCollectors["Tutorial"],FullDocumentationOptionValues@TutorialSections];
+
+
+ExtractTutorialHeaders[sec_Association,max_,lvl_:0]/;lvl<max:=
+  KeyValueMap[
+    {#->lvl,ExtractTutorialHeaders[#2,max,lvl+1]}&,
+    KeyDrop[sec,None]
+  ]
+ExtractTutorialHeaders[_,_,_]:={}
+
+
 MakeTutorialJumpList[nb_,tut_]:=NotebookWrite[nb,
   Cell[
     BoxData@GridBox[
-      Map[
+      Apply[
         If[
           #==="",
           "",
           TemplateBox[
             {
+              8 #2,
               Cell@#,
               StringTemplate["``#``"][DocumentationPath[tut],GenerateCellID[#]],
-              JumpListArrow,
-              JumpListArrowHov
+              GrayLevel[0.360784+0.1 Min[#2,3]]
             },
-            "GrayLinkWithIcon",
+            "JumpListLink",
             BaseStyle->{"TutorialJumpBoxLink"}
           ]
         ]&,
-        ArrayReshape[#,{Ceiling[Length@#/2],2},""]&@Keys@KeyDrop[TutorialSections@tut,None],
+        ArrayReshape[#,{Ceiling[Length@#/2],2},""]&@Flatten@ExtractTutorialHeaders[
+          TutorialSections@tut,
+          DocumentationOptionValue[TutorialSections[tut],"JumpBoxDepth"]
+        ],
         {2}
       ]
     ],
@@ -173,8 +191,19 @@ Flatten@Map[
 
 
 MakeTutorialSections[tut_,nb_,OptionsPattern[]]:=If[TutorialSections[tut]=!=<||>,
-  If[Keys@TutorialSections[tut]=!={None},MakeTutorialJumpList[nb,tut]];
-  EvaluateAndWrite[nb,MakeTutorialSection[TutorialSections[tut],nb,1]]
+  If[
+    Keys@TutorialSections[tut]=!={None}&&
+      DocumentationOptionValue[TutorialSections[tut],"JumpBoxDepth"]>0,
+    MakeTutorialJumpList[nb,tut]
+  ];
+  EvaluateAndWrite[
+    nb,
+    MakeTutorialSection[
+      TutorialSections[tut],
+      nb,
+      1
+    ]
+  ]
 ]
 
 
