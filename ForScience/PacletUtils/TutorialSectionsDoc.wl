@@ -11,7 +11,7 @@ TutorialSections[tut,\[Ellipsis]] returns the assigned section text/list of subs
 Begin[BuildAction]
 
 
-DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.31"];
+DocumentationHeader[TutorialSections]=FSHeader["0.68.0","0.88.32"];
 
 
 Details[TutorialSections]={
@@ -51,10 +51,17 @@ Details[TutorialSections]={
   "If any titled sections are specified, a jump-box is added to the top of the tutorial.",
   "The following [*DocumentationOptions*] can be given:",
   TableForm@{
-    {"JumpBoxDepth","1","How many levels of sections to include in the jump-box"}
+    {"JumpBoxDepth","1","How many levels of sections to include in the jump-box"},
+    {"OpenLevels",Full,"How many levels of sections to open by default"}
   },
   "With the default setting \"JumpBoxDepth\"->1, only top-level sections will be included in the jump-box.",
   Hyperlink["The setting \"JumpBoxDepth\"->0 can be used to disable the jump-box.","NoJumpBox"],
+  "\"OpenLevels\" accepts the following settings:",
+  TableForm@{
+    {Full,"Generate everything open, don't include openers"},
+    {All,"Generate everything open, but include openers for all levels"},
+    {"```n```","Generate the first ```n``` levels open"}
+  },
   "For more information & examples, see the documentation of [*Examples*]."
 };
 
@@ -238,6 +245,44 @@ Examples[TutorialSections,"DocumentationOptions","\"JumpBoxDepth\""]={
     Labeled["Use \"JumpBoxDepth\"->0, to disable the jump-box:","NoJumpBox"],
     ExampleInput[
       SetDocumentationOptions[TutorialSections[tut],"JumpBoxDepth"->0];,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  }
+};
+
+
+Examples[TutorialSections,"DocumentationOptions","\"OpenLevels\""]={
+  {
+    "With the default setting \"OpenLevels\"->[*Full*], all sections levels are open, and no openers are generated:",
+    ExampleInput[
+      TutorialSections[tut]=<|
+        "Section 1"-><|"Subsection 1.1"->{"Some text"},"Subsection 1.2"->{"Some more text"}|>,
+        "Section 2"-><|"Subsection 2.1"->{"Still more text"},"Subsection 2.2"->{"And still more"}|>|>;,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Include openers to allow sections to be closed:",
+    ExampleInput[
+      SetDocumentationOptions[TutorialSections[tut],"OpenLevels"->All];,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Only open top-level sections by default:",
+    ExampleInput[
+      SetDocumentationOptions[TutorialSections[tut],"OpenLevels"->1];,
+      DocumentationBuilder[tut]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Open nothing by default:",
+    ExampleInput[
+      SetDocumentationOptions[TutorialSections[tut],"OpenLevels"->0];,
       DocumentationBuilder[tut]
     ],
     ExampleInput[NotebookClose[%];,Visible->False]

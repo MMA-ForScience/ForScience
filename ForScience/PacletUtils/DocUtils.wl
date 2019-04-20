@@ -80,11 +80,11 @@ GenerateCellID[expr_]:=Mod[Hash[expr],2^31]
 
 
 $SectionColor=RGBColor[217/255,101/255,0];
-$SectionArrow=Style[
+$SectionArrow[col_]:=Style[
   Graphics[
     {
       Thickness[0.18],
-      $SectionColor,
+      col,
       Line@{{-1.8,0.5},{0,0},{1.8,0.5}}
     },
     AspectRatio->1,
@@ -102,7 +102,7 @@ AppendTo[$DocumentationStyles[_],
   VersionAwareTemplateBox["SectionOpenerArrow",
     ""&,
     Evaluate@ToBoxes@Rotate[
-      $SectionArrow,
+      $SectionArrow[#2],
       Dynamic@If[
         CurrentValue[
           EvaluationNotebook[],
@@ -113,6 +113,12 @@ AppendTo[$DocumentationStyles[_],
       ],
       {-1.65,-1}
     ]&
+  ]
+]
+AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["SectionOpener"],
+    ShowGroupOpener->Pre111StyleSwitch[],
+    WholeCellGroupOpener->True
   ]
 ]
 AppendTo[$DocumentationStyles[_],
@@ -149,15 +155,17 @@ AppendTo[$DocumentationStyles[_],
 ]
 
 
-DocumentationOpener[{heading__},type_,index_]:=
+DocumentationOpener[{heading__}|heading2_,type_,index_,col_,opts:OptionsPattern[]]:=
   Cell[
     TextData@{
-      Cell@BoxData@TemplateBox[{{TaggingRules,"Openers",type,index}},"SectionOpenerArrow"],
+      Cell@BoxData@TemplateBox[{{TaggingRules,"Openers",type,index},col},"SectionOpenerArrow"],
       Cell@BoxData@SpacerBox@1,
-      heading
+      heading,
+      heading2
     },
     type,
-    WholeCellGroupOpener->True
+    "SectionOpener",
+    opts
   ]
 
 
@@ -183,12 +191,12 @@ AddOpenerTag[nb_,type_,open_]:=Module[
 ]
 
 
-CreateDocumentationOpener[nb_,heading_,type_,{content___},open_:False]:=
+CreateDocumentationOpener[nb_,heading_,type_,{content___},open_:False,col_:$SectionColor,opts:OptionsPattern[]]:=
 With[
   {index=AddOpenerTag[nb,type,open]},
   Cell@CellGroupData[
     {
-      DocumentationOpener[heading,type,index],
+      DocumentationOpener[heading,type,index,col,opts],
       content
     },
     Dynamic@CurrentValue[

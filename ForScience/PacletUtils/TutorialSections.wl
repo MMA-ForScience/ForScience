@@ -64,7 +64,7 @@ AppendTo[$DocumentationStyles["Tutorial"],
 ]
 
 
-DocumentationOptions[TutorialSections]={"JumpBoxDepth"->1};
+DocumentationOptions[TutorialSections]={"JumpBoxDepth"->1,"OpenLevels"->Full};
 AppendTo[$DependencyCollectors["Tutorial"],FullDocumentationOptionValues@TutorialSections];
 
 
@@ -159,19 +159,41 @@ FormatTutorialTable[Grid[t_,___]]:=(Message[FormatTutorialTable::noTable,t];Cell
 
 
 $SectionLevels={"Section","Subsection","Subsubsection","Subsubsubsection"};
+$SectionColors={GrayLevel[0],GrayLevel[0.305882],GrayLevel[0.305882],GrayLevel[0.5]};
 
 
-MakeTutorialSection[sec_Association,nb_,lev_]:=
-KeyValueMap[
+AssembleTutorialSection[_,None,_,cont_,_,_]:=
+  Cell@CellGroupData@cont
+AssembleTutorialSection[_,tit_,type_,cont_,_,Full]:=
+  Cell@CellGroupData@
+    Prepend[Cell[tit,type,CellID->GenerateCellID[tit]]]@
+      cont
+AssembleTutorialSection[nb_,tit_,type_,cont_,lvl_,open_]:=
+  CreateDocumentationOpener[
+    nb,
+    tit,
+    type,
+    cont,
+    open===All||open>=lvl,
+    $SectionColors[[Min[lvl,Length@$SectionColors]]],
+    CellID->GenerateCellID[tit]
+  ]
+
+MakeTutorialSection[sec_Association,nb_,lev_,open_]:=
   With[
     {type=$SectionLevels[[Min[lev,Length@$SectionLevels]]]},
-    Cell@CellGroupData@Flatten@{
-      If[#===None,Nothing,Cell[#,type,CellID->GenerateCellID[#]]],
-      MakeTutorialSection[#2,nb,lev+1]
-    }
-  ]&
-]@KeySortBy[{StringQ}]@sec
-MakeTutorialSection[sec_List,_:"",_:""]:=
+    KeyValueMap[
+      AssembleTutorialSection[
+        nb,
+        #,
+        type,
+        MakeTutorialSection[#2,nb,lev+1,open],
+        lev,
+        open
+      ]&
+    ]@KeySortBy[{StringQ}]@sec
+  ]
+MakeTutorialSection[sec_List,_:"",_:"",_:""]:=
 Flatten@Map[
   Switch[#,
     _String,
@@ -205,7 +227,8 @@ MakeTutorialSections[tut_,nb_,OptionsPattern[]]:=If[TutorialSections[tut]=!=<||>
     MakeTutorialSection[
       TutorialSections[tut],
       nb,
-      1
+      1,
+      DocumentationOptionValue[TutorialSections[tut],"OpenLevels"]
     ]
   ]
 ]
