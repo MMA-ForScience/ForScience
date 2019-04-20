@@ -7,7 +7,7 @@ Begin["`Private`"]
 
 
 Attributes[ExampleInput]={HoldAll};
-Options[ExampleInput]={InitializationCell->Automatic,Visible->True,"Multiline"->Automatic};
+Options[ExampleInput]={InitializationCell->Automatic,Visible->True,"Multiline"->Automatic,Evaluated->True};
 
 
 resetInOut[in_,out_,line_]:=With[
@@ -222,6 +222,9 @@ AppendTo[$DocumentationStyles[_],
   ]
 ]
 AppendTo[$DocumentationStyles[_],
+  Cell[StyleData["UnevaluatedInput",StyleDefinitions->StyleData["Input"]]]
+]
+AppendTo[$DocumentationStyles[_],
   Cell[StyleData["Output"],
     CellContext->Notebook
   ]
@@ -232,12 +235,12 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
   EIToBoxData[
     EIToBoxes[#,opts]&/@Unevaluated/@ProcessVisibleOption[exInput,OptionValue[ExampleInput,{opts},Visible]]
   ],
-  "Input",
+  If[OptionValue[ExampleInput,{opts},Evaluated],"Input","UnevaluatedInput"],
   InitializationCell->(OptionValue[ExampleInput,{opts},InitializationCell]/.Automatic:>MemberQ[Hold[in],_Needs])
 ]
 
 
-EvaluateAndWrite[nb_,cells_,nbOpts:OptionsPattern[]]:=
+EvaluateAndWrite[nb_,cells_,styleDefs_:Automatic]:=
 (* NotebookEvaluate leaks $Context/$ContextPath/$Line when called from a cell with CellContext 
    Global`Private`SavedContextInfo is also messed up due to excessive context switching back to Global`.
    This leads to $Context in cells without CellContext to be broken as well.
@@ -254,7 +257,20 @@ Block[
     {exNb=NotebookPut[
       Visible->False,
       InitializationCellEvaluation->False,
-      nbOpts
+      StyleDefinitions->Notebook@Prepend[
+        Replace[
+          styleDefs,
+          Automatic->Replace[
+            StyleDefinitions/.Options[nb,StyleDefinitions],
+            styles:Except[_Notebook]:>Notebook[
+              {
+                Cell[StyleData[StyleDefinitions->styles]]
+              }
+            ]
+          ]
+        ],
+        Cell[StyleData["UnevaluatedInput"]]
+      ]
     ]},
     NotebookWrite[exNb,cells,All];
     NotebookEvaluate[exNb,InsertResults->True];

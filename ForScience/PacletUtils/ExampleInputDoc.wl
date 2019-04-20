@@ -25,7 +25,8 @@ Details[ExampleInput]={
   TableForm@{
     {InitializationCell,Automatic,"Whether the input cell should be an initialization cell"},
     {Visible,True,"Whether the input cell should be visible in the final notebook"},
-    {"\"Multiline\"",Automatic,"How long input lines should be handled"}
+    {"\"Multiline\"",Automatic,"How long input lines should be handled"},
+    {Evaluated,True,"Whether the input cell should be evaluated"}
   },
   "The default setting [*InitializationCell->Automatic*] detects example inputs of the form [*ExampleInput*][[*Needs*][\[Ellipsis]]] and automatically marks them as initialization cell.",
   "The option [*Visible*] can be used to execute cleanup code in an example that should not be included in the final notebook.",
@@ -272,6 +273,26 @@ Examples[ExampleInput,"Options","\"Multiline\""]={
     ]
   }
 };
+
+
+Examples[ExampleInput,"Options","Evaluated"]={
+  {
+    "With the default setting [*Evaluated->True*], the input is evaluated when the documentation page is built:",
+    ExampleInput[
+      Examples[test,"Basic examples"]={{ExampleInput[1+2]}};,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  },
+  {
+    "Create a cell that has to be evaluated by the user by setting [*Evaluated->False*]:",
+    ExampleInput[
+      Examples[test,"Basic examples"]={{ExampleInput[1+2,Evaluated->False]}};,
+      DocumentationBuilder[test]
+    ],
+    ExampleInput[NotebookClose[%];,Visible->False]
+  }
+}
 
 
 Examples[ExampleInput,"Properties & Relations"]={
