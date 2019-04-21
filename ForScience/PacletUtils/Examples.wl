@@ -88,6 +88,14 @@ ExamplesSection[_,sec_List,_,_,_]:=
 ExamplesSection[sym_Symbol,nb_]:=ExamplesSection[sym,<|"Examples"->Examples[sym]|>,nb,1,{1}]
 
 
+AppendTo[$DocumentationStyles["Symbol"],
+  Cell[StyleData["ExampleSectionDelimiter",StyleDefinitions->StyleData["PageDelimiter"]],
+    CellMargins->Pre120StyleSwitch[-2,{{24,14},{12,12}}],
+    CellOpen->Pre120StyleSwitch[False,True]
+  ]
+];
+
+
 Options[MakeExampleSection]={Examples->True};
 
 
@@ -95,6 +103,7 @@ Attributes[MakeExampleSection]={HoldFirst};
 
 
 MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@Examples@sym>0,
+  NotebookWrite[nb,Cell["","ExampleSectionDelimiter"]];
   EvaluateAndWrite[nb,ExamplesSection[sym,nb],Join[
     First[StyleDefinitions/.Options[nb,StyleDefinitions]],
     (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
