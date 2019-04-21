@@ -105,7 +105,6 @@ Attributes[MakeExampleSection]={HoldFirst};
 MakeExampleSection[sym_,nb_,OptionsPattern[]]:=If[OptionValue@Examples&&Length@Examples@sym>0,
   NotebookWrite[nb,Cell["","ExampleSectionDelimiter"]];
   EvaluateAndWrite[nb,ExamplesSection[sym,nb],Join[
-    First[StyleDefinitions/.Options[nb,StyleDefinitions]],
     (* this enables evaluation of the $Line=0 lines hidden in the example delimiters *)
     {Cell[StyleData["ExampleDelimiter"],Evaluatable->True,CellContext->Notebook]},
     Cell[StyleData[#],

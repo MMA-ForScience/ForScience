@@ -240,7 +240,7 @@ ExampleInputToCell[exInput:ExampleInput[in__,opts:OptionsPattern[]]]:=Cell[
 ]
 
 
-EvaluateAndWrite[nb_,cells_,styleDefs_:Automatic]:=
+EvaluateAndWrite[nb_,cells_,styleDefs_:{}]:=
 (* NotebookEvaluate leaks $Context/$ContextPath/$Line when called from a cell with CellContext 
    Global`Private`SavedContextInfo is also messed up due to excessive context switching back to Global`.
    This leads to $Context in cells without CellContext to be broken as well.
@@ -257,19 +257,16 @@ Block[
     {exNb=NotebookPut[
       Visible->False,
       InitializationCellEvaluation->False,
-      StyleDefinitions->Notebook@Prepend[
+      StyleDefinitions->Notebook@Join[
+        {Cell[StyleData["UnevaluatedInput"]]},
+        styleDefs,
         Replace[
-          styleDefs,
-          Automatic->Replace[
-            StyleDefinitions/.Options[nb,StyleDefinitions],
-            styles:Except[_Notebook]:>Notebook[
-              {
-                Cell[StyleData[StyleDefinitions->styles]]
-              }
-            ]
-          ]
-        ],
-        Cell[StyleData["UnevaluatedInput"]]
+          StyleDefinitions/.Options[nb,StyleDefinitions],
+          {
+            Notebook[styles_,___]:>styles,
+            styles_:>{Cell[StyleData[StyleDefinitions->styles]]}
+          }
+        ]
       ]
     ]},
     NotebookWrite[exNb,cells,All];
