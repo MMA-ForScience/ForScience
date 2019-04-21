@@ -105,17 +105,21 @@ AppendTo[$DocumentationStyles[_],
       #
     }&,
     Evaluate@Cell@TextData@{
-      Cell@BoxData@ToBoxes@Rotate[
-        $SectionArrow[#4],
-        Dynamic@If[
-          CurrentValue[
-            EvaluationNotebook[],
+      Cell@BoxData@RotationBox[
+        ToBoxes@$SectionArrow[#4],
+        BoxRotation->FEPrivate`Switch[
+          FrontEnd`CurrentValue[
+            FrontEnd`EvaluationNotebook[],
             #3
           ],
+          True,
           0,
+          Open,
+          0,
+          _,
           Pi/2
         ],
-        {-1.65,-1}
+        BoxRotationPoint->{-1.65,-1}
       ],
       Cell@BoxData@SpacerBox@1,
       #

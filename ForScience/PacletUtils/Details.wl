@@ -60,7 +60,22 @@ AppendTo[$DocumentationStyles["Symbol"],
     CellElementSpacings->{
       "CellMinHeight"->0,
       "ClosedCellHeight"->0
-    }
+    },
+    CellOpen->Pre111StyleSwitch[
+      False,
+      FEPrivate`Switch[
+        FrontEnd`CurrentValue[
+          FrontEnd`EvaluationNotebook[],
+          {TaggingRules,"Openers","NotesSection","0"}
+        ],
+        True,
+        False,
+        Open,
+        False,
+        _,
+        True
+      ]
+    ]
   ]
 ];
 
@@ -163,45 +178,37 @@ With[
               {TaggingRules,"Openers","NotesSection","0"}
             ],
             {
-              True->"",
-              False->Graphics[
-                {
-                  Inset[
-                    Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
-                    Scaled@{0,0},
-                    Scaled@{0,0}
-                  ],
-                  Inset[
-                    PaneSelector[
-                      {
-                        True->SummaryOverlayHover,
-                        False->SummaryOverlay
-                      },
-                      Dynamic@CurrentValue["MouseOver"]
-                    ],
-                    Scaled@{0,0},
-                    Scaled@{0,0}
-                  ]
-                },
-                AspectRatio->Full,
-                PlotRangePadding->None,
-                ImagePadding->None,
-                ImageSize->{720,80}
-              ]
+              True->Graphics[{},ImageSize->{0,80}],
+              Open->Graphics[{},ImageSize->{0,80}]
             },
-            ""
+            Graphics[
+              {
+                Inset[
+                  Grid@{{Spacer[10],Sequence@@thumbs,Spacer[10]}},
+                  Scaled@{0,0},
+                  Scaled@{0,0}
+                ],
+                Inset[
+                  PaneSelector[
+                    {
+                      True->SummaryOverlayHover,
+                      False->SummaryOverlay
+                    },
+                    Dynamic@CurrentValue["MouseOver"]
+                  ],
+                  Scaled@{0,0},
+                  Scaled@{0,0}
+                ]
+              },
+              AspectRatio->Full,
+              PlotRangePadding->None,
+              ImagePadding->None,
+              ImageSize->{720,80}
+            ]
           ],
           "LinkHand"
         ],
-        "NotesThumbnails",
-        CellOpen->Dynamic@If[
-          CurrentValue[
-            EvaluationNotebook[],
-            {TaggingRules,"Openers","NotesSection","0"}
-          ],
-          False,
-          True
-        ]
+        "NotesThumbnails"
       ]
     }
   ]
