@@ -120,8 +120,7 @@ AppendTo[$DocumentationStyles[_],
       Cell@BoxData@SpacerBox@1,
       #
     }&,
-    ShowGroupOpener->Pre111StyleSwitch[],
-    WholeCellGroupOpener->True
+    ShowGroupOpener->Pre111StyleSwitch[]
   ]
 ]
 AppendTo[$DocumentationStyles[_],
@@ -231,8 +230,9 @@ DocumentationOpener[{heading__}|heading2_,type_,spacer_,index_,col_,opts:Options
       },
       "SectionOpener"
     ],
-    "SectionOpener",
     type,
+    type,
+    WholeCellGroupOpener->True,
     opts
   ]
 
