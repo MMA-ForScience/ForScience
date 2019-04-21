@@ -8,8 +8,8 @@ BeginPackage["ForScience`PlotUtils`",{"ForScience`","ForScience`PacletUtils`","F
 <<`VectorMarker`;
 <<`ForSciencePlotTheme`;
 <<`CustomTicks`;
-<<`CombinePlots`;
 <<`GraphicsInformation`;
+<<`CombinePlots`;
 <<`PlotGrid`;
 
 
