@@ -2,6 +2,7 @@
 
 Jet;
 Parula;
+Fire;
 
 
 Begin["`Private`"]
