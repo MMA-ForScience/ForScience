@@ -160,7 +160,7 @@ VectorMarker[metrics_Association,size:_?NumericQ:10,OptionsPattern[]]:=Let[
       },
       VectorMarker,
       AlignmentPoint->alignmentPoint,
-      ImageSize->{Automatic,3size} ,
+      ImageSize->{Automatic,3size},
       PlotRangeClipping->False,
       PlotRangePadding->Scaled@0.3,
       PlotRange->metrics["plotRange"]
@@ -184,19 +184,38 @@ InsertBaseStyles[g_,styles_]:=g/.h_@Inherited:>Directive@@Cases[
     h[__]
   ]
 ]
-VectorMarker/:Graphics[{styles__,Style[prim_]},VectorMarker,opts___]:=
- VectorMarker[InsertBaseStyles[Graphics[prim,opts],{styles}],Automatic]
+
+
 VectorMarker/:Graphics[prim_,VectorMarker,opts___]/;MemberQ[{opts},DefaultBaseStyle->_,All]:=
-VectorMarker[
-  InsertBaseStyles[
-    Graphics[prim,FilterRules[{opts},Except[DefaultBaseStyle]]],
-    OptionValue[Graphics,{opts},DefaultBaseStyle]/.
-     {"Graphics",s__}:>{s}
-  ],
-  Automatic
+  VectorMarker[
+    InsertBaseStyles[
+      Graphics[prim,FilterRules[{opts},Except[DefaultBaseStyle]]],
+      OptionValue[GraphicsBox,{opts},DefaultBaseStyle]/.
+        {"Graphics",s__}:>{s}
+    ],
+    Automatic
+  ]
+VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_,Automatic,_]:=
+  Inset[g,pos]
+VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_]:=
+  Inset[g,pos]
+
+
+If[$VersionNumber<12.0,
+  VectorMarker/:Graphics[{styles__,Style[prim_]},VectorMarker,opts___]:=
+    VectorMarker[InsertBaseStyles[Graphics[prim,opts],{styles}],Automatic],
+  Typeset`MakeBoxes[Inset[Style[Graphics[{Style@prim_},VectorMarker,opts___],sOpts__],pos_,Automatic,_],_,Graphics]/;
+    MemberQ[{sOpts},GraphicsBoxOptions->_]:=
+      With[
+        {
+          marker=InsertBaseStyles[
+            Graphics[prim,opts],
+            OptionValue[GraphicsBox,GraphicsBoxOptions/.{sOpts},DefaultBaseStyle]
+          ]
+        },
+        InsetBox[Evaluate@MakeBoxes[marker,StandardForm],pos]
+      ]
 ]
-VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_,Automatic,_]:=Inset[g,pos]
-VectorMarker/:Inset[VectorMarker[g_Graphics,Automatic],pos_]:=Inset[g,pos]
 
 
 (* Typesetting of marker-type graphics expression (contains "invalid option" VectorMarker) *)
