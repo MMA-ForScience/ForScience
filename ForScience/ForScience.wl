@@ -27,7 +27,7 @@ If[!TrueQ@ForScience`Private`$PolarPlotsFixed2&&($VersionNumber==11.2||$VersionN
    HoldPattern[l:{rmin,rmax}|{tmin,tmax}=r_]:>
     (l=r/.{\[Infinity],-\[Infinity]}->{0,1});
 ]
-If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=11.3,
+If[!TrueQ@ForScience`Private`$PolarPlotsFixed3&&$VersionNumber<=12.0,
 (* fix for inconsistent sizing of (List)PolarPlot[...,PolarAxes->True,PlotRange->All] *)
   ListPolarPlot@{};
   ForScience`Private`$PolarPlotsFixed3=True;
@@ -42,7 +42,7 @@ End[];
 
 
 Begin["DrawPolarAxes`DrawPolarAxesDump`"];
-If[!TrueQ@ForScience`Private`$PolarPlotsFixed4&&$VersionNumber<=11.3,
+If[!TrueQ@ForScience`Private`$PolarPlotsFixed4&&$VersionNumber<=12.0,
 (* fix for PolarTicks specifications of the form {pos,label,{plen,mlen},style} *)
   ForScience`Private`$PolarPlotsFixed4=True;
   (
@@ -72,7 +72,7 @@ End[];
 
 
 Begin["Parallel`Evaluate`Private`"]
-If[!TrueQ@ForScience`Private`$ParallelMapIndexedFixed&&(11.1<=$VersionNumber<=11.3),
+If[!TrueQ@ForScience`Private`$ParallelMapIndexedFixed&&(11.1<=$VersionNumber<=12.0),
 (* fix for Parallelize[MapIndexed[...,<|...|>]] supplying wrong second argument to function *)
   ForScience`Private`$ParallelMapIndexedFixed=True;
   Unprotect@MapIndexed;
@@ -100,7 +100,7 @@ End[]
 
 
 Begin["Charting`"]
-If[!TrueQ@ForScience`Private`$SimplePaddingFixed&&($VersionNumber<=11.3),
+If[!TrueQ@ForScience`Private`$SimplePaddingFixed&&($VersionNumber<=12.0),
 (* Fix for 0 tick label not having same number of decimal places as other labels in Charting`ScaledTicks *)
   ForScience`Private`$SimplePaddingFixed=True;
   (* 
@@ -116,14 +116,17 @@ If[!TrueQ@ForScience`Private`$SimplePaddingFixed&&($VersionNumber<=11.3),
   };
   Protect@SimplePadding;
   (* Chop 0. to 0 in MantissaExponent calls in simplePadding["Medium",...] to prevent errors/broken formatting *)
-  DownValues[`CommonDump`simplePadding]=DownValues[`CommonDump`simplePadding]/.
-   HoldPattern[MantissaExponent[l_,10]]:>MantissaExponent[Chop@l,10];
+  (* For 12.0: Convert 0 to 0. to enable NumberForm formatting *)
+  DownValues[`CommonDump`simplePadding]=DownValues[`CommonDump`simplePadding]/.{
+    HoldPattern[MantissaExponent[l_,10]]:>MantissaExponent[Chop@l,10],
+    HoldPattern@NumberForm[#,{Infinity,d_}]:>NumberForm[N@#,{Infinity,d}]
+  };
 ]
 End[]
 
 
 Begin["System`PairedBarChartDump`"]
-If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=11.3),
+If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=12.0),
 (* Fix for ChartLabels not respecting LabelStyle setting in PairedBarChart *)
   PairedBarChart;
   DownValues@`PairedBarAxis=DownValues@`PairedBarAxis/.
@@ -154,7 +157,7 @@ End[]
 
 
 Begin["Charting`"]
-If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=11.3),
+If[!TrueQ@ForScience`Private`$PairedBarChartLabelsFixed&&($VersionNumber<=12.0),
   ForScience`Private`$PairedBarChartLabelsFixed=True;
   Unprotect@`CategoricalAxis;
   Block[
@@ -179,7 +182,7 @@ End[]
 
 
 Begin["Charting`AxisDump`"]
-If[!TrueQ@ForScience`Private`$CategoricalAxisStylingFixed&&($VersionNumber<=11.3),
+If[!TrueQ@ForScience`Private`$CategoricalAxisStylingFixed&&($VersionNumber<=12.0),
 (* fix for axis styling not being applied properly to category axes of plots such as CandlestickChart *)
   ForScience`Private`$CategoricalAxisStylingFixed=True;
   Unprotect@Charting`CategoricalAxis;
