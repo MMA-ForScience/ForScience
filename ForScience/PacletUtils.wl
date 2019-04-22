@@ -30,12 +30,12 @@ BeginPackage["ForScience`PacletUtils`",{"ForScience`","PacletManager`","JLink`",
 <<`UsageSection`;
 <<`DeclareMetadataHandler`;
 <<`DeclareSectionAccessor`;
+<<`ExampleInput`;
 <<`Abstract`;
 <<`GuideSections`;
 <<`TutorialSections`;
 <<`OverviewEntries`;
 <<`Details`;
-<<`ExampleInput`;
 <<`Examples`;
 <<`SeeAlso`;
 <<`Tutorials`;
